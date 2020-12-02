@@ -115,7 +115,7 @@ Here's what is happening here:
 Once you've done this at the top of your partial file, you can then use `<%= p.yield :some_section %>` to render whatever content areas you want to be passed into your partial.
 
 
-### Extra Credit: Defining and Using Well Isolated Helper Methods
+### Defining and using well isolated helper methods
 
 To minimize the amount of pollution in the global helper namespace, you can use the shared context object to define helper methods specifically for your partials _within your partial_ like so:
 
