@@ -1,6 +1,6 @@
 # nice_partials [![[version]](https://badge.fury.io/rb/nice_partials.svg)](https://badge.fury.io/rb/nice_partials)  [![[travis]](https://travis-ci.org/andrewculver/nice_partials.svg)](https://travis-ci.org/andrewculver/nice_partials)
 
-Nice Partials provides a light layer of magic on top of traditional Rails view partials to try and make them an even better fit for extracting and reusing components in your views. Nice Partials is specifically designed to be a lightweight and more Rails-native alternative to [ViewComponent](http://viewcomponent.org) that hopefully provides many of the same benefits while requiring less ceremony. This specific approach originated with [Bullet Train](https://bullettrain.co)'s "Field Partials" and was later reimagined and reimplemented by Dom Christie.
+Nice Partials provides a light layer of magic on top of traditional Rails view partials to try and make them an even better fit for extracting and reusing components in your views. Nice Partials is specifically designed to be a lightweight and more Rails-native alternative to [ViewComponent](http://viewcomponent.org) that hopefully provides many of the same benefits while requiring less ceremony. This specific approach originated with [Bullet Train](https://bullettrain.co)'s "Field Partials" and was later reimagined and completely reimplemented by Dom Christie.
 
 
 ## Benefits
