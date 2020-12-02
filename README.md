@@ -22,6 +22,8 @@ Compared to something more heavy-handed, Nice Partials:
 
 Nice Partials slightly extends the concept of [`content_for` blocks and `yield`](https://guides.rubyonrails.org/layouts_and_rendering.html#using-the-content-for-method) so they can be properly used to define and utilize "content areas" or "slots" in simple ERB partials.
 
+### Can't I do the same thing without Nice Partials?
+
 You can almost accomplish the same thing without Nice Partials, but in practice you end up having to flush the content buffers after using them, leading to something like this:
 
 ```html+erb
