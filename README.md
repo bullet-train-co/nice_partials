@@ -76,9 +76,9 @@ gem "nice_partials"
 
 You only need to use Nice Partials when:
 
- - You want to define multiple named content areas in your partial. If you don't have multiple named content areas in your partial, you could just pass your content into the partial using the standard block and `yield` approach.
+ - you want to define multiple named content areas in your partial. If you don't have multiple named content areas in your partial, you could just pass your content into the partial using the standard block and `yield` approach.
 
- - You want to specifically isolate your helper methods for a specific partial.
+ - you want to specifically isolate your helper methods for a specific partial.
 
 ### Create a partial with Nice Partials
 
