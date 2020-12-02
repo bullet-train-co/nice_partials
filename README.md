@@ -74,9 +74,6 @@ You can almost accomplish the same thing without Nice Partials, but in practice 
 
 Earlier iterations of Nice Partials aimed to simply clean up this syntax with helper methods like `flush_content_for`, but because the named content buffers were in a global namespace, it was also possible to accidentally create situations where two partials with a `:body` content area would end up interfering with each other, depending on the order they're nested and rendered.
 
-
-## How does Nice Partials help?
-
 Nice Partials resolves the last-mile issues with standard view partials and content buffers by introducing a small, generic object that helps transparently namespace your named content buffers. This same object can also be used to define helper methods specific to your partial that are isolated from the global helper namespace.
 
 
