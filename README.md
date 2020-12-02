@@ -1,6 +1,38 @@
 # nice_partials [![[version]](https://badge.fury.io/rb/nice_partials.svg)](https://badge.fury.io/rb/nice_partials)  [![[travis]](https://travis-ci.org/andrewculver/nice_partials.svg)](https://travis-ci.org/andrewculver/nice_partials)
 
-Nice Partials provides a light layer of magic on top of traditional Rails view partials to try and make them an even better fit for extracting and reusing components in your views.
+Nice Partials provides a light layer of magic on top of traditional Rails view partials to try and make them an even better fit for extracting and reusing components in your views. 
+
+It allows your partials to define named content areas like this:
+
+`app/views/partials/_card.html.erb`:
+```html+erb
+<div class="card">
+  <%= p.yield :image %>
+  <div class="card-body">
+    <h5 class="card-title"><%= title %></h5>
+    <p class="card-text">
+      <%= p.yield :body %>
+    </p>
+  </div>
+</div>
+```
+
+These partials can still be utilized with a standard `render` call, but you can specify how to populate the content areas like so:
+
+```html+erb
+<%= render 'partials/card', title: 'Some Title' do |p| %>
+  <% p.content_for :body do %>
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+    <strong>quis nostrud exercitation ullamco laboris</strong> nisi ut aliquip
+    ex ea commodo consequat.
+  <% end %>
+
+  <% p.content_for :image do %>
+    <%= image_tag image_path('example.jpg'), alt: 'An example image' %>
+  <% end %>
+<% end %>
+```
 
 Nice Partials is a lightweight and hopefully more Rails-native alternative to [ViewComponent](http://viewcomponent.org). It aims to provide many of the same benefits as ViewComponent while requiring less ceremony. This specific approach originated with [Bullet Train](https://bullettrain.co)'s "Field Partials" and was later reimagined and completely reimplemented by Dom Christie.
 
@@ -47,20 +79,6 @@ Earlier iterations of Nice Partials aimed to simply clean up this syntax with he
 
 Nice Partials resolves the last-mile issues with standard view partials and content buffers by introducing a small, generic object that helps transparently namespace your named content buffers. This same object can also be used to define helper methods specific to your partial that are isolated from the global helper namespace.
 
-The result looks like this:
-
-```html+erb
-<div class="card">
-  <%= p.yield :image %>
-  <div class="card-body">
-    <h5 class="card-title"><%= title %></h5>
-    <p class="card-text">
-      <%= p.yield :body %>
-    </p>
-  </div>
-</div>
-```
-
 
 ## Setup
 
@@ -99,24 +117,6 @@ Here's what is happening here:
 
 Once you've done this at the top of your partial file, you can then use `<%= p.yield :some_section %>` to render whatever content areas you want to be passed into your partial.
 
-### Utilizing a partial that has been built with Nice Partials
-
-To use a partial, just render it like you would any other partial, but also pass a block that receives the shared context object (`p` in this example) and specifies the content for the content areas like so:
-
-```html+erb
-<%= render 'partials/card', title: 'Some Title' do |p| %>
-  <% p.content_for :body do %>
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-    <strong>quis nostrud exercitation ullamco laboris</strong> nisi ut aliquip
-    ex ea commodo consequat.
-  <% end %>
-
-  <% p.content_for :image do %>
-    <%= image_tag image_path('example.jpg'), alt: 'An example image' %>
-  <% end %>
-<% end %>
-```
 
 ### Extra Credit: Defining and Using Well Isolated Helper Methods
 
