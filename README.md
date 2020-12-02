@@ -52,16 +52,16 @@ That's it!
 
 ### Utilizing a Nice Partial
 
-To use a Nice Partial, just render it like you would any other partial, but also pass a block that accepts a parameter:
+To use a Nice Partial, just render it like you would any other partial, but also pass a block that defines the content for the content areas like so:
 
 ```
 <%= render 'partials/card', title: 'Some Title' do |p| %>
-  <% p.content_for :body %>
+  <% p.content_for :body do %>
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
     Ut enim ad minim veniam, <strong>quis nostrud exercitation ullamco laboris</strong> nisi ut aliquip ex ea commodo consequat.
   <% end %>
 
-  <% p.content_for :image %>
+  <% p.content_for :image do %>
     <%= image_tag image_path('example.jpg'), alt: 'An example image' %>
   <% end %>
 <% end %>
