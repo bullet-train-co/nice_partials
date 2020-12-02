@@ -80,7 +80,7 @@ You only need to use Nice Partials when:
 
  - you want to specifically isolate your helper methods for a specific partial.
 
-### Create a partial with Nice Partials
+### Use Nice Partials in a partial
 
 To invoke nice partials, start your partial file with the following:
 
