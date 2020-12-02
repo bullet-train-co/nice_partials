@@ -90,7 +90,7 @@ To invoke nice partials, start your partial file with the following:
 
 Here's what is happening here:
 
-  - `yield` Executes the block we receive when someone uses our partial.
+  - `yield` executes the block we receive when someone uses our partial.
   - `np` fetches an instance of the generic class that helps isolate our content buffers and helper methods.
   - `p = np` ensures we have a reference to that object in this partial.
   - `yield p = np` ensures the developer using this partial also has a reference to that object, so they can define what goes in the various content buffers.
