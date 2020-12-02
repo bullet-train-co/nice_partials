@@ -54,7 +54,7 @@ That's it!
 
 To use a Nice Partial, just render it like you would any other partial, but also pass a block that accepts a parameter:
 
-```ruby
+```
 <%= render 'partials/card', title: 'Some Title' do |p| %>
   <% p.content_for :body %>
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
