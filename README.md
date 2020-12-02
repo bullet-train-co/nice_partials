@@ -110,7 +110,7 @@ Here's what is happening here:
   - `p = np` ensures we have a reference to that object in this partial.
   - `yield p = np` ensures the developer using this partial also has a reference to that object, so they can define what goes in the various content buffers.
 
-(This is, as far as we know, the minimum viable invocation.)
+(This is, [as far as we know](https://github.com/bullet-train-co/nice_partials/issues/1), the minimum viable invocation.)
 
 Once you've done this at the top of your partial file, you can then use `<%= p.yield :some_section %>` to render whatever content areas you want to be passed into your partial.
 
