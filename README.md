@@ -26,7 +26,7 @@ gem "nice_partials"
 
 ### Defining a Nice Partial
 
-We'll define an example Nice Partial in `app/views/partials/_card.html.erb`. We start by invoking Nice Partials like so:
+We'll define an example partial in `app/views/partials/_card.html.erb`. We start by invoking Nice Partials like so:
 
 ```
 <% yield p = np %>
