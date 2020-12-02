@@ -9,11 +9,12 @@ Nice Partials is a lightweight and more Rails-native alternative to [ViewCompone
 
 Compared to something more heavy-handed, Nice Partials:
 
- - are just partials like you're used to.
- - are easier to extract.
- - require less mental context switching.
- - allow you to define helper logic alongside the view code.
- - don't require you to upgrade your existing partials for interoperability.
+ - is just regular Rails view partials like you're used to.
+ - reduces the friction when extracting components.
+ - only ends up in the specific partials you need its functionality in.
+ - reduces context switching.
+ - allows isolated helper logic alongside your partial view code.
+ - doesn't require any upgrades to existing partials for interoperability.
  - are still testable!
 
 
