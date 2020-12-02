@@ -126,8 +126,8 @@ To minimize the amount of pollution in the global helper namespace, you can use 
 <% p.helpers do
 
   # references should be a link if the user can drill down, otherwise just a text label.
-  # (this method has access to the scope of the entire view context and all the other helpers that come with it.)
   def reference_to(user)
+    # look! this method has access to the scope of the entire view context and all the other helpers that come with it!
     if can? :show, user
       link_to user.name, user
     else
