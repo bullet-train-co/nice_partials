@@ -17,5 +17,9 @@ module NicePartials
     def content_for(name, content = nil, options = {}, &block)
       @view_context.content_for("#{name}_#{@key}".to_sym, content, options, &block)
     end
+
+    def content_for?(name)
+      @view_context.content_for?("#{name}_#{@key}".to_sym)
+    end
   end
 end
