@@ -97,7 +97,7 @@ Here's what is happening here:
 
 (This is, as far as we know, the minimum viable invocation.)
 
-Once you've done this at the top of your partial file, you can then use `<%= p.content_for :some_section %>` to render whatever content areas you want to be passed into your partial.
+Once you've done this at the top of your partial file, you can then use `<%= p.yield :some_section %>` to render whatever content areas you want to be passed into your partial.
 
 ### Utilizing a partial that has been built with Nice Partials
 
