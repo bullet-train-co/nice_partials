@@ -10,9 +10,11 @@ It allows your partials to define named content areas like this:
   <%= p.yield :image %>
   <div class="card-body">
     <h5 class="card-title"><%= title %></h5>
-    <p class="card-text">
-      <%= p.yield :body %>
-    </p>
+    <% if p.content_for? :body %>
+      <p class="card-text">
+        <%= p.yield :body %>
+      </p>
+    <% end %>
   </div>
 </div>
 ```
@@ -64,10 +66,12 @@ You can almost accomplish the same thing without Nice Partials, but in practice 
   <% content_for :image, flush: true do '' end %>
   <div class="card-body">
     <h5 class="card-title"><%= title %></h5>
-    <p class="card-text">
-      <%= yield :body %>
-      <% content_for :body, flush: true do '' end %>
-    </p>
+    <% if content_for? :body %>
+      <p class="card-text">
+        <%= yield :body %>
+        <% content_for :body, flush: true do '' end %>
+      </p>
+    <% end %>
   </div>
 </div>
 ```
