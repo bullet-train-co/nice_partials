@@ -4,7 +4,7 @@ Nice Partials provides a light layer of magic on top of traditional Rails view p
 
 It allows your partials to define named content areas like this:
 
-`app/views/partials/_card.html.erb`:
+`app/views/shared/_card.html.erb`:
 ```html+erb
 <div class="card">
   <%= p.yield :image %>
@@ -22,7 +22,7 @@ It allows your partials to define named content areas like this:
 These partials can still be utilized with a standard `render` call, but you can specify how to populate the content areas like so:
 
 ```html+erb
-<%= render 'partials/card', title: 'Some Title' do |p| %>
+<%= render 'shared/card', title: 'Some Title' do |p| %>
   <% p.content_for :body do %>
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
     tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
