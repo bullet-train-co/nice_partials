@@ -1,8 +1,6 @@
 # nice_partials [![[version]](https://badge.fury.io/rb/nice_partials.svg)](https://badge.fury.io/rb/nice_partials)  [![[travis]](https://travis-ci.org/andrewculver/nice_partials.svg)](https://travis-ci.org/andrewculver/nice_partials)
 
-Nice Partials provides a Rails-native convention and a thin layer of supporting magic to slightly extend the concept of [`content_for` blocks and `yield`](https://guides.rubyonrails.org/layouts_and_rendering.html#using-the-content-for-method) in traditionals Rails views partials, helping make them an even better fit for extracting components from your views. You don't need to invoke Nice Partials in all your partials, but you can reach for it when a partial specifically needs to provide one or more named "content areas" or "slots".
-
-For example, it allows your partials to define named content areas like this:
+Nice Partials extends the concept of [`content_for` blocks and `yield`](https://guides.rubyonrails.org/layouts_and_rendering.html#using-the-content-for-method) for those times when a partial specifically needs to provide one or more named "content areas" or "slots". This thin, optional layer of magic helps make traditional Rails view partials an even better fit for extracting components from your views, like so:
 
 `app/views/components/_card.html.erb`:
 ```html+erb
