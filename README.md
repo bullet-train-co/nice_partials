@@ -1,8 +1,8 @@
 # nice_partials [![[version]](https://badge.fury.io/rb/nice_partials.svg)](https://badge.fury.io/rb/nice_partials)  [![[travis]](https://travis-ci.org/andrewculver/nice_partials.svg)](https://travis-ci.org/andrewculver/nice_partials)
 
-Nice Partials provides a light layer of magic on top of traditional Rails view partials to try and make them an even better fit for extracting and reusing components in your views. 
+Nice Partials provides a Rails-native convention and a thin layer of supporting magic to slightly extend the concept of [`content_for` blocks and `yield`](https://guides.rubyonrails.org/layouts_and_rendering.html#using-the-content-for-method) in traditionals Rails views partials, helping make them an even better fit for extracting components from your views. You don't need to invoke Nice Partials in all your partials, but you can reach for it when a partial specifically needs to provide one or more named "content areas" or "slots".
 
-It allows your partials to define named content areas like this:
+For example, it allows your partials to define named content areas like this:
 
 `app/views/components/_card.html.erb`:
 ```html+erb
@@ -52,11 +52,7 @@ Compared to something more heavy-handed, Nice Partials:
  - are still testable!
 
 
-## How does it work?
-
-Nice Partials slightly extends the concept of [`content_for` blocks and `yield`](https://guides.rubyonrails.org/layouts_and_rendering.html#using-the-content-for-method) so they can be properly used to define and utilize "content areas" or "slots" in simple ERB partials.
-
-### Can't I do the same thing without Nice Partials?
+## Can't I do the same thing without Nice Partials?
 
 You can almost accomplish the same thing without Nice Partials, but in practice you end up having to flush the content buffers after using them, leading to something like this:
 
@@ -95,7 +91,7 @@ gem "nice_partials"
 
 You only need to use Nice Partials when:
 
- - you want to define multiple named content areas in your partial. If you don't have multiple named content areas in your partial, you could just pass your content into the partial using the standard block and `yield` approach.
+ - you want to define one or more named content areas in your partial. If you don't have multiple named content areas in your partial, you could just pass your content into the partial using the standard block and `yield` approach.
 
  - you want to specifically isolate your helper methods for a specific partial.
 
