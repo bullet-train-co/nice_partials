@@ -1,5 +1,7 @@
 module NicePartials
   class Partial
+    delegate_missing_to :@view_context
+
     def initialize(view_context)
       @view_context = view_context
       @key = SecureRandom.uuid
