@@ -15,7 +15,18 @@ module NicePartials
     end
 
     def content_for(name, content = nil, options = {}, &block)
-      @view_context.content_for("#{name}_#{@key}".to_sym, content, options, &block)
+      if block_given?
+        @partial_prefix = caller.detect { |line| line.include?('app/views') }.split('.').first.gsub(Rails.root.to_s + '/app/views/', '').gsub('/_', '/').gsub('/', '.')
+        @view_context.nice_partials_push_t_prefix(@partial_prefix)
+      end
+
+      result = @view_context.content_for("#{name}_#{@key}".to_sym, content, options, &block)
+
+      if block_given?
+        @view_context.nice_partials_pop_t_prefix
+      end
+
+      return result
     end
 
     def content_for?(name)
