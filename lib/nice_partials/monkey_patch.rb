@@ -8,13 +8,15 @@ class ActionView::PartialRenderer
     if block
       partial_prefix = nice_partials_locale_prefix_from_view_context_and_block(context, block)
       context.nice_partials_push_t_prefix partial_prefix
+    else
+      # Render partial calls with no block should disable any prefix magic.
+      context.nice_partials_push_t_prefix ''
     end
 
     result = original_render(partial, context, block)
 
-    if block
-      context.nice_partials_pop_t_prefix
-    end
+    # Whether there was a block or not, pop off whatever we put on the stack.
+    context.nice_partials_pop_t_prefix
 
     return result
   end
