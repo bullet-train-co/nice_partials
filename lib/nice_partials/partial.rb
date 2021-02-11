@@ -16,8 +16,20 @@ module NicePartials
       class_eval &block
     end
 
+    # See the `ActionView::PartialRenderer` monkey patch in `lib/nice_partials/monkey_patch.rb` for something similar.
     def content_for(name, content = nil, options = {}, &block)
-      @view_context.content_for("#{name}_#{@key}".to_sym, content, options, &block)
+      if block_given?
+        partial_prefix = nice_partials_locale_prefix_from_view_context_and_block(@view_context, block)
+        @view_context.nice_partials_push_t_prefix(partial_prefix)
+      end
+
+      result = @view_context.content_for("#{name}_#{@key}".to_sym, content, options, &block)
+
+      if block_given?
+        @view_context.nice_partials_pop_t_prefix
+      end
+
+      return result
     end
 
     def content_for?(name)
