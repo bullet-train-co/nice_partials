@@ -37,6 +37,17 @@ These partials can still be utilized with a standard `render` call, but you can 
 Nice Partials is a lightweight and hopefully more Rails-native alternative to [ViewComponent](http://viewcomponent.org). It aims to provide many of the same benefits as ViewComponent while requiring less ceremony. This specific approach originated with [Bullet Train](https://bullettrain.co)'s "Field Partials" and was later reimagined and completely reimplemented by Dom Christie.
 
 
+## Sponsored By
+
+<a href="https://bullettrain.co" target="_blank">
+  <img src="https://github.com/CanCanCommunity/cancancan/raw/develop/logo/bullet_train.png" alt="Bullet Train" width="400"/>
+</a>
+<br/>
+<br/>
+
+> Would you like to support Magic Test development and have your logo featured here? [Reach out!](http://twitter.com/andrewculver)
+
+
 ## Benefits of Nice Partials
 
 Compared to something more heavy-handed, Nice Partials:
