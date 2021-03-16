@@ -45,7 +45,7 @@ Nice Partials is a lightweight and hopefully more Rails-native alternative to [V
 <br/>
 <br/>
 
-> Would you like to support Magic Test development and have your logo featured here? [Reach out!](http://twitter.com/andrewculver)
+> Would you like to support Nice Partials development and have your logo featured here? [Reach out!](http://twitter.com/andrewculver)
 
 
 ## Benefits of Nice Partials
