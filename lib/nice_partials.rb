@@ -16,4 +16,6 @@ def nice_partials_locale_prefix_from_view_context_and_block(context, block)
   partial_location.split('.').first.gsub('/_', '/').gsub('/', '.')
 end
 
-ActionView::Base.send :include, NicePartials::Helper
+ActiveSupport.on_load :action_view do
+  include NicePartials::Helper
+end
