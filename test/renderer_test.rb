@@ -1,6 +1,6 @@
 require_relative "./test_helper"
 
-class PartialRendererTest < ActiveSupport::TestCase
+class RendererTest < ActiveSupport::TestCase
   # from actionview/render_test
   class TestController < ActionController::Base
   end
@@ -42,7 +42,9 @@ class PartialRendererTest < ActiveSupport::TestCase
   end
 
   test "render basic nice partial" do
-    assert_equal "hello from nice partials", @view.render(partial: "basic").squish
+    rendered = @view.render("basic") { |p| p.content_for :message, "hello from nice partials" }.squish
+
+    assert_equal "hello from nice partials", rendered
   end
 
   test "render nice partial in card template" do
