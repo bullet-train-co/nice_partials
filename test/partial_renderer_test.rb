@@ -44,4 +44,12 @@ class PartialRendererTest < ActiveSupport::TestCase
   test "render basic nice partial" do
     assert_equal "hello from nice partials", @view.render(partial: "basic").squish
   end
+
+  test "render nice partial in card template" do
+    rendered = @view.render(template: "card_test").squish
+
+    assert_match "Some Title", rendered
+    assert_match "Lorem Ipsum", rendered
+    assert_match "https://example.com/image.jpg", rendered
+  end
 end
