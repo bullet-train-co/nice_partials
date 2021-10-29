@@ -30,8 +30,8 @@ end
 # # #
 # Run specs
 
-desc "#{gemspec.name} | Spec"
-task :spec do
-  sh "for file in spec/*_spec.rb; do ruby $file; done"
+desc "#{gemspec.name} | Test"
+task :test do
+  sh "for file in test/*_test.rb; do ruby $file; done"
 end
-task default: :spec
+task default: :test

@@ -1,4 +1,3 @@
-require "pry"
 require "active_support"
 require "active_support/testing/autorun"
 require "action_controller"
