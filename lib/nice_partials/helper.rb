@@ -20,6 +20,6 @@ module NicePartials::Helper
       key = "#{@_nice_partials_t_prefixes.last}#{key}"
     end
 
-    super(key, options)
+    super(key, **options)
   end
 end
