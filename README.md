@@ -150,6 +150,14 @@ Then later in the partial you can use the helper method like so:
 <td><%= p.reference_to(user) %></td>
 ```
 
+## Development
+
+### Testing
+
+```sh
+bundle exec rake test
+```
+
 ## MIT License
 
 Copyright (C) 2020 Andrew Culver <https://bullettrain.co> and Dom Christie <https://domchristie.co.uk>. Released under the MIT license.
