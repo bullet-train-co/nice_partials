@@ -20,4 +20,33 @@ class ActionView::PartialRenderer
 
     return result
   end
+
+  # This and ActionView::Template#render below are for compatibility
+  # with Ruby 3, as opposed to altering the original functionality.
+  def render_partial_template(view, locals, template, layout, block)
+    ActiveSupport::Notifications.instrument(
+      "render_partial.action_view",
+      identifier: template.identifier,
+      layout: layout && layout.virtual_path
+    ) do |payload|
+      content = template.render(view, locals, ActionView::OutputBuffer.new, {add_to_stack: !block}) do |*name|
+        view._layout_for(*name, &block)
+      end
+
+      content = layout.render(view, locals) { content } if layout
+      payload[:cache_hit] = view.view_renderer.cache_hits[template.virtual_path]
+      build_rendered_template(content, template)
+    end
+  end
+end
+
+class ActionView::Template
+  def render(view, locals, buffer = ActionView::OutputBuffer.new, flag = {add_to_stack: true}, &block)
+    instrument_render_template do
+      compile!(view)
+      view._run(method_name, self, locals, buffer, **flag, &block)
+    end
+  rescue => e
+    handle_render_error(view, e)
+  end
 end
