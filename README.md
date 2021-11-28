@@ -50,7 +50,7 @@ Nice Partials is a lightweight and hopefully more Rails-native alternative to [V
 
 ## Benefits of Nice Partials
 
-Compared to something more heavy-handed, Nice Partials:
+Nice Partials:
 
  - is just regular Rails view partials like you're used to.
  - reduces the friction when extracting components.
