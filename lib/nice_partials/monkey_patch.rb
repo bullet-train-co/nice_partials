@@ -13,7 +13,14 @@ class ActionView::PartialRenderer
       context.nice_partials_push_t_prefix ''
     end
 
-    result = original_render(partial, context, block)
+    begin
+      result = original_render(partial, context, block)
+    rescue Exception => exception
+      # If there was some sort of exception thrown, we also need to pop the `t` prefix.
+      # This provides compatibility with other libraries that depend on catching exceptions from the view renderer.
+      context.nice_partials_pop_t_prefix
+      raise exception
+    end
 
     # Whether there was a block or not, pop off whatever we put on the stack.
     context.nice_partials_pop_t_prefix
