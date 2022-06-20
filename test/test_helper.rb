@@ -8,4 +8,10 @@ require "nice_partials"
 
 class NicePartials::Test < ActionView::TestCase
   TestController.view_paths << "test/fixtures"
+
+  private
+
+  def assert_rendered(matcher)
+    assert_match matcher, rendered
+  end
 end
