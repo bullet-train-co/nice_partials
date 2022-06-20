@@ -14,7 +14,6 @@ module NicePartials
 
     def initialize(view_context)
       @view_context = view_context
-      @key = SecureRandom.uuid
     end
 
     def yield(name = nil)
@@ -26,12 +25,19 @@ module NicePartials
       class_eval &block
     end
 
-    def content_for(name, content = nil, options = {}, &block)
-      @view_context.content_for("#{name}_#{@key}".to_sym, content, options, &block)
+    def content_for(name, content = nil, &block)
+      content = @view_context.capture(&block) if block
+
+      if content
+        contents[name] << content.to_s
+        nil
+      else
+        contents[name].presence
+      end
     end
 
     def content_for?(name)
-      @view_context.content_for?("#{name}_#{@key}".to_sym)
+      contents[name].present?
     end
 
     def capture(block)
@@ -39,6 +45,12 @@ module NicePartials
         # Mimic standard `yield` by calling into `_layout_for` directly.
         self.output_buffer = @view_context._layout_for(self, &block)
       end
+    end
+
+    private
+
+    def contents
+      @contents ||= Hash.new { |h, k| h[k] = ActiveSupport::SafeBuffer.new }
     end
   end
 end
