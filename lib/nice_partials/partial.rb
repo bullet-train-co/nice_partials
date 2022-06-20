@@ -40,9 +40,11 @@ module NicePartials
 
     def generate_attribute_methods(name)
       self.class.class_eval <<~RUBY, __FILE__, __LINE__ + 1
-        def #{name}(content = nil, &block)
-          if content || block
-            self.#{name} = content || @view_context.capture(&block)
+        def #{name}(content = nil, **options, &block)
+          options, content = content, nil if content.is_a?(Hash) # lol Ruby 3 keywords
+
+          if content || options.any? || block
+            self.#{name} = Section.new(content || (@view_context.capture(&block) if block), **options)
             nil
           else
             @#{name}.presence
@@ -50,13 +52,32 @@ module NicePartials
         end
 
         def #{name}=(content)
-          @#{name} = ActiveSupport::SafeBuffer.new(content.to_s)
+          @#{name} = Section.wrap(content)
         end
 
         def #{name}?
           @#{name}.present?
         end
       RUBY
+    end
+
+    class Section
+      attr_reader :content, :options
+      delegate :to_s, to: :content
+
+      def self.wrap(section)
+        section.is_a?(self) ? section : new(section)
+      end
+
+      def initialize(content, **options)
+        @content = content.present? ? ActiveSupport::SafeBuffer.new(content.to_s) : content.to_s
+        @options = options
+      end
+
+      def with(**options)
+        @options.merge!(**options)
+        self
+      end
     end
   end
 end

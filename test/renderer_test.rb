@@ -20,4 +20,10 @@ class RendererTest < NicePartials::Test
     assert_rendered "Lorem Ipsum"
     assert_rendered "https://example.com/image.jpg"
   end
+
+  test "render nice partial card with options" do
+    render("card_with_options")
+
+    assert_select "span.some-class[data-controller='yup']"
+  end
 end
