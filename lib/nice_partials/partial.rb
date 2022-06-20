@@ -1,7 +1,8 @@
 module NicePartials
   class Partial
-    def initialize(view_context)
+    def initialize(view_context, *names)
       @view_context = view_context
+      names.each { |name| generate_attribute_methods(name) }
     end
 
     def yield(name = nil)
