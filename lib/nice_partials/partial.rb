@@ -31,7 +31,7 @@ module NicePartials
       if @view_context.respond_to?(meth)
         @view_context.send(meth, *args, **options, &block)
       else
-        generate_attribute_methods(meth)
+        generate_attribute_methods meth.to_s.sub(/(\?|=)/, "")
         public_send(meth, *args, **options, &block)
       end
     end
@@ -39,8 +39,6 @@ module NicePartials
     private
 
     def generate_attribute_methods(name)
-      name = name.to_s.sub(/(\?|=)/, "")
-
       self.class.class_eval <<~RUBY, __FILE__, __LINE__ + 1
         def #{name}(content = nil, &block)
           if content || block
