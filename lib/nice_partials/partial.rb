@@ -23,13 +23,9 @@ module NicePartials
         @view_context.nice_partials_push_t_prefix(partial_prefix)
       end
 
-      result = @view_context.content_for("#{name}_#{@key}".to_sym, content, options, &block)
-
-      if block_given?
-        @view_context.nice_partials_pop_t_prefix
-      end
-
-      return result
+      @view_context.content_for("#{name}_#{@key}".to_sym, content, options, &block)
+    ensure
+      @view_context.nice_partials_pop_t_prefix if block_given?
     end
 
     def content_for?(name)
