@@ -27,7 +27,7 @@ class RendererTest < ActiveSupport::TestCase
       controller)
   end
 
-  def setup
+  setup do
     ActionView::LookupContext::DetailsKey.clear
     path = ActionView::FileSystemResolver.new(FIXTURE_LOAD_PATH)
     view_paths = ActionView::PathSet.new([path])
@@ -35,7 +35,7 @@ class RendererTest < ActiveSupport::TestCase
     setup_view(view_paths)
   end
 
-  def teardown
+  teardown do
     ActionController::Base.view_paths.map(&:clear_cache)
   end
 
