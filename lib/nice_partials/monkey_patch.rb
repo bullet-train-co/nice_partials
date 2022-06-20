@@ -6,7 +6,7 @@ class ActionView::PartialRenderer
   # See `content_for` in `lib/nice_partials/partial.rb` for something similar.
   def render(partial, context, block)
     if block
-      partial_prefix = nice_partials_locale_prefix_from_view_context_and_block(context, block)
+      partial_prefix = NicePartials.locale_prefix_from_view_context_and_block(context, block)
       context.nice_partials_push_t_prefix partial_prefix
     else
       # Render partial calls with no block should disable any prefix magic.
