@@ -4,7 +4,7 @@ module NicePartials
 
     def initialize(view_context)
       @view_context = view_context
-      @key = SecureRandom.uuid
+      @content = {}
     end
 
     def yield(name = nil)
@@ -17,12 +17,19 @@ module NicePartials
     end
 
     # See the `ActionView::PartialRenderer` monkey patch in `lib/nice_partials/monkey_patch.rb` for something similar.
-    def content_for(name, content = nil, options = {}, &block)
-      @view_context.content_for("#{name}_#{@key}".to_sym, content, options, &block)
+    def content_for(name, content = nil, &block)
+      content = capture(&block) if block
+
+      if content
+        @content[name] = ActiveSupport::SafeBuffer.new(content.to_s)
+        nil
+      else
+        @content[name].presence
+      end
     end
 
     def content_for?(name)
-      @view_context.content_for?("#{name}_#{@key}".to_sym)
+      @content[name].present?
     end
   end
 end
