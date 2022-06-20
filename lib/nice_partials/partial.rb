@@ -19,7 +19,7 @@ module NicePartials
     # See the `ActionView::PartialRenderer` monkey patch in `lib/nice_partials/monkey_patch.rb` for something similar.
     def content_for(name, content = nil, options = {}, &block)
       if block_given?
-        partial_prefix = NicePartials.locale_prefix_from_view_context_and_block(@view_context, block)
+        partial_prefix = NicePartials.locale_prefix_from(@view_context.lookup_context, block)
         @view_context.nice_partials_push_t_prefix(partial_prefix)
       end
 
