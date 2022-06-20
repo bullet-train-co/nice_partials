@@ -32,6 +32,6 @@ end
 
 desc "#{gemspec.name} | Test"
 task :test do
-  sh "for file in test/*_test.rb; do ruby $file; done"
+  sh "for file in test/{**/,}*_test.rb; do ruby -Ilib:test $file; done"
 end
 task default: :test

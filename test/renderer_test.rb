@@ -1,4 +1,4 @@
-require_relative "./test_helper"
+require "test_helper"
 
 class RendererTest < NicePartials::Test
   test "render basic nice partial" do
