@@ -7,6 +7,20 @@ require "nice_partials"
 FIXTURE_LOAD_PATH = File.expand_path("fixtures", __dir__)
 
 class NicePartials::Test < ActiveSupport::TestCase
+  setup do
+    ActionView::LookupContext::DetailsKey.clear
+    path = ActionView::FileSystemResolver.new(FIXTURE_LOAD_PATH)
+    view_paths = ActionView::PathSet.new([path])
+    assert_equal ActionView::FileSystemResolver.new(FIXTURE_LOAD_PATH), view_paths.first
+    setup_view(view_paths)
+  end
+
+  teardown do
+    ActionController::Base.view_paths.map(&:clear_cache)
+  end
+
+  private
+
   # from actionview/render_test
   class TestController < ActionController::Base
   end
@@ -31,17 +45,5 @@ class NicePartials::Test < ActiveSupport::TestCase
       controller.lookup_context,
       controller.view_assigns,
       controller)
-  end
-
-  setup do
-    ActionView::LookupContext::DetailsKey.clear
-    path = ActionView::FileSystemResolver.new(FIXTURE_LOAD_PATH)
-    view_paths = ActionView::PathSet.new([path])
-    assert_equal ActionView::FileSystemResolver.new(FIXTURE_LOAD_PATH), view_paths.first
-    setup_view(view_paths)
-  end
-
-  teardown do
-    ActionController::Base.view_paths.map(&:clear_cache)
   end
 end
