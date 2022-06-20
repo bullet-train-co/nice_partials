@@ -15,6 +15,17 @@ module NicePartials::RenderingWithLocalePrefix
   ensure
     nice_partials_pop_t_prefix
   end
+
+  def capture(*, &block)
+    if block_given?
+      partial_prefix = NicePartials.locale_prefix_from(lookup_context, block)
+      nice_partials_push_t_prefix(partial_prefix)
+    end
+
+    super
+  ensure
+    nice_partials_pop_t_prefix if block_given?
+  end
 end
 
 ActionView::Base.prepend NicePartials::RenderingWithLocalePrefix
