@@ -7,6 +7,12 @@ class RendererTest < NicePartials::Test
     assert_rendered "hello from nice partials"
   end
 
+  test "render basic nice partial with custom name" do
+    render("basic") { |p| p.message "hello from nice partials" }
+
+    assert_rendered "hello from nice partials"
+  end
+
   test "render nice partial in card template" do
     render(template: "card_test")
 
