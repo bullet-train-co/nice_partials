@@ -1,9 +1,11 @@
 module NicePartials
   class Partial
+    attr_reader :options
     delegate_missing_to :@view_context
 
-    def initialize(view_context)
+    def initialize(view_context, options = {})
       @view_context = view_context
+      @options = options
       @key = SecureRandom.uuid
     end
 
