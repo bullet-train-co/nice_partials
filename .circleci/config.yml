@@ -1,0 +1,150 @@
+version: 2.1
+orbs:
+  ruby: circleci/ruby@0.1.2
+  browser-tools: circleci/browser-tools@1.1
+aliases:
+  - &restore_bundler_cache
+      name: Restore Bundler cache
+      keys:
+        - gem-cache-v1-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
+        - gem-cache-v1-{{ .Branch }}-
+        - gem-cache-v1-
+  - &restore_yarn_cache
+      name: Restore Yarn cache
+      keys:
+        - yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+        - yarn-packages-v1-{{ .Branch }}-
+        - yarn-packages-
+  - &save_bundle_cache
+      name: Save Bundle cache
+      key: gem-cache-v1-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
+      paths:
+        - vendor/bundle
+  - &save_yarn_cache
+      name: Save Yarn cache
+      key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      paths:
+        - node_modules
+  - &ruby_node_browsers_docker_image
+      - image: cimg/ruby:3.1.2-browsers
+        environment:
+          PGHOST: localhost
+          PGUSER: untitled_application
+          RAILS_ENV: test
+  - &postgres_docker_image
+      - image: circleci/postgres
+        environment:
+          POSTGRES_HOST_AUTH_METHOD: trust
+          POSTGRES_DB: untitled_application_test
+          POSTGRES_USER: untitled_application
+  - &wait_for_docker
+      # We run this because the DB might not be available for a while due to a race condition.
+      run: dockerize -wait tcp://localhost:5432 -timeout 1m
+jobs:
+  'Local Minitest':
+    docker:
+      - <<: *ruby_node_browsers_docker_image
+      - <<: *postgres_docker_image
+      - image: circleci/redis
+    executor: ruby/default
+    steps:
+      - browser-tools/install-browser-tools
+      - checkout
+
+      # Install dependencies
+      - run: "bundle install"
+      - run: "bundle clean --force"
+      - run: "yarn install"
+      - *wait_for_docker
+      - run:
+          name: Run unit tests
+          command: bundle exec rails test
+
+  'Local Standard Ruby':
+    docker:
+      - <<: *ruby_node_browsers_docker_image
+    steps:
+      - checkout
+
+      # TODO Figure out how to make these work for `tmp/starter`
+      # # Restore dependency caches
+      # - restore_cache: *restore_bundler_cache
+      # - restore_cache: *restore_yarn_cache
+
+      # Install dependencies
+      - ruby/bundle-install
+      - run: bundle clean --force
+      - run: yarn install
+
+      # # Save dependency caches
+      # # We only do this as part of this job, because it's time consuming and we don't want it to slow down test runners.
+      # - save_cache: *save_bundle_cache
+      # - save_cache: *save_yarn_cache
+
+      - run:
+          name: Check Standard Ruby
+          command: bundle exec standardrb
+
+  'Starter Repo Minitest':
+    docker:
+      - <<: *ruby_node_browsers_docker_image
+      - <<: *postgres_docker_image
+      - image: circleci/redis
+    executor: ruby/default
+    parallelism: 16
+    steps:
+      - browser-tools/install-browser-tools
+      - checkout
+      - run: "git clone https://github.com/bullet-train-co/bullet_train.git tmp/starter"
+
+      - run:
+          name: Link starter repository to the Ruby gem being tested.
+          command: "grep -v 'gem \"nice_partials\"' tmp/starter/Gemfile > tmp/starter/Gemfile.tmp && mv tmp/starter/Gemfile.tmp tmp/starter/Gemfile && echo 'gem \"nice_partials\", path: \"../..\"' >> tmp/starter/Gemfile"
+
+      # TODO Figure out how to make these work for `tmp/starter`
+      # - restore_cache: *restore_bundler_cache
+      # - restore_cache: *restore_yarn_cache
+
+      # Install dependencies
+      - run: "cd tmp/starter && bundle install"
+      - run: "cd tmp/starter && bundle clean --force"
+      - run: "cd tmp/starter && bundle exec rake bt:link"
+      - run: "cd tmp/starter && yarn install"
+      - run: "cd tmp/starter && yarn build"
+      - run: "cd tmp/starter && yarn build:css"
+
+      - *wait_for_docker
+
+      - run:
+          name: Run tests with Knapsack Pro
+          command: |
+            cd tmp/starter
+            export RAILS_ENV=test
+            SKIP_RESOLVE_TEST=1 bundle exec rails "knapsack_pro:queue:minitest[--verbose]"
+          environment:
+            KNAPSACK_PRO_CI_NODE_TOTAL: 16
+
+      # If you don't want to use Knapsack Pro, then use this configuration:
+      #
+      # - run:
+      #     name: Run unit tests
+      #     command: bundle exec rails test
+      # - run:
+      #     name: Run system tests
+      #     command: bundle exec rails test:system
+      #
+      # If you want to gather test results in CircleCI when not running tests in parallel,
+      # include `minitest-ci` in your Gemfile and uncomment the following step.
+      # You can access the test results via the "Tests" tab within each build in CircleCI.
+      #
+      # - store_test_results:
+      #     path: test/reports
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - 'Local Minitest'
+      # TODO Enable this when we're sure it won't cause a bunch of conflicts on PRs.
+      # - 'Local Standard Ruby'
+      - 'Starter Repo Minitest'

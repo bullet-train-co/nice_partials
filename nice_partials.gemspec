@@ -22,4 +22,5 @@ Gem::Specification.new do |gem|
   gem.add_dependency "actionview", '>= 4.2.6'
 
   gem.add_development_dependency "rails"
+  gem.add_development_dependency "standard"
 end
