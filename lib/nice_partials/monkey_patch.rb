@@ -11,7 +11,7 @@ module NicePartials::RenderingWithLocalePrefix
   end
 
   def t(key, options = {})
-    if (prefix = @_nice_partials_t_prefixes&.last) && key.first == '.'
+    if (prefix = @_nice_partials_t_prefix) && key.first == '.'
       key = "#{prefix}#{key}"
     end
 
@@ -21,11 +21,11 @@ module NicePartials::RenderingWithLocalePrefix
   private
 
   def with_nice_partials_t_prefix(lookup_context, block)
-    @_nice_partials_t_prefixes ||= []
-    @_nice_partials_t_prefixes << (block ? NicePartials.locale_prefix_from(lookup_context, block) : '')
+    _nice_partials_t_prefix = @_nice_partials_t_prefix
+    @_nice_partials_t_prefix = block ? NicePartials.locale_prefix_from(lookup_context, block) : nil
     yield
   ensure
-    @_nice_partials_t_prefixes.pop
+    @_nice_partials_t_prefix = _nice_partials_t_prefix
   end
 end
 
