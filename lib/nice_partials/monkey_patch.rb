@@ -1,30 +1,32 @@
 # Monkey patch required to make `t` work as expected. Is this evil?
 # TODO Do we need to monkey patch other types of renderers as well?
-class ActionView::PartialRenderer
-  alias_method :original_render, :render
-
+module NicePartials::RenderingWithLocalePrefix
   # See `content_for` in `lib/nice_partials/partial.rb` for something similar.
-  def render(partial, context, block)
-    if block
-      partial_prefix = nice_partials_locale_prefix_from_view_context_and_block(context, block)
-      context.nice_partials_push_t_prefix partial_prefix
-    else
-      # Render partial calls with no block should disable any prefix magic.
-      context.nice_partials_push_t_prefix ''
+  def render(*, &block)
+    with_nice_partials_t_prefix(lookup_context, block) { super }
+  end
+
+  def capture(*, &block)
+    with_nice_partials_t_prefix(lookup_context, block) { super }
+  end
+
+  def t(key, options = {})
+    if (prefix = @_nice_partials_t_prefixes&.last) && key.first == '.'
+      key = "#{prefix}#{key}"
     end
 
-    begin
-      result = original_render(partial, context, block)
-    rescue Exception => exception
-      # If there was some sort of exception thrown, we also need to pop the `t` prefix.
-      # This provides compatibility with other libraries that depend on catching exceptions from the view renderer.
-      context.nice_partials_pop_t_prefix
-      raise exception
-    end
+    super(key, **options)
+  end
 
-    # Whether there was a block or not, pop off whatever we put on the stack.
-    context.nice_partials_pop_t_prefix
+  private
 
-    return result
+  def with_nice_partials_t_prefix(lookup_context, block)
+    @_nice_partials_t_prefixes ||= []
+    @_nice_partials_t_prefixes << (block ? NicePartials.locale_prefix_from(lookup_context, block) : '')
+    yield
+  ensure
+    @_nice_partials_t_prefixes.pop
   end
 end
+
+ActionView::Base.prepend NicePartials::RenderingWithLocalePrefix
