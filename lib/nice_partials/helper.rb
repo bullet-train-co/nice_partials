@@ -5,19 +5,17 @@ module NicePartials::Helper
     NicePartials::Partial.new(self)
   end
 
-  def nice_partials_push_t_prefix(prefix)
+  def with_nice_partials_t_prefix(lookup_context, block)
     @_nice_partials_t_prefixes ||= []
-    @_nice_partials_t_prefixes << prefix
-  end
-
-  def nice_partials_pop_t_prefix
-    @_nice_partials_t_prefixes ||= []
+    @_nice_partials_t_prefixes << (block ? NicePartials.locale_prefix_from(lookup_context, block) : '')
+    yield
+  ensure
     @_nice_partials_t_prefixes.pop
   end
 
   def t(key, options = {})
-    if @_nice_partials_t_prefixes&.any? && key.first == '.'
-      key = "#{@_nice_partials_t_prefixes.last}#{key}"
+    if (prefix = @_nice_partials_t_prefixes&.last) && key.first == '.'
+      key = "#{prefix}#{key}"
     end
 
     super(key, **options)
