@@ -104,7 +104,7 @@ You only need to use Nice Partials when:
 
  - you want to specifically isolate your helper methods for a specific partial.
 
-### Invoking Nice Partials
+### Using Nice Partials
 
 Nice Partials is invoked automatically when you render your partial with a block that takes a single parameter like so:
 
