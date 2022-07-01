@@ -25,14 +25,14 @@ module NicePartials::RenderingWithLocalePrefix
 end
 
 module NicePartials::RenderingWithAutoContext
-  attr_reader :content
+  attr_reader :p
 
   def render(options = {}, locals = {}, &block)
-    _content = content
-    _layout_for(@content = np) if block&.arity == 1 # Mimic standard `yield` by calling into `_layout_for` directly.
+    _p = p
+    _layout_for(@p = np) if block&.arity == 1 # Mimic standard `yield` by calling into `_layout_for` directly.
     super
   ensure
-    @content = _content
+    @p = _p
   end
 end
 
