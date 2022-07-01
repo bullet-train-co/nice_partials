@@ -16,7 +16,6 @@ module NicePartials
       class_eval &block
     end
 
-    # See the `ActionView::PartialRenderer` monkey patch in `lib/nice_partials/monkey_patch.rb` for something similar.
     def content_for(name, content = nil, options = {}, &block)
       @view_context.content_for("#{name}_#{@key}".to_sym, content, options, &block)
     end
