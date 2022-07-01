@@ -24,4 +24,17 @@ module NicePartials::RenderingWithLocalePrefix
   end
 end
 
+module NicePartials::RenderingWithAutoContext
+  attr_reader :content
+
+  def render(options = {}, locals = {}, &block)
+    _content = content
+    _layout_for(@content = np) if block&.arity == 1 # Mimic standard `yield` by calling into `_layout_for` directly.
+    super
+  ensure
+    @content = _content
+  end
+end
+
 ActionView::Base.prepend NicePartials::RenderingWithLocalePrefix
+ActionView::Base.prepend NicePartials::RenderingWithAutoContext
