@@ -104,25 +104,21 @@ You only need to use Nice Partials when:
 
  - you want to specifically isolate your helper methods for a specific partial.
 
-### Use Nice Partials in a partial
+### Invoking Nice Partials
 
-To invoke nice partials, start your partial file with the following:
+Nice Partials is invoked automatically when you render your partial with a block that takes a single parameter like so:
 
 ```html+erb
-<% yield p = np %>
+<%= render 'components/card' do |p| %>
+  <%= p.content_for :some_section %>
+    Some content!
+  <% end %>
+<% end %>
 ```
 
-Here's what is happening here:
+It's always been natural to pass blocks to a partial in Rails, but not to pass blocks that take parameters, so when you do this, we know it's a partial that uses Nice Partials.
 
-  - `yield` executes the block we receive when someone uses our partial.
-  - `np` fetches an instance of the generic class that helps isolate our content buffers and helper methods.
-  - `p = np` ensures we have a reference to that object in this partial.
-  - `yield p = np` ensures the developer using this partial also has a reference to that object, so they can define what goes in the various content buffers.
-
-(This is, [as far as we know](https://github.com/bullet-train-co/nice_partials/issues/1), the minimum viable invocation.)
-
-Once you've done this at the top of your partial file, you can then use `<%= p.yield :some_section %>` to render whatever content areas you want to be passed into your partial.
-
+Now within the partial file itself, you can use `<%= p.yield :some_section %>` to render whatever content areas you want to be passed into your partial.
 
 ### Defining and using well isolated helper methods
 
