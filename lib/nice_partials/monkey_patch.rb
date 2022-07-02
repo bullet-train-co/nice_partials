@@ -34,6 +34,10 @@ module NicePartials::RenderingWithAutoContext
   ensure
     @content = _content
   end
+
+  def p(*args)
+    args.empty? ? content : super
+  end
 end
 
 ActionView::Base.prepend NicePartials::RenderingWithLocalePrefix

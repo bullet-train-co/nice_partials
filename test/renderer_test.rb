@@ -26,4 +26,12 @@ class RendererTest < NicePartials::Test
     assert_rendered "hello from nice partials"
     assert_equal "Some extra content", nice_partial.output_buffer
   end
+
+  test "doesn't clobber Kernel.p" do
+    assert_output "\"it's clobbering time\"\n" do
+      render("clobberer") { |p| p.content_for :message, "hello from nice partials" }
+    end
+
+    assert_rendered "hello from nice partials"
+  end
 end
