@@ -28,7 +28,7 @@ module NicePartials::RenderingWithAutoContext
   attr_reader :content
 
   def render(options = {}, locals = {}, &block)
-    _content, @content = content, np
+    _content, @content = content, nice_partial
     @content.capture(block)
     super
   ensure
