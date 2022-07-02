@@ -29,7 +29,7 @@ module NicePartials::RenderingWithAutoContext
 
   def render(options = {}, locals = {}, &block)
     _content = content
-    _layout_for(@content = np) if block&.arity == 1 # Mimic standard `yield` by calling into `_layout_for` directly.
+    _layout_for(@content = np, &block) if block&.arity == 1 # Mimic standard `yield` by calling into `_layout_for` directly.
     super
   ensure
     @content = _content
