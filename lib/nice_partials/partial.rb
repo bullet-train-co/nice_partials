@@ -2,6 +2,16 @@ module NicePartials
   class Partial
     delegate_missing_to :@view_context
 
+    #   <%= render "nice_partial" do |p| %>
+    #     <% p.content_for :title, "Yo" %>
+    #     This line is printed to the `output_buffer`.
+    #   <% end %>
+    #
+    # Then in the nice_partial:
+    #   <%= content.content_for :title %> # => "Yo"
+    #   <%= content.output_buffer %> # => "This line is printed to the `output_buffer`."
+    attr_accessor :output_buffer
+
     def initialize(view_context)
       @view_context = view_context
       @key = SecureRandom.uuid
