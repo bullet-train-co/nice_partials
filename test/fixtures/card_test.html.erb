@@ -1,9 +1,9 @@
-<%= render "card", title: "Some Title" do |p| %>
-  <% p.content_for :body do %>
+<%= render "card", title: "Some Title" do %>
+  <% _p.content_for :body do %>
     Lorem Ipsum
   <% end %>
 
-  <% p.content_for :image do %>
+  <% _p.content_for :image do %>
     <img src="https://example.com/image.jpg" />
   <% end %>
 <% end %>

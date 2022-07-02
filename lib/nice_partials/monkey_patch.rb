@@ -25,19 +25,40 @@ module NicePartials::RenderingWithLocalePrefix
 end
 
 module NicePartials::RenderingWithAutoContext
-  attr_reader :content
+  def content
+    @content ||= nice_partial
+  end
   alias_method :_p, :content
 
   def p(*args)
     args.empty? ? _p : super
   end
 
-  def render(options = {}, locals = {}, &block)
-    _content, @content = content, nice_partial
-    @content.capture(block)
+  def render(*, &block)
+    _auto_captured_output_buffer, _content, @content = @auto_captured_output_buffer, content, nil
+
+    # Auto-capture a block passed to render…
+    @auto_captured_output_buffer =
+      case block&.arity
+      when 0 then capture(&block) # …without arguments to capture `content`/`_p`.
+      when 1 then capture(content, &block) # …with one argument we're expecting callers to expect a NicePartial::Partial.
+      end
+
+    # Expose any auto-captured buffer to any referenced `content` from within `capture`.
+    @content&.output_buffer = @auto_captured_output_buffer
+
     super
   ensure
-    @content = _content
+    @auto_captured_output_buffer, @content = _auto_captured_output_buffer, _content
+  end
+
+  def _layout_for(*args, &block)
+    if block && !args.first.is_a?(Symbol)
+      # Avoid calling capture again if we've already auto-captured.
+      @auto_captured_output_buffer || capture(*args, &block)
+    else
+      super
+    end
   end
 end
 
