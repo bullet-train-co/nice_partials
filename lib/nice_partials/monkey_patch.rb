@@ -25,19 +25,19 @@ module NicePartials::RenderingWithLocalePrefix
 end
 
 module NicePartials::RenderingWithAutoContext
-  attr_reader :content
-  alias_method :_p, :content
+  attr_reader :partial
+  alias_method :_p, :partial
 
   def p(*args)
     args.empty? ? _p : super
   end
 
   def render(options = {}, locals = {}, &block)
-    _content, @content = content, nice_partial
-    @content.capture(block)
+    _partial, @partial = partial, nice_partial
+    @partial.capture(block)
     super
   ensure
-    @content = _content
+    @partial = _partial
   end
 end
 
