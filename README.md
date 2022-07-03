@@ -5,12 +5,12 @@ Nice Partials extends the concept of [`content_for` blocks and `yield`](https://
 `app/views/components/_card.html.erb`:
 ```html+erb
 <div class="card">
-  <%= p.yield :image %>
+  <%= partial.yield :image %>
   <div class="card-body">
     <h5 class="card-title"><%= title %></h5>
-    <% if p.content_for? :body %>
+    <% if partial.content_for? :body %>
       <p class="card-text">
-        <%= p.yield :body %>
+        <%= partial.yield :body %>
       </p>
     <% end %>
   </div>
@@ -21,14 +21,14 @@ These partials can still be utilized with a standard `render` call, but you can 
 
 ```html+erb
 <%= render 'components/card', title: 'Some Title' do |p| %>
-  <% p.content_for :body do %>
+  <% partial.content_for :body do %>
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
     tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
     <strong>quis nostrud exercitation ullamco laboris</strong> nisi ut aliquip
     ex ea commodo consequat.
   <% end %>
 
-  <% p.content_for :image do %>
+  <% partial.content_for :image do %>
     <%= image_tag image_path('example.jpg'), alt: 'An example image' %>
   <% end %>
 <% end %>
@@ -110,7 +110,7 @@ Nice Partials is invoked automatically when you render your partial with a block
 
 ```html+erb
 <%= render 'components/card' do |p| %>
-  <%= p.content_for :some_section %>
+  <%= partial.content_for :some_section %>
     Some content!
   <% end %>
 <% end %>
@@ -118,14 +118,14 @@ Nice Partials is invoked automatically when you render your partial with a block
 
 It's always been natural to pass blocks to a partial in Rails, but not to pass blocks that take parameters, so when you do this, we know it's a partial that uses Nice Partials.
 
-Now within the partial file itself, you can use `<%= p.yield :some_section %>` to render whatever content areas you want to be passed into your partial.
+Now within the partial file itself, you can use `<%= partial.yield :some_section %>` to render whatever content areas you want to be passed into your partial.
 
 ### Defining and using well isolated helper methods
 
 To minimize the amount of pollution in the global helper namespace, you can use the shared context object to define helper methods specifically for your partials _within your partial_ like so:
 
 ```html+erb
-<% p.helpers do
+<% partial.helpers do
 
   # references should be a link if the user can drill down, otherwise just a text label.
   def reference_to(user)
@@ -143,7 +143,7 @@ end %>
 Then later in the partial you can use the helper method like so:
 
 ```html+erb
-<td><%= p.reference_to(user) %></td>
+<td><%= partial.reference_to(user) %></td>
 ```
 
 ## Development
