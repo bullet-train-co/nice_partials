@@ -53,7 +53,7 @@ class RendererTest < NicePartials::Test
     end
 
     assert_rendered "hello from nice partials"
-    assert_equal "Some extra content", nice_partial.output_buffer
+    assert_equal "Some extra content", nice_partial.yield
   end
 
   test "doesn't clobber Kernel.p" do
