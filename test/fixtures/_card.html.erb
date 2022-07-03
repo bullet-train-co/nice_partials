@@ -4,7 +4,7 @@
     <h5 class="card-title"><%= title %></h5>
     <% if partial.content_for? :body %>
       <p class="card-text">
-        <%= partial.content_for :body %>
+        <%= partial.content_for :body, tag.with_options(class: "text-bold") %>
       </p>
     <% end %>
   </div>

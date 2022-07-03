@@ -16,19 +16,35 @@ module NicePartials
       @view_context = view_context
     end
 
-    def yield(name = nil)
-      raise "You can only use Nice Partial's yield method to retrieve the content of named content area blocks. If you're not trying to fetch the content of a named content area block, you don't need Nice Partials! You can just call the vanilla Rails `yield`." unless name
-      content_for(name)
+    def yield(*arguments, &block)
+      if arguments.empty?
+        raise "You can only use Nice Partial's yield method to retrieve the content of named content area blocks. If you're not trying to fetch the content of a named content area block, you don't need Nice Partials! You can just call the vanilla Rails `yield`."
+      else
+        content_for(*arguments, &block)
+      end
     end
 
     def helpers(&block)
       class_eval &block
     end
 
-    def content_for(name, content = nil, &block)
-      content = @view_context.capture(&block) if block
-
-      if content
+    # Similar to Rails' built-in `content_for` except it defers any block execution
+    # and lets you pass arguments into it, like so:
+    #
+    #   # Here we store a block with some eventual content…
+    #   <% partial.content_for :title do |tag|
+    #     <%= tag.h1 %>
+    #   <% end %>
+    #
+    #  # …which is then invoked with some predefined options later.
+    #  <%= partial.content_for :title, tag.with_options(class: "text-bold") %>
+    def content_for(name, content = nil, *arguments, &block)
+      case
+      when block_given?
+        defer_content_for(name, block)
+      when deferred_content = deferred_content_for(name, content, *arguments)
+        contents[name] = deferred_content.to_s
+      when content
         contents[name] << content.to_s
         nil
       else
@@ -37,7 +53,7 @@ module NicePartials
     end
 
     def content_for?(name)
-      contents[name].present?
+      deferred_contents.key?(name) || contents[name].present?
     end
 
     def capture(block)
@@ -51,6 +67,20 @@ module NicePartials
 
     def contents
       @contents ||= Hash.new { |h, k| h[k] = ActiveSupport::SafeBuffer.new }
+    end
+
+    def defer_content_for(name, block)
+      deferred_contents[name] = block
+    end
+
+    def deferred_content_for(name, *arguments)
+      if block = deferred_contents.delete(name)
+        @view_context.capture(*arguments, &block)
+      end
+    end
+
+    def deferred_contents
+      @deferred_contents ||= {}
     end
   end
 end
