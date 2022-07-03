@@ -20,7 +20,7 @@ Nice Partials extends the concept of [`content_for` blocks and `yield`](https://
 These partials can still be utilized with a standard `render` call, but you can specify how to populate the content areas like so:
 
 ```html+erb
-<%= render 'components/card', title: 'Some Title' do |p| %>
+<%= render 'components/card', title: 'Some Title' do |partial| %>
   <% partial.content_for :body do %>
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
     tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
@@ -109,7 +109,7 @@ You only need to use Nice Partials when:
 Nice Partials is invoked automatically when you render your partial with a block that takes a single parameter like so:
 
 ```html+erb
-<%= render 'components/card' do |p| %>
+<%= render 'components/card' do |partial| %>
   <%= partial.content_for :some_section %>
     Some content!
   <% end %>
