@@ -1,12 +1,10 @@
-<% yield p = np %>
-
 <div class="card">
-  <%= p.yield :image %>
+  <%= content.yield :image %>
   <div class="card-body">
     <h5 class="card-title"><%= title %></h5>
-    <% if p.content_for? :body %>
+    <% if content.content_for? :body %>
       <p class="card-text">
-        <%= p.content_for :body %>
+        <%= content.content_for :body %>
       </p>
     <% end %>
   </div>

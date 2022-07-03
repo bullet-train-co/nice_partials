@@ -24,4 +24,22 @@ module NicePartials::RenderingWithLocalePrefix
   end
 end
 
+module NicePartials::RenderingWithAutoContext
+  attr_reader :content
+  alias_method :_p, :content
+
+  def p(*args)
+    args.empty? ? _p : super
+  end
+
+  def render(options = {}, locals = {}, &block)
+    _content, @content = content, nice_partial
+    @content.capture(block)
+    super
+  ensure
+    @content = _content
+  end
+end
+
 ActionView::Base.prepend NicePartials::RenderingWithLocalePrefix
+ActionView::Base.prepend NicePartials::RenderingWithAutoContext
