@@ -26,10 +26,9 @@ end
 
 module NicePartials::RenderingWithAutoContext
   attr_reader :partial
-  alias_method :_p, :partial
 
   def p(*args)
-    args.empty? ? _p : super
+    args.empty? ? partial : super
   end
 
   def render(options = {}, locals = {}, &block)
