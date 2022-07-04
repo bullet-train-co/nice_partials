@@ -28,7 +28,9 @@ require "active_support/deprecation"
 NicePartials::DEPRECATOR = ActiveSupport::Deprecation.new("1.0", "nice_partials")
 
 module NicePartials::RenderingWithAutoContext
-  attr_reader :partial
+  def partial
+    @partial ||= nice_partial
+  end
   delegate :content_for?, :content_for, to: :partial
 
   def p(*args)
@@ -41,7 +43,7 @@ module NicePartials::RenderingWithAutoContext
   end
 
   def render(options = {}, locals = {}, &block)
-    _partial, @partial = partial, nice_partial
+    _partial = @partial
     super
   ensure
     @partial = _partial
