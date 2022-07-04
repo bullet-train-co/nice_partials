@@ -1,5 +1,7 @@
 module NicePartials
   class Partial
+    autoload :Section, "nice_partials/partial/section"
+
     delegate_missing_to :@view_context
 
     #   <%= render "nice_partial" do |p| %>
@@ -51,52 +53,6 @@ module NicePartials
       if block&.arity == 1
         # Mimic standard `yield` by calling into `_layout_for` directly.
         self.output_buffer = @view_context._layout_for(self, &block)
-      end
-    end
-
-    private
-
-    class Section
-      def initialize(view_context)
-        @view_context = view_context
-        @content = @pending_content = nil
-      end
-
-      def content_for(*arguments, &block)
-        if write_content_for(arguments.first, &block)
-          nil
-        else
-          capture_content_for(*arguments) if pending?
-          @content
-        end
-      end
-
-      def content?
-        pending? || @content
-      end
-
-      private
-
-      def write_content_for(content = nil, &block)
-        if content && !pending?
-          concat content
-        else
-          @pending_content = block if block
-        end
-      end
-
-      def capture_content_for(*arguments)
-        concat @view_context.capture(*arguments, &@pending_content)
-        @pending_content = nil
-      end
-
-      def concat(string)
-        @content ||= ActiveSupport::SafeBuffer.new
-        @content << string.to_s if string.present?
-      end
-
-      def pending?
-        @pending_content
       end
     end
   end
