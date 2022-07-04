@@ -29,6 +29,7 @@ NicePartials::DEPRECATOR = ActiveSupport::Deprecation.new("1.0", "nice_partials"
 
 module NicePartials::RenderingWithAutoContext
   attr_reader :partial
+  delegate :content_for?, :content_for, to: :partial
 
   def p(*args)
     if args.empty?
@@ -41,12 +42,35 @@ module NicePartials::RenderingWithAutoContext
 
   def render(options = {}, locals = {}, &block)
     _partial, @partial = partial, nice_partial
-    @partial.capture(block)
+    _layout_for(&block) # if !@current_template || @current_template.manual_yield?
     super
   ensure
     @partial = _partial
   end
+
+  # <%= yield %> # Stores the yield in output_buffer
+  # <%= partial.yield %> # Access via yield without capturing again
+  # <%= yield :message %> # Automatically read from the captured `partial` content
+  def _layout_for(*arguments, &block)
+    if arguments.first.is_a?(Symbol)
+      partial.content_for(*arguments)
+    elsif block
+      partial.output_buffer ||= capture(*arguments, partial, &block)
+    end
+  end
 end
+
+ActionView::Template.prepend Module.new {
+  def manual_yield?
+    # Matches plain yields that'll end up calling `capture`:
+    #   <%= yield %>
+    #   <%= yield something_else %>
+    #
+    # Doesn't match obfuscated `content_for` invocations:
+    #   <%= yield :message %>
+    source.match? /\byield[\(? ]+\:/
+  end
+}
 
 ActionView::Base.prepend NicePartials::RenderingWithLocalePrefix
 ActionView::Base.prepend NicePartials::RenderingWithAutoContext

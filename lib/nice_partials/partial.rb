@@ -48,12 +48,5 @@ module NicePartials
     def content_for?(name)
       @contents[name].content?
     end
-
-    def capture(block)
-      if block&.arity == 1
-        # Mimic standard `yield` by calling into `_layout_for` directly.
-        self.output_buffer = @view_context._layout_for(self, &block)
-      end
-    end
   end
 end

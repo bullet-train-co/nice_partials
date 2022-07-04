@@ -1,3 +1,3 @@
-<%= render("basic") do |partial| %>
-  <%= partial.content_for :message, t(".message") %>
+<%= render("basic") do %>
+  <%= content_for :message, t(".message") %>
 <% end %>

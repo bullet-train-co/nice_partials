@@ -1,9 +1,9 @@
-<%= render "card", title: "Some Title" do |p| %>
-  <% p.content_for :body do |tag| %>
+<%= render "card", title: "Some Title" do %>
+  <% content_for :body do |tag| %>
     <%= tag.p "Lorem Ipsum" %>
   <% end %>
 
-  <% p.content_for :image do %>
+  <% content_for :image do %>
     <img src="https://example.com/image.jpg" />
   <% end %>
 <% end %>

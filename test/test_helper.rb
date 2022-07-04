@@ -6,6 +6,8 @@ require "action_view/test_case"
 
 require "nice_partials"
 
+require "debug"
+
 class NicePartials::Test < ActionView::TestCase
   TestController.view_paths << "test/fixtures"
 

@@ -2,7 +2,7 @@ require "test_helper"
 
 class RendererTest < NicePartials::Test
   test "render basic nice partial" do
-    render("basic") { |p| p.content_for :message, "hello from nice partials" }
+    render("basic") { |p| p.yield :message, "hello from nice partials" }
 
     assert_rendered "hello from nice partials"
   end
