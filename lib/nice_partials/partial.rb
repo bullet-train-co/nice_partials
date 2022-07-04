@@ -39,16 +39,18 @@ module NicePartials
     #  # …which is then invoked with some predefined options later.
     #  <%= partial.content_for :title, tag.with_options(class: "text-bold") %>
     def content_for(name, content = nil, *arguments, &block)
+      section = contents[name]
+
       case
       when block_given?
         defer_content_for(name, block)
       when deferred_content = deferred_content_for(name, content, *arguments)
-        contents[name] = deferred_content.to_s
+        section << deferred_content
       when content
-        contents[name] << content.to_s
+        section << content
         nil
       else
-        contents[name].presence
+        section.content.presence
       end
     end
 
@@ -65,8 +67,20 @@ module NicePartials
 
     private
 
+    class Section
+      attr_reader :content
+
+      def initialize
+        @content = ActiveSupport::SafeBuffer.new
+      end
+
+      def <<(content)
+        @content << content.to_s
+      end
+    end
+
     def contents
-      @contents ||= Hash.new { |h, k| h[k] = ActiveSupport::SafeBuffer.new }
+      @contents ||= Hash.new { |h, k| h[k] = Section.new }
     end
 
     def defer_content_for(name, block)
