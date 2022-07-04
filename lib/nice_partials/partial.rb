@@ -67,27 +67,31 @@ module NicePartials
           nil
         else
           capture_content_for(*arguments) if @pending_content
-          @content.presence
+          @content
         end
       end
 
       def content?
-        @pending_content.present? || @content.present?
+        @pending_content || @content
       end
 
       private
 
       def write_content_for(content = nil, &block)
         if content && !@pending_content
-          @content << content.to_s
+          concat content
         else
           @pending_content = block if block
         end
       end
 
       def capture_content_for(*arguments)
-        @content << @view_context.capture(*arguments, &@pending_content).to_s
+        concat @view_context.capture(*arguments, &@pending_content)
         @pending_content = nil
+      end
+
+      def concat(string)
+        @content << string.to_s if string.present?
       end
     end
 
