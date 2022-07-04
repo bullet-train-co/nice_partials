@@ -62,24 +62,29 @@ module NicePartials
         @content = ActiveSupport::SafeBuffer.new
       end
 
-      def content_for(content = nil, *arguments, &block)
-        case
-        when block_given?
-          @block = block
-        when block = @block
-          @block = nil
-          @content << @view_context.capture(content, *arguments, &block).to_s
-          @content.presence
-        when content
-          @content << content.to_s
+      def content_for(*arguments, &block)
+        if write_content_for(arguments.first, &block)
           nil
         else
+          capture_content_for(*arguments) if @block
           @content.presence
         end
       end
 
       def content?
         @block || @content.present?
+      end
+
+      private
+
+      def write_content_for(content = nil, &block)
+        @content << content.to_s if content && !@block
+        @block = block if block
+      end
+
+      def capture_content_for(*arguments)
+        @content << @view_context.capture(*arguments, &@block).to_s
+        @block = nil
       end
     end
 
