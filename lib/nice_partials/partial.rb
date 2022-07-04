@@ -39,20 +39,7 @@ module NicePartials
     #  # …which is then invoked with some predefined options later.
     #  <%= partial.content_for :title, tag.with_options(class: "text-bold") %>
     def content_for(name, content = nil, *arguments, &block)
-      section = contents[name]
-
-      case
-      when block_given?
-        section.block = block
-      when section.block?
-        section.deferred_content_for(content, *arguments)
-        section.content.presence
-      when content
-        section << content
-        nil
-      else
-        section.content.presence
-      end
+      contents[name].content_for(content, *arguments, &block)
     end
 
     def content_for?(name)
@@ -76,6 +63,23 @@ module NicePartials
       def initialize(view_context)
         @view_context = view_context
         @content = ActiveSupport::SafeBuffer.new
+      end
+
+      def content_for(*arguments, &block)
+        _content = arguments.first
+
+        case
+        when block_given?
+          self.block = block
+        when block?
+          deferred_content_for(_content, *arguments)
+          content.presence
+        when _content
+          self << _content
+          nil
+        else
+          content.presence
+        end
       end
 
       def deferred_content_for(*arguments)
