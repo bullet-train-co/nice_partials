@@ -58,7 +58,7 @@ module NicePartials
     class Section
       def initialize(view_context)
         @view_context = view_context
-        @block = nil
+        @pending_content = nil
         @content = ActiveSupport::SafeBuffer.new
       end
 
@@ -66,25 +66,25 @@ module NicePartials
         if write_content_for(arguments.first, &block)
           nil
         else
-          capture_content_for(*arguments) if @block
+          capture_content_for(*arguments) if @pending_content
           @content.presence
         end
       end
 
       def content?
-        @block || @content.present?
+        @pending_content.present? || @content.present?
       end
 
       private
 
       def write_content_for(content = nil, &block)
-        @content << content.to_s if content && !@block
-        @block = block if block
+        @content << content.to_s if content && !@pending_content
+        @pending_content = block if block
       end
 
       def capture_content_for(*arguments)
-        @content << @view_context.capture(*arguments, &@block).to_s
-        @block = nil
+        @content << @view_context.capture(*arguments, &@pending_content).to_s
+        @pending_content = nil
       end
     end
 
