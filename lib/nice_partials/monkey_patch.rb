@@ -42,7 +42,7 @@ module NicePartials::RenderingWithAutoContext
 
   def render(options = {}, locals = {}, &block)
     _partial, @partial = partial, nice_partial
-    _layout_for(&block) # if !@current_template || @current_template.manual_yield?
+    _layout_for(&block) # if !@current_template || @current_template.has_capturing_yield?
     super
   ensure
     @partial = _partial
@@ -61,14 +61,14 @@ module NicePartials::RenderingWithAutoContext
 end
 
 ActionView::Template.prepend Module.new {
-  def manual_yield?
+  def has_capturing_yield?
     # Matches plain yields that'll end up calling `capture`:
     #   <%= yield %>
     #   <%= yield something_else %>
     #
     # Doesn't match obfuscated `content_for` invocations:
     #   <%= yield :message %>
-    source.match? /\byield[\(? ]+\:/
+    source.match? /\byield[\(? ]+[^:]/
   end
 }
 
