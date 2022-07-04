@@ -42,7 +42,6 @@ module NicePartials::RenderingWithAutoContext
 
   def render(options = {}, locals = {}, &block)
     _partial, @partial = partial, nice_partial
-    _layout_for(&block) # if !@current_template || @current_template.has_capturing_yield?
     super
   ensure
     @partial = _partial
@@ -59,6 +58,15 @@ module NicePartials::RenderingWithAutoContext
     end
   end
 end
+
+module NicePartials::PartialRendering
+  def render_partial_template(view, locals, template, layout, block)
+    view._layout_for(&block) unless template.has_capturing_yield?
+    super
+  end
+end
+
+ActionView::PartialRenderer.prepend NicePartials::PartialRendering
 
 module NicePartials::CapturingYieldDetection
   # Matches plain yields that'll end up calling `capture`:
