@@ -66,9 +66,9 @@ module NicePartials
         case
         when block_given?
           @block = block
-        when @block
-          @content << @view_context.capture(*arguments, &@block).to_s
+        when block = @block
           @block = nil
+          @content << @view_context.capture(content, *arguments, &block).to_s
           @content.presence
         when content
           @content << content.to_s
