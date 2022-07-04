@@ -54,6 +54,7 @@ module NicePartials::RenderingWithAutoContext
     if arguments.first.is_a?(Symbol)
       partial.content_for(*arguments)
     elsif block
+      # TODO: Check if the block condition is enough to not break `yield` with no arguments calls.
       partial.output_buffer ||= capture(*arguments, partial, &block)
     end
   end
