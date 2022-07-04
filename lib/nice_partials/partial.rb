@@ -14,6 +14,7 @@ module NicePartials
 
     def initialize(view_context)
       @view_context = view_context
+      @contents = Hash.new { |h, k| h[k] = Section.new(@view_context) }
     end
 
     def yield(*arguments, &block)
@@ -39,11 +40,11 @@ module NicePartials
     #  # …which is then invoked with some predefined options later.
     #  <%= partial.content_for :title, tag.with_options(class: "text-bold") %>
     def content_for(name, content = nil, *arguments, &block)
-      contents[name].content_for(content, *arguments, &block)
+      @contents[name].content_for(content, *arguments, &block)
     end
 
     def content_for?(name)
-      contents[name].content?
+      @contents[name].content?
     end
 
     def capture(block)
@@ -97,10 +98,6 @@ module NicePartials
       def pending?
         @pending_content
       end
-    end
-
-    def contents
-      @contents ||= Hash.new { |h, k| h[k] = Section.new(@view_context) }
     end
   end
 end
