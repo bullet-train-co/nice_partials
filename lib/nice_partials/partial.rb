@@ -78,11 +78,10 @@ module NicePartials
       private
 
       def write_content_for(content = nil, &block)
-        case
-        when content && !@pending_content
+        if content && !@pending_content
           @content << content.to_s
-        when block
-          @pending_content = block
+        else
+          @pending_content = block if block
         end
       end
 
