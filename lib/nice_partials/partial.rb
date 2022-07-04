@@ -66,19 +66,19 @@ module NicePartials
         if write_content_for(arguments.first, &block)
           nil
         else
-          capture_content_for(*arguments) if @pending_content
+          capture_content_for(*arguments) if pending?
           @content
         end
       end
 
       def content?
-        @pending_content || @content
+        pending? || @content
       end
 
       private
 
       def write_content_for(content = nil, &block)
-        if content && !@pending_content
+        if content && !pending?
           concat content
         else
           @pending_content = block if block
@@ -92,6 +92,10 @@ module NicePartials
 
       def concat(string)
         @content << string.to_s if string.present?
+      end
+
+      def pending?
+        @pending_content
       end
     end
 
