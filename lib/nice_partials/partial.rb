@@ -58,8 +58,7 @@ module NicePartials
     class Section
       def initialize(view_context)
         @view_context = view_context
-        @pending_content = nil
-        @content = ActiveSupport::SafeBuffer.new
+        @content = @pending_content = nil
       end
 
       def content_for(*arguments, &block)
@@ -91,6 +90,7 @@ module NicePartials
       end
 
       def concat(string)
+        @content ||= ActiveSupport::SafeBuffer.new
         @content << string.to_s if string.present?
       end
 
