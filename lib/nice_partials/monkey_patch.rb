@@ -79,7 +79,11 @@ module NicePartials::CapturingYieldDetection
   # Doesn't match obfuscated `content_for` invocations:
   #   <%= yield :message %>
   def has_capturing_yield?
-    source.match? /\byield[\(? ]+[^:]/
+    if defined?(@has_capturing_yield)
+      @has_capturing_yield
+    else
+      @has_capturing_yield = source.match? /\byield[\(? ]+[^:]/
+    end
   end
 end
 
