@@ -60,17 +60,19 @@ module NicePartials::RenderingWithAutoContext
   end
 end
 
-ActionView::Template.prepend Module.new {
+module NicePartials::CapturingYieldDetection
+  # Matches plain yields that'll end up calling `capture`:
+  #   <%= yield %>
+  #   <%= yield something_else %>
+  #
+  # Doesn't match obfuscated `content_for` invocations:
+  #   <%= yield :message %>
   def has_capturing_yield?
-    # Matches plain yields that'll end up calling `capture`:
-    #   <%= yield %>
-    #   <%= yield something_else %>
-    #
-    # Doesn't match obfuscated `content_for` invocations:
-    #   <%= yield :message %>
     source.match? /\byield[\(? ]+[^:]/
   end
-}
+end
+
+ActionView::Template.include NicePartials::CapturingYieldDetection
 
 ActionView::Base.prepend NicePartials::RenderingWithLocalePrefix
 ActionView::Base.prepend NicePartials::RenderingWithAutoContext
