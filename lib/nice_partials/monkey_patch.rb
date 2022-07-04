@@ -24,12 +24,19 @@ module NicePartials::RenderingWithLocalePrefix
   end
 end
 
+require "active_support/deprecation"
+NicePartials::DEPRECATOR = ActiveSupport::Deprecation.new("1.0", "nice_partials")
+
 module NicePartials::RenderingWithAutoContext
   attr_reader :partial
-  alias_method :_p, :partial
 
   def p(*args)
-    args.empty? ? _p : super
+    if args.empty?
+      NicePartials::DEPRECATOR.deprecation_warning :p, :partial # In-branch printing so we don't warn on legit `Kernel.p` calls.
+      partial
+    else
+      super # …we're really Kernel.p
+    end
   end
 
   def render(options = {}, locals = {}, &block)
