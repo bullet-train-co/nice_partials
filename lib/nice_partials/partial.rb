@@ -43,7 +43,7 @@ module NicePartials
     end
 
     def content_for?(name)
-      contents[name].then { _1.block? || _1.content.present? }
+      contents[name].content?
     end
 
     def capture(block)
@@ -57,11 +57,10 @@ module NicePartials
 
     class Section
       attr_reader :content
-      attr_accessor :block
-      alias_method :block?, :block
 
       def initialize(view_context)
         @view_context = view_context
+        @block = nil
         @content = ActiveSupport::SafeBuffer.new
       end
 
@@ -70,9 +69,10 @@ module NicePartials
 
         case
         when block_given?
-          self.block = block
-        when block?
-          deferred_content_for(_content, *arguments)
+          @block = block
+        when @block
+          self << @view_context.capture(*arguments, &@block)
+          @block = nil
           content.presence
         when _content
           self << _content
@@ -82,15 +82,12 @@ module NicePartials
         end
       end
 
-      def deferred_content_for(*arguments)
-        if block
-          self << @view_context.capture(*arguments, &block)
-          self.block = nil
-        end
-      end
-
       def <<(content)
         @content << content.to_s
+      end
+
+      def content?
+        @block || content.present?
       end
     end
 
