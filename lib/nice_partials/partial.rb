@@ -56,38 +56,30 @@ module NicePartials
     private
 
     class Section
-      attr_reader :content
-
       def initialize(view_context)
         @view_context = view_context
         @block = nil
         @content = ActiveSupport::SafeBuffer.new
       end
 
-      def content_for(*arguments, &block)
-        _content = arguments.first
-
+      def content_for(content = nil, *arguments, &block)
         case
         when block_given?
           @block = block
         when @block
-          self << @view_context.capture(*arguments, &@block)
+          @content << @view_context.capture(*arguments, &@block).to_s
           @block = nil
-          content.presence
-        when _content
-          self << _content
+          @content.presence
+        when content
+          @content << content.to_s
           nil
         else
-          content.presence
+          @content.presence
         end
       end
 
-      def <<(content)
-        @content << content.to_s
-      end
-
       def content?
-        @block || content.present?
+        @block || @content.present?
       end
     end
 
