@@ -15,6 +15,27 @@ class RendererTest < NicePartials::Test
     assert_rendered "https://example.com/image.jpg"
   end
 
+  test "explicit yield without any arguments auto-captures passed block" do
+    render "yields/plain" do |partial, auto_capture_shouldnt_pass_extra_argument|
+      assert_kind_of NicePartials::Partial, partial
+      assert_nil auto_capture_shouldnt_pass_extra_argument
+    end
+  end
+
+  test "explicit yield with symbol auto-captures passed block" do
+    render "yields/symbol" do |partial, auto_capture_shouldnt_pass_extra_argument|
+      assert_kind_of NicePartials::Partial, partial
+      assert_nil auto_capture_shouldnt_pass_extra_argument
+    end
+  end
+
+  test "explicit yield with object won't auto-capture but make partial available in capture" do
+    render "yields/object" do |object, partial|
+      assert_equal Hash.new(custom_key: :custom_value), object
+      assert_kind_of NicePartials::Partial, partial
+    end
+  end
+
   test "output_buffer captures content not written via yield/content_for" do
     nice_partial = nil
     render "basic" do |p|
