@@ -36,6 +36,14 @@ class RendererTest < NicePartials::Test
     end
   end
 
+  test "explicit yield without any arguments with nesting" do
+    render "yields/plain_nested" do
+      tag.span "Output in outer partial through yield"
+    end
+
+    assert_rendered "<span>Output in outer partial through yield</span>"
+  end
+
   test "output_buffer captures content not written via yield/content_for" do
     nice_partial = nil
     render "basic" do |p|
