@@ -1,6 +1,8 @@
 # Monkey patch required to make `t` work as expected. Is this evil?
 # TODO Do we need to monkey patch other types of renderers as well?
 module NicePartials::RenderingWithLocalePrefix
+  ActionView::Base.prepend self
+
   def capture(*, &block)
     with_nice_partials_t_prefix(lookup_context, block) { super }
   end
@@ -28,7 +30,11 @@ require "active_support/deprecation"
 NicePartials::DEPRECATOR = ActiveSupport::Deprecation.new("1.0", "nice_partials")
 
 module NicePartials::RenderingWithAutoContext
-  attr_reader :partial
+  ActionView::Base.prepend self
+
+  def partial
+    @partial ||= nice_partial
+  end
 
   def p(*args)
     if args.empty?
@@ -40,13 +46,44 @@ module NicePartials::RenderingWithAutoContext
   end
 
   def render(options = {}, locals = {}, &block)
-    _partial, @partial = partial, nice_partial
-    @partial.capture(block)
+    _partial = @partial
     super
   ensure
     @partial = _partial
   end
+
+  def _layout_for(*arguments, &block)
+    if block && !arguments.first.is_a?(Symbol)
+      partial.capture(*arguments, &block)
+    else
+      super
+    end
+  end
 end
 
-ActionView::Base.prepend NicePartials::RenderingWithLocalePrefix
-ActionView::Base.prepend NicePartials::RenderingWithAutoContext
+module NicePartials::PartialRendering
+  ActionView::PartialRenderer.prepend self
+
+  def render_partial_template(view, locals, template, layout, block)
+    view.partial.capture(&block) if block && !template.has_capturing_yield?
+    super
+  end
+end
+
+module NicePartials::CapturingYieldDetection
+  ActionView::Template.include self
+
+  # Matches yields that'll end up calling `capture`:
+  #   <%= yield %>
+  #   <%= yield something_else %>
+  #
+  # Doesn't match obfuscated `content_for` invocations, nor custom yields:
+  #   <%= yield :message %>
+  #   <%= something.yield %>
+  #
+  # Note: `<%= yield %>` becomes `yield :layout` with no `render` `block`, though this method assumes a block is passed.
+  def has_capturing_yield?
+    defined?(@has_capturing_yield) ? @has_capturing_yield :
+      @has_capturing_yield = source.match?(/\byield[\(? ]+(%>|[^:])/)
+  end
+end
