@@ -15,6 +15,15 @@ class RendererTest < NicePartials::Test
     assert_rendered "https://example.com/image.jpg"
   end
 
+  test "accessing partial in outer context won't leak state to inner render" do
+    render "partial_accessed_in_outer_context"
+
+    assert_rendered "hello"
+    assert_rendered "goodbye"
+    assert_rendered "<span></span>"
+    assert_not_includes rendered, "hellogoodbye"
+  end
+
   test "explicit yield without any arguments auto-captures passed block" do
     render "yields/plain" do |partial, auto_capture_shouldnt_pass_extra_argument|
       assert_kind_of NicePartials::Partial, partial
