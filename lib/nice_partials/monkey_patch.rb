@@ -32,9 +32,10 @@ NicePartials::DEPRECATOR = ActiveSupport::Deprecation.new("1.0", "nice_partials"
 module NicePartials::RenderingWithAutoContext
   ActionView::Base.prepend self
 
-  def partial
-    @partial ||= nice_partial
+  def __partials
+    @__partials ||= NicePartials::Partial::Stack.new
   end
+  delegate :partial, to: :__partials
 
   def p(*args)
     if args.empty?
@@ -46,18 +47,32 @@ module NicePartials::RenderingWithAutoContext
   end
 
   def render(*)
-    _partial, @partial = @partial, nil
+    __partials.prepend nice_partial
     super
   ensure
-    @partial = _partial
+    __partials.shift
   end
 
   def _layout_for(*arguments, &block)
     if block && !arguments.first.is_a?(Symbol)
-      partial.capture(*arguments, &block)
+      capture_with_outer_partial_access(*arguments, &block)
     else
       super
     end
+  end
+
+  # Reverts `partial` to return the outer partial before the render call started.
+  #
+  # So we don't clobber the `partial` shown here:
+  #
+  #   <%= render "card" do |cp| %>
+  #     <% cp.content_for :title, partial.content_for(:title) %>
+  #   <% end %>
+  def capture_with_outer_partial_access(*arguments, &block)
+    __partials.locate_previous
+    __partials.first.capture(*arguments, &block)
+  ensure
+    __partials.reset_locator
   end
 end
 
@@ -65,7 +80,7 @@ module NicePartials::PartialRendering
   ActionView::PartialRenderer.prepend self
 
   def render_partial_template(view, locals, template, layout, block)
-    view.partial.capture(&block) if block && !template.has_capturing_yield?
+    view.capture_with_outer_partial_access(&block) if block && !template.has_capturing_yield?
     super
   end
 end
