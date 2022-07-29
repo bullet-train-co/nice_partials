@@ -1,6 +1,7 @@
 module NicePartials
   class Partial
     autoload :Section, "nice_partials/partial/section"
+    autoload :Stack, "nice_partials/partial/stack"
 
     delegate_missing_to :@view_context
 
