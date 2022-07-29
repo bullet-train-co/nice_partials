@@ -7,7 +7,7 @@ module NicePartials
 
     #   <%= render "nice_partial" do |p| %>
     #     <% p.content_for :title, "Yo" %>
-    #     This line is printed to the `output_buffer`.
+    #     This content can be accessed through calling `yield`.
     #   <% end %>
     #
     # Then in the nice_partial:
@@ -22,7 +22,7 @@ module NicePartials
 
     def yield(*arguments, &block)
       if arguments.empty?
-        raise "You can only use Nice Partial's yield method to retrieve the content of named content area blocks. If you're not trying to fetch the content of a named content area block, you don't need Nice Partials! You can just call the vanilla Rails `yield`."
+        output_buffer
       else
         content_for(*arguments, &block)
       end
