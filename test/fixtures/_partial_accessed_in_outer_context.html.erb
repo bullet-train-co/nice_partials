@@ -1,0 +1,12 @@
+<%# Access the partial in the outer context before renders %>
+<% partial %>
+
+<%= render "basic" do |partial| %>
+  <% partial.content_for :message, "hello" %>
+<% end %>
+
+<%= render "basic" do |partial| %>
+  <% partial.content_for :message, "goodbye" %>
+<% end %>
+
+<span><%= partial.content_for :message %></span>

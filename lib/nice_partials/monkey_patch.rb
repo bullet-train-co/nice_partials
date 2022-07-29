@@ -46,7 +46,7 @@ module NicePartials::RenderingWithAutoContext
   end
 
   def render(options = {}, locals = {}, &block)
-    _partial = @partial
+    _partial, @partial = @partial, nil
     super
   ensure
     @partial = _partial
