@@ -69,13 +69,16 @@ module NicePartials::RenderingWithAutoContext
     end
   end
 
-  # Reverts `partial` to return the outer partial before the render call started.
+  # Reverts `partial` to return the outer partial before the `render` call started.
   #
   # So we don't clobber the `partial` shown here:
   #
-  #   <%= render "card" do |cp| %>
-  #     <% cp.content_for :title, partial.content_for(:title) %>
+  #   <%= render "card" do |inner_partial| %>
+  #     <% inner_partial.content_for :title, partial.content_for(:title) %>
   #   <% end %>
+  #
+  # Note: this happens because the `@partial` instance variable is shared between all
+  # `render` calls since rendering happens in one `ActionView::Base` instance.
   def capture_with_outer_partial_access(*arguments, &block)
     __partials.locate_previous
     __partials.first.capture(*arguments, &block)
