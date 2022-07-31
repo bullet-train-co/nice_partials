@@ -92,7 +92,9 @@ module NicePartials::PartialRendering
 
   # Automatically captures the `block` in case the partial has no manual capturing `yield` call.
   #
-  # Effectively the same as having `<% yield partial %>` as the first partial line.
+  # This manual equivalent would be inserting this:
+  #
+  #   <% yield partial %>
   def render_partial_template(view, locals, template, layout, block)
     view.capture_with_outer_partial_access(&block) if block && !template.has_capturing_yield?
     super
