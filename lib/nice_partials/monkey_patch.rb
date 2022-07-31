@@ -46,6 +46,8 @@ module NicePartials::RenderingWithAutoContext
     end
   end
 
+  # Overrides `ActionView::Helpers::RenderingHelper#render` to push a new `nice_partial`
+  # on the stack, so rendering has a fresh `partial` to store content in.
   def render(*)
     __partials.prepend nice_partial
     super
@@ -53,6 +55,12 @@ module NicePartials::RenderingWithAutoContext
     __partials.shift
   end
 
+  # Since Action View passes any `yield`s in partials through `_layout_for`, we
+  # override `_layout_for` to detects if it's a capturing yield and append the
+  # current partial to the arguments.
+  #
+  # So `render … do |some_object|` can become `render … do |some_object, partial|`
+  # without needing to find and update the inner `yield some_object` call.
   def _layout_for(*arguments, &block)
     if block && !arguments.first.is_a?(Symbol)
       capture_with_outer_partial_access(*arguments, &block)
@@ -61,13 +69,16 @@ module NicePartials::RenderingWithAutoContext
     end
   end
 
-  # Reverts `partial` to return the outer partial before the render call started.
+  # Reverts `partial` to return the outer partial before the `render` call started.
   #
   # So we don't clobber the `partial` shown here:
   #
-  #   <%= render "card" do |cp| %>
-  #     <% cp.content_for :title, partial.content_for(:title) %>
+  #   <%= render "card" do |inner_partial| %>
+  #     <% inner_partial.content_for :title, partial.content_for(:title) %>
   #   <% end %>
+  #
+  # Note: this happens because the `@partial` instance variable is shared between all
+  # `render` calls since rendering happens in one `ActionView::Base` instance.
   def capture_with_outer_partial_access(*arguments, &block)
     __partials.locate_previous
     __partials.first.capture(*arguments, &block)
@@ -79,6 +90,11 @@ end
 module NicePartials::PartialRendering
   ActionView::PartialRenderer.prepend self
 
+  # Automatically captures the `block` in case the partial has no manual capturing `yield` call.
+  #
+  # This manual equivalent would be inserting this:
+  #
+  #   <% yield partial %>
   def render_partial_template(view, locals, template, layout, block)
     view.capture_with_outer_partial_access(&block) if block && !template.has_capturing_yield?
     super

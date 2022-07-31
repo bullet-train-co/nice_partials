@@ -1,6 +1,6 @@
 # nice_partials [![[version]](https://badge.fury.io/rb/nice_partials.svg)](https://badge.fury.io/rb/nice_partials)  [![[travis]](https://travis-ci.org/andrewculver/nice_partials.svg)](https://travis-ci.org/andrewculver/nice_partials)
 
-Nice Partials extends the concept of [`content_for` blocks and `yield`](https://guides.rubyonrails.org/layouts_and_rendering.html#using-the-content-for-method) for those times when a partial needs to provide one or more named "content areas" or "slots". This thin, optional layer of magic helps make traditional Rails view partials an even better fit for extracting components from your views, like so:
+Nice Partials lets [`content_for` and `yield`](https://guides.rubyonrails.org/layouts_and_rendering.html#using-the-content-for-method) calls be partial specific, to provide named "content areas" or "slots". This optional layer of magic helps make traditional Rails view partials a better fit for extracting components from your views, like so:
 
 `app/views/components/_card.html.erb`:
 ```html+erb
@@ -17,7 +17,7 @@ Nice Partials extends the concept of [`content_for` blocks and `yield`](https://
 </div>
 ```
 
-These partials can still be utilized with a standard `render` call, but you can specify how to populate the content areas like so:
+Then you can call `render`, but specify how to populate the content areas:
 
 ```html+erb
 <%= render 'components/card', title: 'Some Title' do |partial| %>
@@ -106,19 +106,37 @@ You only need to use Nice Partials when:
 
 ### Using Nice Partials
 
-Nice Partials is invoked automatically when you render your partial with a block that takes a single parameter like so:
+Nice Partials is invoked automatically when you render your partial with a block like so:
 
 ```html+erb
 <%= render 'components/card' do |partial| %>
-  <%= partial.content_for :some_section %>
+  <%= partial.content_for :some_section do %>
     Some content!
   <% end %>
 <% end %>
 ```
 
-It's always been natural to pass blocks to a partial in Rails, but not to pass blocks that take parameters, so when you do this, we know it's a partial that uses Nice Partials.
-
 Now within the partial file itself, you can use `<%= partial.yield :some_section %>` to render whatever content areas you want to be passed into your partial.
+
+### Accessing the content returned from `yield`
+
+In a regular Rails partial:
+
+```html+erb
+<%= render 'components/card' do %>
+  Some content!
+  Yet more content!
+<% end %>
+```
+
+You can access the inner content lines through what's returned from `yield`:
+
+```html+erb
+<%# app/views/components/_card.html.erb %>
+<%= yield %> # => "Some content!\n\nYet more content!"
+```
+
+With Nice Partials, you can call `partial.yield` without arguments and return the same `"Some content!\n\nYet more content!"`.
 
 ### Defining and using well isolated helper methods
 
