@@ -39,7 +39,7 @@
 
 * Expose `partial.yield` to access the captured output buffer.
 
-  Let's you access what a `<%= yield %>` call returned, like this:
+  Lets you access what a `<%= yield %>` call returned, like this:
 
   ```erb
   <%= render "card" do %>
