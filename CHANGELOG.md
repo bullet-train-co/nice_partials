@@ -24,7 +24,7 @@
     puts "These files had render calls with a block parameter and likely require some manual edits:"
     puts files_to_inspect
   else
-    puts "No files with renders calls with a block parameter found, you're likely all set"
+    puts "No files with render calls with a block parameter found, you're likely all set"
   end
   ```
 
