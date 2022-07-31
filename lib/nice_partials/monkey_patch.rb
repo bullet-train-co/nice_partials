@@ -55,9 +55,9 @@ module NicePartials::RenderingWithAutoContext
     __partials.shift
   end
 
-  # Action View passes any `yield`s in partials through `_layout_for`, our
-  # override detects if it's a capturing yield and appends the current partial
-  # to the arguments.
+  # Since Action View passes any `yield`s in partials through `_layout_for`, we
+  # override `_layout_for` to detects if it's a capturing yield and append the
+  # current partial to the arguments.
   #
   # So `render … do |some_object|` can become `render … do |some_object, partial|`
   # without needing to find and update the inner `yield some_object` call.
