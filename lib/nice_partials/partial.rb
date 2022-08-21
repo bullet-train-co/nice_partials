@@ -32,6 +32,27 @@ module NicePartials
       class_eval &block
     end
 
+    # Allows an inner partial to copy content from an outer partial.
+    #
+    # Additionally a hash of keys to rename in the new partial context can be passed.
+    #
+    #   First, an outer partial gets some content set:
+    #   <% partial.content_for :title, "Hello there" %>
+    #   <% partial.content_for :byline, "Somebody" %>
+    #
+    #   Second, a new partial is rendered, but we want to extract the title, byline content but rename the byline key too:
+    #   <%= render "shared/title" do |cp| %>
+    #     <% cp.content_from partial, :title, byline: :name %>
+    #   <% end %>
+    #
+    #   # Third, the contents with any renames are accessible in shared/_title.html.erb:
+    #   <%= partial.content_for :title %> # => "Hello there"
+    #   <%= partial.content_for :name %> # => "Somebody"
+    def content_from(partial, *names, **renames)
+      names.chain(renames).each { |key, new_key = key| content_for new_key, partial.content_for(key) }
+      nil
+    end
+
     # Similar to Rails' built-in `content_for` except it defers any block execution
     # and lets you pass arguments into it, like so:
     #

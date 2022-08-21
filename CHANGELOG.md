@@ -56,6 +56,22 @@
   <% partial.title "content", class: "post-title" %> # Adding some content and options…
   <% partial.title.h2 %> # => <h2 class="post-title">content</h2>
   <% partial.title.h2 "more" %> # => <h2 class="post-title">contentmore</h2>
+
+* Add `Partial#content_from`
+
+  `content_from` lets a partial extract contents from another partial.
+  Additionally, contents can be renamed by passing a hash:
+
+  ```erb
+  <% partial.title "Hello there" %>
+  <% partial.byline "Somebody" %>
+
+  <%= render "shared/title" do |cp| %>
+    # Here the inner partial `cp` accesses the outer partial through `partial`
+    # extracting the `title` and `byline` contents.
+    # `byline` is renamed to `name` in `cp`.
+    <% cp.content_from partial, :title, byline: :name %>
+  <% end %>
   ```
 
 * Remove need to insert `<% yield p = np %>` in partials.
