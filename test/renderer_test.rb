@@ -65,6 +65,24 @@ class RendererTest < NicePartials::Test
     assert_equal "Some extra content", nice_partial.yield
   end
 
+  test "mixing Partial#yield call styles renders all captured content" do
+    render template: "mixed_yield_test"
+
+    assert_css "#mixed_yield" do
+      assert_css "#output_buffer", text: "output buffer content"
+      assert_css "#slot", text: "slot content"
+    end
+  end
+
+  test "mixing Partial#yield call styles with objects renders all captured content" do
+    render template: "mixed_yield_with_object_test"
+
+    assert_css "#mixed_yield_with_object" do
+      assert_css "#output_buffer", text: "output buffer content"
+      assert_css "#yielded_object", text: "slot content"
+    end
+  end
+
   test "doesn't clobber Kernel.p" do
     assert_output "\"it's clobbering time\"\n" do
       render("clobberer") { |p| p.content_for :message, "hello from nice partials" }
