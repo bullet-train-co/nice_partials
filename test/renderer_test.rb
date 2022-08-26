@@ -12,7 +12,7 @@ class RendererTest < NicePartials::Test
 
     assert_text "Some Title"
     assert_css "p", class: "text-bold", text: "Lorem Ipsum"
-    assert_css("img") { _1["src"] == "https://example.com/image.jpg" }
+    assert_css("img") { assert_equal "https://example.com/image.jpg", _1["src"] }
   end
 
   test "accessing partial in outer context won't leak state to inner render" do
