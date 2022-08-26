@@ -20,7 +20,7 @@ class NicePartials::Partial::Section
   private
 
   def write_content_for(content = nil, &block)
-    if content.class <= String && !pending?
+    if content && !pending?
       concat content
     else
       @pending_content = block if block
