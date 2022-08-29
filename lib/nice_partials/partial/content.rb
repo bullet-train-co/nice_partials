@@ -2,11 +2,7 @@ class NicePartials::Partial::Content
   def initialize(view_context)
     @view_context, @content = view_context, ActiveSupport::SafeBuffer.new
   end
-  delegate :to_s, to: :@content
-
-  def content?
-    @content.present?
-  end
+  delegate :to_s, :present?, to: :@content
 
   def content_for(content = nil, &block)
     self unless concat(content || capture(block))

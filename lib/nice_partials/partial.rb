@@ -47,7 +47,7 @@ module NicePartials
     end
 
     def section?(name)
-      @sections&.dig(name)&.content?
+      @sections&.dig(name).present?
     end
 
     def content_for(name, content = nil, &block)
@@ -55,7 +55,7 @@ module NicePartials
     end
 
     def content_for?(name)
-      @contents&.dig(name)&.content?
+      @contents&.dig(name).present?
     end
 
     def capture(*arguments, &block)
