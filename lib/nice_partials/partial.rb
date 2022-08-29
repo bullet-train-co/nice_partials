@@ -43,7 +43,7 @@ module NicePartials
     #  # …which is then invoked with some predefined options later.
     #  <%= partial.content_for :title, tag.with_options(class: "text-bold") %>
     def section(name, content = nil, &block)
-      section_from(name).process(content, block)
+      section_from(name).then { _1.write(content, &block) ? nil : _1 }
     end
     alias content_for section
 
