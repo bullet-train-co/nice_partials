@@ -76,6 +76,8 @@
 
   Clarifying what keys get converted to what content sections on the partial rather than the boilerplate heavy and repetitive `partial.… t(".…")`.
 
+### 0.1.9
+
 * Remove need to insert `<% yield p = np %>` in partials.
 
   Nice Partials now automatically captures blocks passed to `render`.
