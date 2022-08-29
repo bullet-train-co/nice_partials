@@ -71,5 +71,20 @@ module NicePartials
     def set_named_content(name)
       @contents ||= {} and @contents[name] ||= Content.new(@view_context)
     end
+
+    def method_missing(meth, *arguments, **keywords, &block)
+      if @view_context.respond_to?(meth)
+        @view_context.public_send(meth, *arguments, **keywords, &block)
+      else
+        define_accessor(meth)
+        public_send(meth)
+      end
+    end
+
+    def define_accessor(name)
+      name = name.to_s.chomp("?").to_sym
+      self.class.define_method(name) { set_named_section(name) }
+      self.class.define_method("#{name}?") { section?(name) }
+    end
   end
 end

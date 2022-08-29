@@ -1,5 +1,5 @@
 <%= render "card", title: "Some Title" do |partial| %>
-  <% partial.section :body do |tag| %>
+  <% partial.body.write do |tag| %>
     <%= tag.p "Lorem Ipsum" %>
   <% end %>
 
