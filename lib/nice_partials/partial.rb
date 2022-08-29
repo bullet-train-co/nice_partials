@@ -1,5 +1,6 @@
 module NicePartials
   class Partial
+    autoload :Content, "nice_partials/partial/content"
     autoload :Section, "nice_partials/partial/section"
     autoload :Stack, "nice_partials/partial/stack"
 
@@ -17,7 +18,7 @@ module NicePartials
 
     def initialize(view_context)
       @view_context = view_context
-      @contents = Hash.new { |h, k| h[k] = Section.new(@view_context) }
+      @contents = Hash.new { |h, k| h[k] = Content.new(@view_context) }
     end
 
     def yield(*arguments, &block)
@@ -42,8 +43,8 @@ module NicePartials
     #
     #  # …which is then invoked with some predefined options later.
     #  <%= partial.content_for :title, tag.with_options(class: "text-bold") %>
-    def content_for(name, content = nil, *arguments, &block)
-      @contents[name].content_for(content, *arguments, &block)
+    def content_for(name, content = nil, &block)
+      @contents[name].content_for(content, &block)
     end
 
     def content_for?(name)
