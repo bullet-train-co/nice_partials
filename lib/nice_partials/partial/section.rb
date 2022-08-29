@@ -9,6 +9,12 @@ class NicePartials::Partial::Section < NicePartials::Partial::Content
     self
   end
 
+  # Allows for doing `partial.body.render "form", tangible_thing: @tangible_thing`
+  def render(...)
+    concat @view_context.render(...)
+    self
+  end
+
   def present?
     chunks.present? || super
   end
