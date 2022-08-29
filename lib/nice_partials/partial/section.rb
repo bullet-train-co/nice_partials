@@ -1,7 +1,6 @@
 class NicePartials::Partial::Section < NicePartials::Partial::Content
-  def store(*new_chunks, &block)
-    chunks.concat new_chunks
-    chunks << block if block_given?
+  def store(chunk = nil, &block)
+    chunks.concat [ chunk, block ].compact
     nil
   end
 
