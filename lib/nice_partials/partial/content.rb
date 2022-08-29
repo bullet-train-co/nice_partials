@@ -4,8 +4,8 @@ class NicePartials::Partial::Content
   end
   delegate :to_s, :present?, to: :@content
 
-  def write(*arguments, &block)
-    arguments.append(block).compact.filter_map { _1.respond_to?(:call) ? capture(_1) : concat(_1) }.any?
+  def write(content, &block)
+    concat content or capture block
   end
 
   private
