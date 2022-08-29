@@ -42,6 +42,14 @@ module NicePartials
     #
     #  # …which is then invoked with some predefined options later.
     #  <%= partial.content_for :title, tag.with_options(class: "text-bold") %>
+    def section(name, content = nil)
+      set_named_section(name).content_for(content)
+    end
+
+    def section?(name)
+      @sections&.dig(name)&.content?
+    end
+
     def content_for(name, content = nil, &block)
       set_named_content(name).content_for(content, &block)
     end
@@ -55,6 +63,10 @@ module NicePartials
     end
 
     private
+
+    def set_named_section(name)
+      @sections ||= {} and @sections[name] ||= Section.new(@view_context)
+    end
 
     def set_named_content(name)
       @contents ||= {} and @contents[name] ||= Content.new(@view_context)
