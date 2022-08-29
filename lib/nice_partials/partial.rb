@@ -43,7 +43,7 @@ module NicePartials
     #  # …which is then invoked with some predefined options later.
     #  <%= partial.content_for :title, tag.with_options(class: "text-bold") %>
     def section(name, content = nil, &block)
-      set_named_section(name).process(content, block)
+      section_from(name).process(content, block)
     end
     alias content_for section
 
@@ -58,7 +58,7 @@ module NicePartials
 
     private
 
-    def set_named_section(name)
+    def section_from(name)
       @sections ||= {} and @sections[name] ||= Section.new(@view_context)
     end
 
@@ -72,7 +72,7 @@ module NicePartials
 
     def define_accessor(name)
       name = name.to_s.chomp("?").to_sym
-      self.class.define_method(name) { set_named_section(name) }
+      self.class.define_method(name) { section_from(name) }
       self.class.define_method("#{name}?") { section?(name) }
     end
   end
