@@ -4,14 +4,18 @@ class NicePartials::Partial::Content
   end
   delegate :to_s, :present?, to: :@content
 
-  def process(content, block)
-    self unless concat(content || capture(block))
+  def process(*arguments)
+    self unless write(*arguments)
+  end
+
+  def write(*arguments, &block)
+    arguments.append(block).filter_map { _1.respond_to?(:call) ? capture(_1) : concat(_1) }.any?
   end
 
   private
 
   def capture(block)
-    @view_context.capture(&block) if block
+    concat @view_context.capture(&block) if block
   end
 
   def concat(string)

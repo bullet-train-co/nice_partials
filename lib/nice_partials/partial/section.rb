@@ -12,7 +12,7 @@ class NicePartials::Partial::Section < NicePartials::Partial::Content
 
   def capture(block)
     if block&.arity&.nonzero?
-      chunks << block and nil
+      chunks << block
     else
       super
     end
