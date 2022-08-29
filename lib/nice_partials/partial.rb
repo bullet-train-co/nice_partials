@@ -76,8 +76,7 @@ module NicePartials
       if @view_context.respond_to?(meth)
         @view_context.public_send(meth, *arguments, **keywords, &block)
       else
-        define_accessor(meth)
-        public_send(meth)
+        define_accessor meth and public_send meth
       end
     end
 
