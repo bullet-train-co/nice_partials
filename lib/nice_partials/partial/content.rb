@@ -9,7 +9,7 @@ class NicePartials::Partial::Content
   end
 
   def write(*arguments, &block)
-    arguments.append(block).filter_map { _1.respond_to?(:call) ? capture(_1) : concat(_1) }.any?
+    arguments.append(block).compact.filter_map { _1.respond_to?(:call) ? capture(_1) : concat(_1) }.any?
   end
 
   private
