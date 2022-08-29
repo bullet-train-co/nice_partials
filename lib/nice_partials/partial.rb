@@ -18,7 +18,6 @@ module NicePartials
 
     def initialize(view_context)
       @view_context = view_context
-      @contents = Hash.new { |h, k| h[k] = Content.new(@view_context) }
     end
 
     def yield(*arguments, &block)
@@ -44,15 +43,21 @@ module NicePartials
     #  # …which is then invoked with some predefined options later.
     #  <%= partial.content_for :title, tag.with_options(class: "text-bold") %>
     def content_for(name, content = nil, &block)
-      @contents[name].content_for(content, &block)
+      set_named_content(name).content_for(content, &block)
     end
 
     def content_for?(name)
-      @contents[name].content?
+      @contents&.dig(name)&.content?
     end
 
     def capture(*arguments, &block)
       self.output_buffer = @view_context.capture(*arguments, self, &block)
+    end
+
+    private
+
+    def set_named_content(name)
+      @contents ||= {} and @contents[name] ||= Content.new(@view_context)
     end
   end
 end
