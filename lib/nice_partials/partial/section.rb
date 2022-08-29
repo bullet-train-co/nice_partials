@@ -1,9 +1,4 @@
-class NicePartials::Partial::Section
-  def initialize(view_context)
-    @view_context = view_context
-    @content = @pending_content = nil
-  end
-
+class NicePartials::Partial::Section < NicePartials::Partial::Content
   def content_for(*arguments, &block)
     if write_content_for(arguments.first, &block)
       nil
@@ -30,11 +25,6 @@ class NicePartials::Partial::Section
   def capture_content_for(*arguments)
     concat @view_context.capture(*arguments, &@pending_content)
     @pending_content = nil
-  end
-
-  def concat(string)
-    @content ||= ActiveSupport::SafeBuffer.new
-    @content << string.to_s if string.present?
   end
 
   def pending?
