@@ -43,7 +43,7 @@ module NicePartials
     #  # …which is then invoked with some predefined options later.
     #  <%= partial.content_for :title, tag.with_options(class: "text-bold") %>
     def section(name, content = nil, &block)
-      set_named_section(name).content_for(content, &block)
+      set_named_section(name).process(content, block)
     end
 
     def section?(name)
@@ -51,7 +51,7 @@ module NicePartials
     end
 
     def content_for(name, content = nil, &block)
-      set_named_content(name).content_for(content, &block)
+      set_named_content(name).process(content, block)
     end
 
     def content_for?(name)

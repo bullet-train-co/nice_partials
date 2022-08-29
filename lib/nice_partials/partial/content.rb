@@ -4,7 +4,7 @@ class NicePartials::Partial::Content
   end
   delegate :to_s, :present?, to: :@content
 
-  def content_for(content = nil, &block)
+  def process(content, block)
     self unless concat(content || capture(block))
   end
 
