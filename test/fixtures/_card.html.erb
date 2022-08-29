@@ -2,9 +2,10 @@
   <%= partial.yield :image %>
   <div class="card-body">
     <h5 class="card-title"><%= title %></h5>
-    <% if partial.content_for? :body %>
+    <% if partial.section? :body %>
       <p class="card-text">
-        <%= partial.content_for :body, tag.with_options(class: "text-bold") %>
+        <%# TODO: remove send pending https://github.com/bullet-train-co/nice_partials/pull/54 %>
+        <%= partial.section(:body).send :yield, tag.with_options(class: "text-bold") %>
       </p>
     <% end %>
   </div>

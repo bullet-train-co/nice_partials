@@ -11,7 +11,7 @@ class RendererTest < NicePartials::Test
     render(template: "card_test")
 
     assert_rendered "Some Title"
-    # assert_rendered '<p class="text-bold">Lorem Ipsum</p>'
+    assert_rendered '<p class="text-bold">Lorem Ipsum</p>'
     assert_rendered "https://example.com/image.jpg"
   end
 

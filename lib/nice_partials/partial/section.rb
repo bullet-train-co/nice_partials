@@ -1,5 +1,22 @@
 class NicePartials::Partial::Section < NicePartials::Partial::Content
-  def content_for(content = nil)
-    self unless concat(content)
+  def yield(*arguments)
+    chunks.each { concat @view_context.capture(*arguments, &_1) }
+    self
   end
+
+  def present?
+    chunks.present? || super
+  end
+
+  private
+
+  def capture(block)
+    if block&.arity&.nonzero?
+      chunks << block and nil
+    else
+      super
+    end
+  end
+
+  def chunks() = @chunks ||= []
 end
