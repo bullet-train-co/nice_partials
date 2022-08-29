@@ -45,18 +45,12 @@ module NicePartials
     def section(name, content = nil, &block)
       set_named_section(name).process(content, block)
     end
+    alias content_for section
 
     def section?(name)
       @sections&.dig(name).present?
     end
-
-    def content_for(name, content = nil, &block)
-      set_named_content(name).process(content, block)
-    end
-
-    def content_for?(name)
-      @contents&.dig(name).present?
-    end
+    alias content_for? section?
 
     def capture(*arguments, &block)
       self.output_buffer = @view_context.capture(*arguments, self, &block)
@@ -66,10 +60,6 @@ module NicePartials
 
     def set_named_section(name)
       @sections ||= {} and @sections[name] ||= Section.new(@view_context)
-    end
-
-    def set_named_content(name)
-      @contents ||= {} and @contents[name] ||= Content.new(@view_context)
     end
 
     def method_missing(meth, *arguments, **keywords, &block)
