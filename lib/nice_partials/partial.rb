@@ -36,12 +36,10 @@ module NicePartials
     # and lets you pass arguments into it, like so:
     #
     #   # Here we store a block with some eventual content…
-    #   <% partial.content_for :title do |tag|
-    #     <%= tag.h1 %>
-    #   <% end %>
+    #   <% partial.title.store(&:h1) %>
     #
-    #  # …which is then invoked with some predefined options later.
-    #  <%= partial.content_for :title, tag.with_options(class: "text-bold") %>
+    #  # …which we can then yield into with some predefined options later.
+    #  <%= partial.title.yield tag.with_options(class: "text-bold") %>
     def section(name, content = nil, &block)
       section_from(name).then { _1.write(content, &block) ? nil : _1 }
     end
