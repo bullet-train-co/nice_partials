@@ -64,13 +64,13 @@ module NicePartials
       if @view_context.respond_to?(meth)
         @view_context.public_send(meth, *arguments, **keywords, &block)
       else
-        define_accessor meth and public_send meth
+        define_accessor meth and public_send(meth, *arguments, **keywords, &block)
       end
     end
 
     def define_accessor(name)
       name = name.to_s.chomp("?").to_sym
-      self.class.define_method(name) { section_from(name) }
+      self.class.define_method(name) { |content = nil, &block| section(name, content, &block) }
       self.class.define_method("#{name}?") { section?(name) }
     end
   end
