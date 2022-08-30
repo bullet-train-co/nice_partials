@@ -15,7 +15,6 @@ class NicePartials::Partial::Content
   end
 
   def concat(string)
-    @content << string.presence&.to_s
-    string
+    @content << string.to_s if string.present?
   end
 end
