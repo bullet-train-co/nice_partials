@@ -24,6 +24,8 @@ class NicePartials::PartialTest < ActiveSupport::TestCase
     partial = new_partial
     partial.body "some content"
 
+    partial.body new_partial.body.tap { _1.write("content from another partial") }
+
     partial.body Component.new(:plain)
     partial.body { Component.new(:from_block) }
 
@@ -32,6 +34,7 @@ class NicePartials::PartialTest < ActiveSupport::TestCase
 
     assert_equal <<~OUTPUT.gsub("\n", ""), partial.body.to_s
       some content
+      content from another partial
       component render_in plain
       component render_in from_block
       yielded content, appended to
