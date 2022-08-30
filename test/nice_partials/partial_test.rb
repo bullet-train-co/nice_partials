@@ -5,6 +5,10 @@ class NicePartials::PartialTest < ActiveSupport::TestCase
     def initialize
     end
 
+    def link_to(name, url)
+      %(<a href="#{url}">#{name}</a>).html_safe
+    end
+
     def capture(*arguments)
       yield(*arguments)
     end
@@ -26,6 +30,8 @@ class NicePartials::PartialTest < ActiveSupport::TestCase
 
     partial.body new_partial.body.tap { _1.write("content from another partial") }
 
+    partial.body.link_to "Document", "document_url"
+
     partial.body Component.new(:plain)
     partial.body { Component.new(:from_block) }
 
@@ -35,6 +41,7 @@ class NicePartials::PartialTest < ActiveSupport::TestCase
     assert_equal <<~OUTPUT.gsub("\n", ""), partial.body.to_s
       some content
       content from another partial
+      <a href="document_url">Document</a>
       component render_in plain
       component render_in from_block
       yielded content, appended to
