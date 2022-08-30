@@ -1,10 +1,13 @@
 class NicePartials::Partial::Content
   def initialize(view_context)
-    @view_context, @content = view_context, ActiveSupport::SafeBuffer.new
+    @view_context, @options, @content = view_context, {}, ActiveSupport::SafeBuffer.new
   end
   delegate :to_s, :present?, to: :@content
 
-  def write(content = nil, &block)
+  attr_reader :options
+
+  def write(content = nil, **options, &block)
+    @options.merge! options unless options.empty?
     append content or capture block
   end
 

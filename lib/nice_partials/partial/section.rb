@@ -11,9 +11,12 @@ class NicePartials::Partial::Section < NicePartials::Partial::Content
   # Allows for doing `partial.body.render "form", tangible_thing: @tangible_thing`
   # and `partial.body.link_to @document.name, @document`
   def method_missing(meth, *arguments, **keywords, &block)
-    if @view_context.respond_to?(meth)
+    case
+    when @view_context.respond_to?(meth)
       concat @view_context.public_send(meth, *arguments, **keywords, &block)
       nil
+    when @view_context.tag.respond_to?(meth)
+      @view_context.tag.public_send(meth, @content, **@options)
     else
       super
     end

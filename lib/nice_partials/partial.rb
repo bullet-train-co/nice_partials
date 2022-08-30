@@ -40,8 +40,8 @@ module NicePartials
     #
     #  # …which we can then yield into with some predefined options later.
     #  <%= partial.title.yield tag.with_options(class: "text-bold") %>
-    def section(name, content = nil, &block)
-      section_from(name).then { _1.write(content, &block) ? nil : _1 }
+    def section(name, content = nil, **options, &block)
+      section_from(name).then { _1.write(content, **options, &block) ? nil : _1 }
     end
     alias content_for section
 
@@ -70,7 +70,7 @@ module NicePartials
 
     def define_accessor(name)
       name = name.to_s.chomp("?").to_sym
-      self.class.define_method(name) { |content = nil, &block| section(name, content, &block) }
+      self.class.define_method(name) { |content = nil, **options, &block| section(name, content, **options, &block) }
       self.class.define_method("#{name}?") { section?(name) }
     end
   end

@@ -48,6 +48,14 @@ class NicePartials::PartialTest < ActiveSupport::TestCase
     OUTPUT
   end
 
+  test "tag proxy with options" do
+    partial = new_partial
+    partial.title class: "post-title"
+
+    assert_equal({ class: "post-title" }, partial.title.options)
+    assert_equal %(<h2 class="post-title"></h2>), partial.title.h2
+  end
+
   private
 
   def new_partial
