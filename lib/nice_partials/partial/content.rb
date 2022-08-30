@@ -10,12 +10,17 @@ class NicePartials::Partial::Content
 
   private
 
-  def capture(block)
-    append @view_context.capture(&block) if block
+  def append(content)
+    case
+    when content.respond_to?(:render_in) then concat  content.render_in(@view_context)
+    when content.respond_to?(:call)      then capture content
+    else
+      concat content
+    end
   end
 
-  def append(content)
-    concat content
+  def capture(block)
+    append @view_context.capture(&block) if block
   end
 
   def concat(string)

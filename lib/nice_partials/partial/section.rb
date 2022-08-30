@@ -1,6 +1,6 @@
 class NicePartials::Partial::Section < NicePartials::Partial::Content
   def yield(*arguments)
-    chunks.each { concat @view_context.capture(*arguments, &_1) }
+    chunks.each { append @view_context.capture(*arguments, &_1) }
     self
   end
 
