@@ -1,9 +1,4 @@
 class NicePartials::Partial::Section < NicePartials::Partial::Content
-  def store(chunk = nil, &block)
-    chunks.concat [ chunk, block ].compact
-    nil
-  end
-
   def yield(*arguments)
     chunks.each { concat @view_context.capture(*arguments, &_1) }
     self

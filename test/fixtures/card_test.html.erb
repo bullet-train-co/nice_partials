@@ -1,5 +1,5 @@
 <%= render "card", title: "Some Title" do |partial| %>
-  <% partial.body.store -> { _1.p "Lorem Ipsum" } %>
+  <% partial.body.write { _1.p "Lorem Ipsum" } %>
 
   <% partial.content_for :image do %>
     <img src="https://example.com/image.jpg" />

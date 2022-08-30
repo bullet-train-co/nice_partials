@@ -4,7 +4,7 @@ class NicePartials::Partial::Content
   end
   delegate :to_s, :present?, to: :@content
 
-  def write(content, &block)
+  def write(content = nil, &block)
     concat content or capture block
   end
 
