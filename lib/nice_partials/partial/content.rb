@@ -5,13 +5,17 @@ class NicePartials::Partial::Content
   delegate :to_s, :present?, to: :@content
 
   def write(content = nil, &block)
-    concat content or capture block
+    append content or capture block
   end
 
   private
 
   def capture(block)
-    concat @view_context.capture(&block) if block
+    append @view_context.capture(&block) if block
+  end
+
+  def append(content)
+    concat content
   end
 
   def concat(string)
