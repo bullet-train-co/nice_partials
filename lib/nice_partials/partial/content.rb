@@ -1,10 +1,10 @@
 class NicePartials::Partial::Content
+  attr_reader :options
+
   def initialize(view_context)
     @view_context, @options, @content = view_context, {}, ActiveSupport::SafeBuffer.new
   end
   delegate :to_s, :present?, to: :@content
-
-  attr_reader :options
 
   def write(content = nil, **options, &block)
     @options.merge! options unless options.empty?
