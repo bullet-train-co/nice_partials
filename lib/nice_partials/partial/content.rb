@@ -1,17 +1,23 @@
 class NicePartials::Partial::Content
-  attr_reader :options
-
   def initialize(view_context)
-    @view_context, @options, @content = view_context, {}, ActiveSupport::SafeBuffer.new
+    @view_context, @content = view_context, ActiveSupport::SafeBuffer.new
   end
   delegate :to_s, :present?, to: :@content
 
-  def write(content = nil, **options, &block)
-    @options.merge! options unless options.empty?
+  def options
+    @options ||= {}
+  end
+
+  def write(content = nil, **new_options, &block)
+    process_options new_options
     append content or capture block
   end
 
   private
+
+  def process_options(new_options)
+    @options = NicePartials.options_processor.call(options, new_options) unless new_options.empty?
+  end
 
   def append(content)
     case

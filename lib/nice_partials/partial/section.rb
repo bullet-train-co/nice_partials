@@ -16,7 +16,7 @@ class NicePartials::Partial::Section < NicePartials::Partial::Content
       concat @view_context.public_send(meth, *arguments, **keywords, &block)
       nil
     when @view_context.tag.respond_to?(meth)
-      @view_context.tag.public_send(meth, @content, **@options)
+      @view_context.tag.public_send(meth, @content, **options)
     else
       super
     end
