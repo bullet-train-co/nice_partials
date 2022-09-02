@@ -28,7 +28,6 @@ class NicePartials::Partial::Section < NicePartials::Partial::Content
   def method_missing(meth, *arguments, **keywords, &block)
     if meth != :p && @view_context.respond_to?(meth)
       append @view_context.public_send(meth, *arguments, **keywords, &block)
-      nil
     else
       @view_context.tag.public_send(meth, @content + arguments.first.to_s, **options.merge(keywords), &block)
     end
