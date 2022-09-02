@@ -41,7 +41,7 @@ module NicePartials
     #  # …which we can then yield into with some predefined options later.
     #  <%= partial.title.yield tag.with_options(class: "text-bold") %>
     def section(name, content = nil, **options, &block)
-      section_from(name).then { _1.write(content, **options, &block) ? nil : _1 }
+      section_from(name).then { _1.write?(content, **options, &block) ? nil : _1 }
     end
     alias content_for section
 

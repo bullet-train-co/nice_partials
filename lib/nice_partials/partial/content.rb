@@ -8,9 +8,14 @@ class NicePartials::Partial::Content
     @options ||= {}
   end
 
-  def write(content = nil, **new_options, &block)
+  def write?(content = nil, **new_options, &block)
     process_options new_options
     append content or capture block
+  end
+
+  def write(...)
+    write?(...)
+    self
   end
 
   private
