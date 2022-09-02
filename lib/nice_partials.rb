@@ -2,6 +2,12 @@
 
 require_relative "nice_partials/version"
 
+begin
+  gem "attributes_and_token_lists"
+  require "attributes_and_token_lists/attributes"
+rescue LoadError
+end
+
 module NicePartials
   class Options < Hash
     attr_accessor :tag
@@ -12,7 +18,12 @@ module NicePartials
   end
 
   singleton_class.attr_accessor :new_options
-  self.new_options = -> view_context { Options.new.tap { _1.tag = view_context.tag } }
+  self.new_options =
+    if defined?(AttributesAndTokenLists::Attributes)
+      -> view_context { AttributesAndTokenLists::Attributes.new(view_context.tag, view_context) }
+    else
+      -> view_context { Options.new.tap { _1.tag = view_context.tag } }
+    end
 
   def self.locale_prefix_from(lookup_context, block)
     root_paths = lookup_context.view_paths.map(&:path)
