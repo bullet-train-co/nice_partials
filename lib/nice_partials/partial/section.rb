@@ -8,17 +8,16 @@ class NicePartials::Partial::Section < NicePartials::Partial::Content
     chunks.present? || super
   end
 
+  undef_method :p # Remove Kernel.p here to pipe through method_missing and hit tag proxy.
+
   # Allows for doing `partial.body.render "form", tangible_thing: @tangible_thing`
   # and `partial.body.link_to @document.name, @document`
   def method_missing(meth, *arguments, **keywords, &block)
-    case
-    when @view_context.respond_to?(meth)
+    if meth != :p && @view_context.respond_to?(meth)
       concat @view_context.public_send(meth, *arguments, **keywords, &block)
       nil
-    when @view_context.tag.respond_to?(meth)
-      @view_context.tag.public_send(meth, @content, **options)
     else
-      super
+      @view_context.tag.public_send(meth, @content + arguments.first.to_s, **options.merge(keywords), &block)
     end
   end
   def respond_to_missing?(...) = @view_context.respond_to?(...)

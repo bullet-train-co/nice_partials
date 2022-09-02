@@ -50,10 +50,14 @@ class NicePartials::PartialTest < ActiveSupport::TestCase
 
   test "tag proxy with options" do
     partial = new_partial
-    partial.title class: "post-title"
+    partial.title "content", class: "post-title"
 
     assert_equal({ class: "post-title" }, partial.title.options)
-    assert_equal %(<h2 class="post-title"></h2>), partial.title.h2
+    assert_equal %(<p class="post-title">content</p>),         partial.title.p
+    assert_equal %(<h2 class="post-title">content</h2>),       partial.title.h2
+    assert_equal %(<h2 class="">content</h2>),                 partial.title.h2(class: { "text-m4": false }), "tag proxy didn't support token_list attributes"
+    assert_equal %(<h2 class="text-m4">contentaddendum</h2>),  partial.title.h2("addendum", class: "text-m4")
+    assert_equal %(<h2 class="some-class">contentblabla</h2>), partial.title.h2("blabla", class: "some-class")
   end
 
   private
