@@ -11,6 +11,13 @@
   <% partial.title? %> # => true
   ```
 
+  Note, `title?` uses `present?` under the hood so rendering could also be made conditional with:
+
+  ```erb
+  <% partial.title if partial.title? %> # Instead of this…
+  <% partial.title.presence %> # …you can do this
+  ```
+
   #### Passing procs or components
 
   Procs and objects that implement render_in, like ViewComponents, can also be appended as content:
