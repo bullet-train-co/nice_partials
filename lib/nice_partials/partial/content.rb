@@ -21,7 +21,7 @@ class NicePartials::Partial::Content
   private
 
   def process_options(new_options)
-    @options = NicePartials.options_processor.call(options, new_options) unless new_options.empty?
+    @options ||= NicePartials.options_class.new and @options.merge!(new_options) unless new_options.empty?
   end
 
   def append(content)
