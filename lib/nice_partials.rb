@@ -3,8 +3,16 @@
 require_relative "nice_partials/version"
 
 module NicePartials
-  singleton_class.attr_accessor :options_class
-  self.options_class = Hash
+  class Options < Hash
+    attr_accessor :tag
+
+    def to_s
+      @tag.attributes(self)
+    end
+  end
+
+  singleton_class.attr_accessor :new_options
+  self.new_options = -> view_context { Options.new.tap { _1.tag = view_context.tag } }
 
   def self.locale_prefix_from(lookup_context, block)
     root_paths = lookup_context.view_paths.map(&:path)

@@ -4,9 +4,13 @@ class NicePartials::Partial::Content
   end
   delegate :to_s, :present?, to: :@content
 
-  def options
-    @options ||= {}
-  end
+  # Contains options passed to a partial:
+  #
+  #   <% partial.title class: "post-title" %> # partial.title.options # => { class: "post-title" }
+  #
+  #   # Automatically runs `tag.attributes` when `to_s` is called, e.g.:
+  #   <h1 <% partial.title.options %>> # => <h1 class="post-title">
+  attr_reader :options
 
   def write?(content = nil, **new_options, &block)
     process_options new_options
@@ -21,7 +25,7 @@ class NicePartials::Partial::Content
   private
 
   def process_options(new_options)
-    @options ||= NicePartials.options_class.new and @options.merge!(new_options) unless new_options.empty?
+    @options ||= NicePartials.new_options.(@view_context) and @options.merge!(new_options) unless new_options.empty?
   end
 
   def append(content)

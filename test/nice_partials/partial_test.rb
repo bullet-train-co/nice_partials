@@ -53,6 +53,8 @@ class NicePartials::PartialTest < ActiveSupport::TestCase
     partial.title "content", class: "post-title"
 
     assert_equal({ class: "post-title" }, partial.title.options)
+    assert_equal %(class="post-title"),   partial.title.options.to_s
+
     assert_equal %(<p class="post-title">content</p>),         partial.title.p
     assert_equal %(<h2 class="post-title">content</h2>),       partial.title.h2
     assert_equal %(<h2 class="">content</h2>),                 partial.title.h2(class: { "text-m4": false }), "tag proxy didn't support token_list attributes"
