@@ -5,6 +5,9 @@ require_relative "nice_partials/version"
 begin
   gem "attributes_and_token_lists"
   require "attributes_and_token_lists/attributes"
+  require "attributes_and_token_lists/attribute_merger"
+  require "attributes_and_token_lists/tag_builder"
+  require "attributes_and_token_lists/token_list"
 rescue LoadError
 end
 
