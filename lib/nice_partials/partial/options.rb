@@ -28,6 +28,23 @@ class NicePartials::Partial::Options
     alias to_s to_str
   end
 
+  class Prefixed
+    def initialize(view_context, prefix)
+      @prefix = "#{prefix}-"
+      @values = Hash.new { |h,k| h[k] = TokenList.new(view_context) }
+    end
+
+    def merge!(values)
+      values.each do |key, value|
+        self[key] << value
+      end
+    end
+
+    def to_h
+      @values.transform_keys { prefix + _1 }
+    end
+  end
+
   def initialize(view_context)
     @view_context = view_context
     @hash = Hash.new { |h,k| h[k] = TokenList.new(view_context) }
@@ -39,12 +56,14 @@ class NicePartials::Partial::Options
     @hash[:class] << arguments
   end
 
-  def data(*arguments)
-    @hash[:data] << arguments
+  def data(**values)
+    @hash[:data] = Prefixed.new(@view_context, :data) unless @hash.key?(:data)
+    @hash[:data].merge! values
   end
 
-  def aria(*arguments)
-    @hash[:aria] << arguments
+  def aria(**values)
+    @hash[:aria] = Prefixed.new(@view_context, :aria) unless @hash.key?(:aria)
+    @hash[:aria].merge! values
   end
 
   def merge(**options)
