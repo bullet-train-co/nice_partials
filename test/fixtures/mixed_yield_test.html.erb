@@ -1,5 +1,5 @@
 <%= render "yields/mixed" do |partial| %>
-  <% partial.content_for :slot do %>
+  <% partial.slot do %>
     <div id="slot">slot content</div>
   <% end %>
   <div id="output_buffer">output buffer content</div>
