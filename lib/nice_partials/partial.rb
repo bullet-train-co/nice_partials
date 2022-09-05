@@ -50,7 +50,7 @@ module NicePartials
     alias content_for? section?
 
     def content_for(...)
-      section(...).to_s
+      section(...)&.to_s
     end
 
     def capture(*arguments, &block)

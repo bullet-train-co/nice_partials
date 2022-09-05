@@ -70,7 +70,8 @@ class NicePartials::PartialTest < NicePartials::Test
   test "content_for returns content itself and not section object" do
     partial = new_partial
     partial.body "some content"
-    partial.content_for :body, ", yet more"
+
+    assert_nil partial.content_for(:body, ", yet more"), "content_for must return nil when writing content"
 
     assert_equal "some content, yet more", partial.content_for(:body)
     assert_equal "some content, yet more", partial.body.to_s
