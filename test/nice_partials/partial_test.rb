@@ -77,6 +77,47 @@ class NicePartials::PartialTest < NicePartials::Test
     assert_equal "some content, yet more", partial.body.to_s
   end
 
+  test "content_from with immediate contents" do
+    outer_partial, inner_partial = new_partial, new_partial
+    outer_partial.title "Hello there"
+
+    inner_partial.content_from outer_partial, :title
+    inner_partial.title ", and furthermore"
+
+    assert_equal "Hello there, and furthermore", inner_partial.title.to_s
+    assert_equal "Hello there", outer_partial.title.to_s
+  end
+
+  test "content_from with deferred contents" do
+    outer_partial, inner_partial = new_partial, new_partial
+    outer_partial.message { "Deferred" }
+
+    inner_partial.content_from outer_partial, :message
+    inner_partial.message { ", and furthermore" }
+
+    assert_equal "Deferred, and furthermore", inner_partial.message.to_s
+    assert_equal "Deferred", outer_partial.message.to_s
+  end
+
+  test "content_from with missing contents" do
+    outer_partial, inner_partial = new_partial, new_partial
+
+    inner_partial.content_from outer_partial, :title
+
+    assert_empty inner_partial.title.to_s
+    assert_empty outer_partial.title.to_s
+  end
+
+  test "content_from with renaming" do
+    outer_partial, inner_partial = new_partial, new_partial
+    outer_partial.title "Hello there"
+
+    inner_partial.content_from outer_partial, title: :byline
+
+    assert_equal "Hello there", inner_partial.byline.to_s
+    assert_equal "Hello there", outer_partial.title.to_s
+  end
+
   private
 
   def new_partial

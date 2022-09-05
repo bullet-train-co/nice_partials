@@ -17,13 +17,13 @@ class Renderer::TranslationTest < NicePartials::Test
   test "clean translation render" do
     render "translations/translated"
 
-    assert_rendered "message"
+    assert_text "message"
   end
 
   test "translations insert prefix from originating partial" do
     render "translations/nice_partials_translated"
 
-    assert_rendered "nice_partials"
+    assert_text "nice_partials"
   end
 
   test "translate method" do

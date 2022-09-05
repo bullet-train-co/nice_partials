@@ -76,6 +76,23 @@
 
   Clarifying what keys get converted to what content sections on the partial rather than the boilerplate heavy and repetitive `partial.… t(".…")`.
 
+* Add `Partial#content_from`
+
+  `content_from` lets a partial extract contents from another partial.
+  Additionally, contents can be renamed by passing a hash:
+
+  ```erb
+  <% partial.title "Hello there" %>
+  <% partial.byline "Somebody" %>
+
+  <%= render "shared/title" do |cp| %>
+    # Here the inner partial `cp` accesses the outer partial through `partial`
+    # extracting the `title` and `byline` contents.
+    # `byline` is renamed to `name` in `cp`.
+    <% cp.content_from partial, :title, byline: :name %>
+  <% end %>
+  ```
+
 ### 0.1.9
 
 * Remove need to insert `<% yield p = np %>` in partials.

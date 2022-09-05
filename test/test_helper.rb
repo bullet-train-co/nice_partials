@@ -8,15 +8,18 @@ class TestApp < Rails::Application
   secrets.secret_key_base = "secret_key_base"
 end
 
+require "capybara/minitest"
 require "view_component"
 require "nice_partials"
 
 class NicePartials::Test < ActionView::TestCase
+  include Capybara::Minitest::Assertions
+
   TestController.view_paths << "test/fixtures"
 
   private
 
-  def assert_rendered(matcher)
-    assert_match matcher, rendered
+  def page
+    @page ||= Capybara.string(rendered)
   end
 end
