@@ -16,12 +16,16 @@ class NicePartials::Partial::Options
     def initialize(view_context)
       @view_context, @content = view_context, +""
     end
-    delegate :to_s, :to_str, to: :@content
 
     def <<(list)
-      @content << " " << @view_context.token_list(list) and @content.strip! unless list.empty?
+      @content << " " << @view_context.token_list(list) unless list.empty?
       self
     end
+
+    def to_str
+      @content.tap(&:strip!)
+    end
+    alias to_s to_str
   end
 
   def initialize(view_context)
