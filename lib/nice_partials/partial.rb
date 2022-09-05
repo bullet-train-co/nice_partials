@@ -43,12 +43,15 @@ module NicePartials
     def section(name, content = nil, **options, &block)
       section_from(name).then { _1.write?(content, **options, &block) ? nil : _1 }
     end
-    alias content_for section
 
     def section?(name)
       @sections&.dig(name).present?
     end
     alias content_for? section?
+
+    def content_for(...)
+      section(...).to_s
+    end
 
     def capture(*arguments, &block)
       self.output_buffer = @view_context.capture(*arguments, self, &block)
