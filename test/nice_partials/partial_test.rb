@@ -30,6 +30,7 @@ class NicePartials::PartialTest < NicePartials::Test
     partial.body.link_to "Document", "document_url"
 
     partial.body Component.new(:plain)
+    partial.body.render Component.new(:render)
     partial.body { render Component.new(:from_block) }
 
     partial.body LinkComponent.new("nice_partials")
@@ -43,6 +44,7 @@ class NicePartials::PartialTest < NicePartials::Test
       content from another partial
       <a href="document_url">Document</a>
       component render_in plain
+      component render_in render
       component render_in from_block
       <a href="example.com/nice_partials">view_component.link_to</a>
       <a href="example.com/nice_partials">view_component.link_to</a>
