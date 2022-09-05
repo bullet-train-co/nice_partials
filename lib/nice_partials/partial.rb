@@ -36,7 +36,7 @@ module NicePartials
     # and lets you pass arguments into it, like so:
     #
     #   # Here we store a block with some eventual content…
-    #   <% partial.title.store(&:h1) %>
+    #   <% partial.title { |tag| tag.h1 } %>
     #
     #  # …which we can then yield into with some predefined options later.
     #  <%= partial.title.yield tag.with_options(class: "text-bold") %>
