@@ -1,5 +1,79 @@
 ## CHANGELOG
 
+* Let partials respond to named content sections
+
+  ```erb
+  <% partial.content_for :title, "Title content" %> # Before
+  <% partial.title "Title content" %> # After
+
+  # Which can then be output
+  <% partial.title %> # => "Title content"
+  <% partial.title? %> # => true
+  ```
+
+  Note, `title?` uses `present?` under the hood so rendering could also be made conditional with:
+
+  ```erb
+  <% partial.title if partial.title? %> # Instead of this…
+  <% partial.title.presence %> # …you can do this
+  ```
+
+  #### Passing procs or components
+
+  Procs and objects that implement render_in, like ViewComponents, can also be appended as content:
+
+  ```erb
+  <% partial.title { "some content" } %>
+  <% partial.title TitleComponent.new(Current.user) %>
+  ```
+
+  #### Capturing `options`
+
+  Options can also be captured and output:
+
+  ```erb
+  <% partial.title class: "text-m4" %> # partial.title.options # => { class: "text-m4" }
+
+  # When output `to_s` is called and options automatically pipe through `tag.attributes`:
+  <h1 <% partial.title.options %>> # => <h1 class="post-title">
+  ```
+
+  #### Proxying to the view context and appending content
+
+  A content section appends to its content when calling any view context method on it, e.g.:
+
+  ```erb
+  <% partial.title.render "title", user: %>
+  <% partial.title.link_to @document.name, @document %>
+  <% partial.title.t ".title" %>
+  ```
+
+  #### Building elements with `tag` proxy
+
+  These `tag` calls let you generate elements based on the stored content and options:
+
+  ```erb
+  <% partial.title "content", class: "post-title" %> # Adding some content and options…
+  <% partial.title.h2 %> # => <h2 class="post-title">content</h2>
+  <% partial.title.h2 "more" %> # => <h2 class="post-title">contentmore</h2>
+
+* Add `Partial#content_from`
+
+  `content_from` lets a partial extract contents from another partial.
+  Additionally, contents can be renamed by passing a hash:
+
+  ```erb
+  <% partial.title "Hello there" %>
+  <% partial.byline "Somebody" %>
+
+  <%= render "shared/title" do |cp| %>
+    # Here the inner partial `cp` accesses the outer partial through `partial`
+    # extracting the `title` and `byline` contents.
+    # `byline` is renamed to `name` in `cp`.
+    <% cp.content_from partial, :title, byline: :name %>
+  <% end %>
+  ```
+
 * Remove need to insert `<% yield p = np %>` in partials.
 
   Nice Partials now automatically captures blocks passed to `render`.
