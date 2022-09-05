@@ -50,7 +50,6 @@ module NicePartials
     #   <%= partial.name %> # => "Somebody"
     def content_from(partial, *names, **renames)
       names.chain(renames).each { |key, new_key = key| public_send new_key, partial.public_send(key).to_s }
-      nil
     end
 
     # Similar to Rails' built-in `content_for` except it defers any block execution
