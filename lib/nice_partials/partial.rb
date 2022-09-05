@@ -37,8 +37,8 @@ module NicePartials
     # Additionally a hash of keys to rename in the new partial context can be passed.
     #
     #   First, an outer partial gets some content set:
-    #   <% partial.content_for :title, "Hello there" %>
-    #   <% partial.content_for :byline, "Somebody" %>
+    #   <% partial.title "Hello there" %>
+    #   <% partial.byline "Somebody" %>
     #
     #   Second, a new partial is rendered, but we want to extract the title, byline content but rename the byline key too:
     #   <%= render "shared/title" do |cp| %>
@@ -46,10 +46,10 @@ module NicePartials
     #   <% end %>
     #
     #   # Third, the contents with any renames are accessible in shared/_title.html.erb:
-    #   <%= partial.content_for :title %> # => "Hello there"
-    #   <%= partial.content_for :name %> # => "Somebody"
+    #   <%= partial.title %> # => "Hello there"
+    #   <%= partial.name %> # => "Somebody"
     def content_from(partial, *names, **renames)
-      names.chain(renames).each { |key, new_key = key| content_for new_key, partial.content_for(key) }
+      names.chain(renames).each { |key, new_key = key| public_send new_key, partial.public_send(key).to_s }
       nil
     end
 
