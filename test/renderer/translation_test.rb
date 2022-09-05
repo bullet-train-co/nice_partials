@@ -30,8 +30,8 @@ class Renderer::TranslationTest < NicePartials::Test
     partial = nil
     render("translations/t") { partial = _1 }
 
-    assert_equal "title key content",  partial.content_for(:title)
-    assert_equal "header key content", partial.content_for(:description)
-    assert_equal "custom key content", partial.content_for(:byline)
+    assert_equal "title key content",  partial.title.to_s
+    assert_equal "header key content", partial.description.to_s
+    assert_equal "custom key content", partial.byline.to_s
   end
 end
