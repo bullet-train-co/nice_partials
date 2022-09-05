@@ -58,7 +58,7 @@ jobs:
       - *wait_for_docker
       - run:
           name: Run unit tests
-          command: bundle exec rails test
+          command: bin/test
 
   'Local Standard Ruby':
     docker:
