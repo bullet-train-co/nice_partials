@@ -30,10 +30,10 @@ class NicePartials::PartialTest < NicePartials::Test
     partial.body.link_to "Document", "document_url"
 
     partial.body Component.new(:plain)
-    partial.body { Component.new(:from_block) }
+    partial.body { render Component.new(:from_block) }
 
     partial.body LinkComponent.new("nice_partials")
-    partial.body { LinkComponent.new("nice_partials") }
+    partial.body { render LinkComponent.new("nice_partials") }
 
     partial.body { _1 << ", appended to" }
     partial.body.yield "yielded content"
