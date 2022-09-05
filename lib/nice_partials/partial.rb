@@ -2,7 +2,10 @@ module NicePartials
   class Partial
     autoload :Content, "nice_partials/partial/content"
     autoload :Section, "nice_partials/partial/section"
+    autoload :Options, "nice_partials/partial/options"
     autoload :Stack, "nice_partials/partial/stack"
+
+    include Options::Accessors
 
     delegate_missing_to :@view_context
 

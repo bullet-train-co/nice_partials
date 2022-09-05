@@ -1,21 +1,10 @@
 class NicePartials::Partial::Content
-  autoload :Options, "nice_partials/partial/content/options"
+  include NicePartials::Partial::Options::Accessors
 
   def initialize(view_context)
     @view_context, @content = view_context, ActiveSupport::SafeBuffer.new
   end
   delegate :to_s, :present?, to: :@content
-
-  # Contains options passed to a partial:
-  #
-  #   <% partial.title class: "post-title" %> # partial.title.options # => { class: "post-title" }
-  #
-  #   # Automatically runs `tag.attributes` when `to_s` is called, e.g.:
-  #   <h1 <% partial.title.options %>> # => <h1 class="post-title">
-  def options
-    @options ||= Options.new(@view_context)
-  end
-  delegate :class_list, :data, :aria, to: :options
 
   def write?(content = nil, **new_options, &block)
     process_options new_options

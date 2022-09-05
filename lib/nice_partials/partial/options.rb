@@ -1,4 +1,17 @@
-class NicePartials::Partial::Content::Options
+class NicePartials::Partial::Options
+  module Accessors
+    # Contains options passed to a partial:
+    #
+    #   <% partial.title class: "post-title" %> # partial.title.options # => { class: "post-title" }
+    #
+    #   # Automatically runs `tag.attributes` when `to_s` is called, e.g.:
+    #   <h1 <% partial.title.options %>> # => <h1 class="post-title">
+    def options
+      @options ||= NicePartials::Partial::Options.new(@view_context)
+    end
+    delegate :class_list, :data, :aria, to: :options
+  end
+
   class TokenList
     def initialize(view_context)
       @view_context, @content = view_context, +""
