@@ -56,17 +56,15 @@ class NicePartials::PartialTest < NicePartials::Test
     partial = new_partial
     partial.title "content", class: "post-title"
 
-    assert_equal "post-title",          partial.title.options[:class]
+    assert_equal "post-title",          partial.title.class_list.to_s
     assert_equal %(class="post-title"), partial.title.options.to_s
 
     assert_equal %(<p class="post-title">content</p>),   partial.title.p
     assert_equal %(<h2 class="post-title">content</h2>), partial.title.h2
 
-    unless defined?(AttributesAndTokenLists)
-      assert_equal %(<h2 class="">content</h2>),                 partial.title.h2(class: { "text-m4": false })
-      assert_equal %(<h2 class="text-m4">contentaddendum</h2>),  partial.title.h2("addendum", class: "text-m4")
-      assert_equal %(<h2 class="some-class">contentblabla</h2>), partial.title.h2("blabla", class: "some-class")
-    end
+    assert_equal %(<h2 class="post-title">content</h2>),                  partial.title.h2(class: { "text-m4": false })
+    assert_equal %(<h2 class="post-title text-m4">contentaddendum</h2>),  partial.title.h2("addendum", class: "text-m4")
+    assert_equal %(<h2 class="post-title some-class">contentblabla</h2>), partial.title.h2("blabla", class: "some-class")
   end
 
   test "content_for returns content itself and not section object" do

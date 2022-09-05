@@ -1,4 +1,6 @@
 class NicePartials::Partial::Content
+  autoload :Options, "nice_partials/partial/content/options"
+
   def initialize(view_context)
     @view_context, @content = view_context, ActiveSupport::SafeBuffer.new
   end
@@ -10,7 +12,10 @@ class NicePartials::Partial::Content
   #
   #   # Automatically runs `tag.attributes` when `to_s` is called, e.g.:
   #   <h1 <% partial.title.options %>> # => <h1 class="post-title">
-  attr_reader :options
+  def options
+    @options ||= Options.new(@view_context)
+  end
+  delegate :class_list, :data, :aria, to: :options
 
   def write?(content = nil, **new_options, &block)
     process_options new_options
@@ -25,7 +30,7 @@ class NicePartials::Partial::Content
   private
 
   def process_options(new_options)
-    @options ||= NicePartials.new_options.(@view_context) and @options.merge!(new_options) unless new_options.empty?
+    options.merge!(**new_options) unless new_options.empty?
   end
 
   def append(content)

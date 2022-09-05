@@ -29,7 +29,7 @@ class NicePartials::Partial::Section < NicePartials::Partial::Content
     if meth != :p && @view_context.respond_to?(meth)
       append @view_context.public_send(meth, *arguments, **keywords, &block)
     else
-      @view_context.tag.public_send(meth, @content + arguments.first.to_s, **options.merge(keywords), &block)
+      @view_context.tag.public_send(meth, @content + arguments.first.to_s, **options.merge(**keywords), &block)
     end
   end
   def respond_to_missing?(...) = @view_context.respond_to?(...)
