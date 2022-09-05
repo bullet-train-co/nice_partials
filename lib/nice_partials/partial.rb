@@ -32,6 +32,23 @@ module NicePartials
       class_eval &block
     end
 
+    # `translate` is a shorthand to set `content_for` with content that's run through
+    # the view's `translate`/`t` context.
+    #
+    #   partial.t :title                       # => partial.content_for :title, t(".title")
+    #   partial.t title: :section              # => partial.content_for :title, t(".section")
+    #   partial.t title: "some.custom.key"     # => partial.content_for :title, t("some.custom.key")
+    #   partial.t :description, title: :header # Mixing is supported too.
+    #
+    # Note that `partial.t "some.custom.key"` can't derive a `content_for` name, so an explicit
+    # name must be provided e.g. `partial.t title: "some.custom.key"`.
+    def translate(*names, **renames)
+      names.chain(renames).each do |name, key = name|
+        content_for name, @view_context.t(key.is_a?(String) ? key : ".#{key}")
+      end
+    end
+    alias t translate
+
     # Similar to Rails' built-in `content_for` except it defers any block execution
     # and lets you pass arguments into it, like so:
     #

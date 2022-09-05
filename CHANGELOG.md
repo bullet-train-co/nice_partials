@@ -58,6 +58,26 @@
   <% partial.title.h2 "more" %> # => <h2 class="post-title">contentmore</h2>
   ```
 
+* Add `NicePartials#t` to aid I18n.
+
+  When using NicePartials with I18n you end up with lots of calls that look like:
+
+  ```erb
+  <% partial.title       t(".title") %>
+  <% partial.description t(".header") %>
+  <% partial.byline      t("custom.key") %>
+  ```
+
+  With NicePartials' `t` method, you can write the above as:
+
+  ```erb
+  <% partial.t :title, description: :header, byline: "custom.key" %>
+  ```
+
+  Clarifying what keys get converted to what content sections on the partial rather than the boilerplate heavy and repetitive `partial.… t(".…")`.
+
+### 0.1.9
+
 * Remove need to insert `<% yield p = np %>` in partials.
 
   Nice Partials now automatically captures blocks passed to `render`.
