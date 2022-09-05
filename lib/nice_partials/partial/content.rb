@@ -1,4 +1,14 @@
 class NicePartials::Partial::Content
+  class Options < Hash
+    def initialize(view_context)
+      @view_context = view_context
+    end
+
+    def to_s
+      @view_context.tag.attributes(self)
+    end
+  end
+
   def initialize(view_context)
     @view_context, @content = view_context, ActiveSupport::SafeBuffer.new
   end
@@ -25,7 +35,7 @@ class NicePartials::Partial::Content
   private
 
   def process_options(new_options)
-    @options ||= NicePartials.new_options.(@view_context) and @options.merge!(new_options) unless new_options.empty?
+    @options ||= Options.new(@view_context) and @options.merge!(new_options) unless new_options.empty?
   end
 
   def append(content)
