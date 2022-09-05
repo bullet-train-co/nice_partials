@@ -5,6 +5,11 @@ class NicePartials::PartialTest < ActiveSupport::TestCase
     def initialize
     end
 
+    LookupContext = Struct.new(:variants)
+    def lookup_context
+      LookupContext.new([])
+    end
+
     def link_to(name, url)
       %(<a href="#{url}">#{name}</a>).html_safe
     end
@@ -24,6 +29,16 @@ class NicePartials::PartialTest < ActiveSupport::TestCase
     end
   end
 
+  class LinkComponent < ViewComponent::Base
+    def initialize(name)
+      @name = name
+    end
+
+    def call
+      link_to "view_component.link_to", "example.com/#{@name}"
+    end
+  end
+
   test "appending content types consecutively" do
     partial = new_partial
     partial.body "some content"
@@ -35,6 +50,9 @@ class NicePartials::PartialTest < ActiveSupport::TestCase
     partial.body Component.new(:plain)
     partial.body { Component.new(:from_block) }
 
+    partial.body LinkComponent.new("nice_partials")
+    partial.body { LinkComponent.new("nice_partials") }
+
     partial.body { _1 << ", appended to" }
     partial.body.yield "yielded content"
 
@@ -44,6 +62,8 @@ class NicePartials::PartialTest < ActiveSupport::TestCase
       <a href="document_url">Document</a>
       component render_in plain
       component render_in from_block
+      <a href="example.com/nice_partials">view_component.link_to</a>
+      <a href="example.com/nice_partials">view_component.link_to</a>
       yielded content, appended to
     OUTPUT
   end
