@@ -1,24 +1,6 @@
 require "test_helper"
 
-class NicePartials::PartialTest < ActiveSupport::TestCase
-  class StubbedViewContext < ActionView::Base
-    def initialize
-    end
-
-    LookupContext = Struct.new(:variants)
-    def lookup_context
-      LookupContext.new([])
-    end
-
-    def link_to(name, url)
-      %(<a href="#{url}">#{name}</a>).html_safe
-    end
-
-    def capture(*arguments)
-      yield(*arguments)
-    end
-  end
-
+class NicePartials::PartialTest < NicePartials::Test
   class Component
     def initialize(key)
       @key = key
@@ -88,6 +70,6 @@ class NicePartials::PartialTest < ActiveSupport::TestCase
   private
 
   def new_partial
-    NicePartials::Partial.new StubbedViewContext.new
+    NicePartials::Partial.new view
   end
 end
