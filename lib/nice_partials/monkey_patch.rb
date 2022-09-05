@@ -115,6 +115,6 @@ module NicePartials::CapturingYieldDetection
   # Note: `<%= yield %>` becomes `yield :layout` with no `render` `block`, though this method assumes a block is passed.
   def has_capturing_yield?
     defined?(@has_capturing_yield) ? @has_capturing_yield :
-      @has_capturing_yield = source.match?(/\byield[\(? ]+(%>|[^:])/)
+      @has_capturing_yield = source.match?(/[^\.\b]yield[\(? ]+(%>|[^:])/)
   end
 end
