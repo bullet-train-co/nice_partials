@@ -5,6 +5,7 @@ gemspec
 gem "minitest"
 gem "rake"
 gem "irb"
+gem "capybara"
 
 gem "view_component"
 gem "rails"
