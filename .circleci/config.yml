@@ -48,13 +48,13 @@ jobs:
     #   - image: circleci/redis
     executor: ruby/default
     steps:
-      - browser-tools/install-browser-tools
+      # - browser-tools/install-browser-tools
       - checkout
 
       # Install dependencies
       - run: "bundle install"
       - run: "bundle clean --force"
-      - run: "yarn install"
+      # - run: "yarn install"
       # - *wait_for_docker
       - run:
           name: Run unit tests
