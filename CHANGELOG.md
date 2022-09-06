@@ -11,7 +11,7 @@
   <% partial.title? %> # => true
   ```
 
-  Note, `title?` uses `present?` under the hood so rendering could also be made conditional with:
+  Note, `title` responds to `present?` so rendering could also be made conditional with:
 
   ```erb
   <% partial.title if partial.title? %> # Instead of this…
@@ -20,7 +20,7 @@
 
   #### Passing procs or components
 
-  Procs and objects that implement render_in, like ViewComponents, can also be appended as content:
+  Procs and objects that implement `render_in`, like ViewComponents, can also be appended as content:
 
   ```erb
   <% partial.title { "some content" } %>
@@ -35,7 +35,7 @@
   <% partial.title class: "text-m4" %> # partial.title.options # => { class: "text-m4" }
 
   # When output `to_s` is called and options automatically pipe through `tag.attributes`:
-  <h1 <% partial.title.options %>> # => <h1 class="post-title">
+  <h1 <% partial.title.options %>> # => <h1 class="text-m4">
   ```
 
   #### Proxying to the view context and appending content
@@ -43,9 +43,12 @@
   A content section appends to its content when calling any view context method on it, e.g.:
 
   ```erb
-  <% partial.title.render "title", user: %>
-  <% partial.title.link_to @document.name, @document %>
   <% partial.title.t ".title" %>
+  <% partial.title.link_to @document.name, @document %>
+  <% partial.title.render "title", user: Current.user %>
+  <% partial.title.render TitleComponent.new(Current.user) do |component| %>
+    <% … %>
+  <% end %>
   ```
 
   #### Building elements with `tag` proxy
@@ -74,7 +77,9 @@
   <% partial.t :title, description: :header, byline: "custom.key" %>
   ```
 
-  Clarifying what keys get converted to what content sections on the partial rather than the boilerplate heavy and repetitive `partial.… t(".…")`.
+  Clarifying what keys get converted to what content sections on the partial rather than the syntax heavy `partial.… t(".…")`.
+
+  Like the Rails built-in `t` method, it's just a shorthand alias for `translate` so that's available too.
 
 * Add `Partial#content_from`
 
