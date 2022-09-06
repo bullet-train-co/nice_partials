@@ -1,0 +1,11 @@
+<% partial.content_for :original_message, "hello" %>
+
+<%= render "basic" do |cp| %>
+  <% cp.content_for :message, partial.content_for(:original_message) %>
+<% end %>
+
+<%= render "basic" do |cp| %>
+  <% cp.content_for :message, "goodbye" %>
+<% end %>
+
+<span><%= partial.content_for :message %></span>

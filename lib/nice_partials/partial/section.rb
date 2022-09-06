@@ -1,43 +1,48 @@
-class NicePartials::Partial::Section
-  def initialize(view_context)
-    @view_context = view_context
-    @content = @pending_content = nil
+class NicePartials::Partial::Section < NicePartials::Partial::Content
+  def yield(*arguments)
+    chunks.each { append @view_context.capture(*arguments, &_1) }
+    self
   end
 
-  def content_for(*arguments, &block)
-    if write_content_for(arguments.first, &block)
-      nil
+  def present?
+    chunks.present? || super
+  end
+
+  undef_method :p # Remove Kernel.p here to pipe through method_missing and hit tag proxy.
+
+  # Implements our proxying to the `@view_context` or `@view_context.tag`.
+  #
+  # `@view_context` proxying forwards the message and automatically appends any content, so you can do things like:
+  #
+  #   <% partial.body.render "form", tangible_thing: @tangible_thing %>
+  #   <% partial.body.link_to @document.name, @document %>
+  #   <% partial.body.t ".body" %>
+  #
+  # `@view_context.tag` proxy lets you build bespoke elements based on content and options provided:
+  #
+  #    <% partial.title "Some title content", class: "xl" %> # Write the content and options to the `title`
+  #    <% partial.title.h2 ", appended" %> # => <h2 class="xl">Some title content, appended</h2>
+  #
+  # Note that NicePartials don't support deep merging attributes out of the box.
+  # For that, bundle https://github.com/seanpdoyle/attributes_and_token_lists
+  def method_missing(meth, *arguments, **keywords, &block)
+    if meth != :p && @view_context.respond_to?(meth)
+      append @view_context.public_send(meth, *arguments, **keywords, &block)
     else
-      capture_content_for(*arguments) if pending?
-      @content
+      @view_context.tag.public_send(meth, @content + arguments.first.to_s, **options.merge(keywords), &block)
     end
   end
-
-  def content?
-    pending? || @content
-  end
+  def respond_to_missing?(...) = @view_context.respond_to?(...)
 
   private
 
-  def write_content_for(content = nil, &block)
-    if content && !pending?
-      concat content
+  def capture(block)
+    if block&.arity&.nonzero?
+      chunks << block
     else
-      @pending_content = block if block
+      super
     end
   end
 
-  def capture_content_for(*arguments)
-    concat @view_context.capture(*arguments, &@pending_content)
-    @pending_content = nil
-  end
-
-  def concat(string)
-    @content ||= ActiveSupport::SafeBuffer.new
-    @content << string.to_s if string.present?
-  end
-
-  def pending?
-    @pending_content
-  end
+  def chunks() = @chunks ||= []
 end
