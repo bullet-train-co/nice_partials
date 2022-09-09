@@ -15,6 +15,30 @@ class RendererTest < NicePartials::Test
     assert_css("img") { assert_equal "https://example.com/image.jpg", _1["src"] }
   end
 
+  test "render with options from call site" do
+    render "columns" do |partial|
+      partial.left "The Left", class: "left-column"
+      partial.right "The Right", class: "right-column"
+    end
+
+    assert_css "div", class: %w[grid gap-2] do
+      assert_css "div", id: "left", class: "left-column", text: "The Left", count: 1
+      assert_css "div", id: "right", class: "right-column", text: "The Right", count: 1
+    end
+  end
+
+  test "render without options from call site" do
+    render "columns" do |partial|
+      partial.left "The Left"
+      partial.right "The Right"
+    end
+
+    assert_css "div", class: %w[grid gap-2] do
+      assert_css "div:not([class])", id: "left", text: "The Left", count: 1
+      assert_css "div:not([class])", id: "right", text: "The Right", count: 1
+    end
+  end
+
   test "accessing partial in outer context won't leak state to inner render" do
     render "partial_accessed_in_outer_context"
 
