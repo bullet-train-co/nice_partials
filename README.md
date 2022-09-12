@@ -125,6 +125,46 @@ But since sections respond to and leverage `present?`, we can shorten the above 
 
 This way no empty h1 element is rendered.
 
+#### Accessing the content returned via `partial.yield`
+
+To access the inner content lines in the block here, partials have to manually insert a `<%= yield %>` call.
+
+```html+erb
+<%= render "components/card" do %>
+  Some content!
+  Yet more content!
+<% end %>
+```
+
+With Nice Partials, `partial.yield` returns the same content:
+
+```html+erb
+# app/views/components/_card.html.erb
+<%= partial.yield %> # => "Some content!\n\nYet more content!"
+```
+
+#### Defining and using well isolated helper methods
+
+If you want to have helper methods that are available only within your partials, you can call `partial.helpers` directly:
+
+```html+erb
+# app/views/components/_card.html.erb
+<% partial.helpers do
+  # references should be a link if the user can drill down, otherwise just a text label.
+  def reference_to(user)
+    # look! this method has access to the scope of the entire view context and all the other helpers that come with it!
+    if can? :show, user
+      link_to user.name, user
+    else
+      object.name
+    end
+  end
+end %>
+
+# Later in the partial we can use the method:
+<td><%= partial.reference_to(user) %></td>
+```
+
 ## Sponsored By
 
 <a href="https://bullettrain.co" target="_blank">
@@ -156,56 +196,6 @@ Add to your `Gemfile`:
 
 ```ruby
 gem "nice_partials"
-```
-
-## Usage
-
-### Using Nice Partials
-
-### Accessing the content returned from `yield`
-
-In a regular Rails partial:
-
-```html+erb
-<%= render 'components/card' do %>
-  Some content!
-  Yet more content!
-<% end %>
-```
-
-You can access the inner content lines through what's returned from `yield`:
-
-```html+erb
-<%# app/views/components/_card.html.erb %>
-<%= yield %> # => "Some content!\n\nYet more content!"
-```
-
-With Nice Partials, `partial.yield` returns the same `"Some content!\n\nYet more content!"`.
-
-### Defining and using well isolated helper methods
-
-To minimize the pollution in the global helper namespace, you can use `partial` to define helper methods specifically for your partials _within your partial_ like so:
-
-```html+erb
-<% partial.helpers do
-
-  # references should be a link if the user can drill down, otherwise just a text label.
-  def reference_to(user)
-    # look! this method has access to the scope of the entire view context and all the other helpers that come with it!
-    if can? :show, user
-      link_to user.name, user
-    else
-      object.name
-    end
-  end
-
-end %>
-```
-
-Then later in the partial you can use the helper method like so:
-
-```html+erb
-<td><%= partial.reference_to(user) %></td>
 ```
 
 ### Testing
