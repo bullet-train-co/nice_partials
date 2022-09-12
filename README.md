@@ -1,4 +1,4 @@
-# nice_partials [![[version]](https://badge.fury.io/rb/nice_partials.svg)](https://badge.fury.io/rb/nice_partials)  [![[travis]](https://travis-ci.org/andrewculver/nice_partials.svg)](https://travis-ci.org/andrewculver/nice_partials)
+# nice_partials [![[version]](https://badge.fury.io/rb/nice_partials.svg)](https://badge.fury.io/rb/nice_partials)
 
 Nice Partials adds ad-hoc named content areas to Action View partials with a lot of extra power.
 
