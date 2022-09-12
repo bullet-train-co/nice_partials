@@ -142,14 +142,6 @@ gem "nice_partials"
 
 ## Usage
 
-### When to use Nice Partials
-
-You only need to use Nice Partials when:
-
- - you want to define one or more named content areas in your partial. If you don't have multiple named content areas in your partial, you could just pass your content into the partial using the standard block and `yield` approach.
-
- - you want to specifically isolate your helper methods for a specific partial.
-
 ### Using Nice Partials
 
 ### Accessing the content returned from `yield`
