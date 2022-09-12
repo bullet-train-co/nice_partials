@@ -170,11 +170,11 @@ You can access the inner content lines through what's returned from `yield`:
 <%= yield %> # => "Some content!\n\nYet more content!"
 ```
 
-With Nice Partials, you can call `partial.yield` without arguments and return the same `"Some content!\n\nYet more content!"`.
+With Nice Partials, `partial.yield` returns the same `"Some content!\n\nYet more content!"`.
 
 ### Defining and using well isolated helper methods
 
-To minimize the amount of pollution in the global helper namespace, you can use the shared context object to define helper methods specifically for your partials _within your partial_ like so:
+To minimize the pollution in the global helper namespace, you can use `partial` to define helper methods specifically for your partials _within your partial_ like so:
 
 ```html+erb
 <% partial.helpers do
@@ -198,8 +198,6 @@ Then later in the partial you can use the helper method like so:
 <td><%= partial.reference_to(user) %></td>
 ```
 
-## Development
-
 ### Testing
 
 ```sh
@@ -208,4 +206,4 @@ bundle exec rake test
 
 ## MIT License
 
-Copyright (C) 2020 Andrew Culver <https://bullettrain.co> and Dom Christie <https://domchristie.co.uk>. Released under the MIT license.
+Copyright (C) 2022 Andrew Culver <https://bullettrain.co> and Dom Christie <https://domchristie.co.uk>. Released under the MIT license.
