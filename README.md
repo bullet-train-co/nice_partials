@@ -107,6 +107,24 @@ But the partial can also prepare tag builders that the rendering block can then 
 <% partial.title.yield tag.with_options(class: "text-m4", data: { controller: "title" }) %> # => <h1 class="text-m4" data-controller="title">Title content</h1>
 ```
 
+#### Smoother conditional rendering
+
+In regular Rails partials it's common to see `content_for?` used to conditionally rendering something. With Nice Partials we can do this:
+
+```html+erb
+<% if partial.title? %>
+  <% partial.title.h1 %>
+<% end %>
+```
+
+But since sections respond to and leverage `present?`, we can shorten the above to:
+
+```html+erb
+<% partial.title.presence&.h1 %>
+```
+
+This way no empty h1 element is rendered.
+
 ## Sponsored By
 
 <a href="https://bullettrain.co" target="_blank">
