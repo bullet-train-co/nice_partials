@@ -1,8 +1,8 @@
 # nice_partials [![[version]](https://badge.fury.io/rb/nice_partials.svg)](https://badge.fury.io/rb/nice_partials)
 
-Nice Partials adds ad-hoc named content areas to Action View partials with a lot of extra power.
+Nice Partials adds ad-hoc named content areas, or sections, to Action View partials with a lot of extra power.
 
-Here we're using the `partial` method from Nice Partials, and printing out both the `image`, `title`, and `body` areas:
+Here we're using the `partial` method from Nice Partials, and outputting the `image`, `title`, and `body` sections:
 
 `app/views/components/_card.html.erb`:
 ```html+erb
@@ -19,10 +19,10 @@ Here we're using the `partial` method from Nice Partials, and printing out both 
 </div>
 ```
 
-Then in `render`, you can populate the content areas:
+Then in `render`, you can populate them:
 
 ```html+erb
-<%= render 'components/card', title: "Some Title" do |partial| %>
+<%= render "components/card", title: "Some Title" do |partial| %>
   <% partial.title t(".title") %>
 
   <% partial.body do %>
@@ -35,22 +35,77 @@ Then in `render`, you can populate the content areas:
 <% end %>
 ```
 
-So far this is pretty analogous to Rails' built-in `content_for` & `content_for?`, and `partial` does support both too. However, while Rails' `content_for` & `content_for?` are global, `partial.content_for` & `partial.content_for?` are local to the specific partial, so you don't have to worry about clashes or leaking.
+So far these are pretty similar to Rails' global `content_for` & `content_for?`, except these sections are local to the specific partial, so there's no clashes or leaking.
 
-Having a `partial` to call gives us a lot of power, here's another way we can write what you just saw above:
+### What can't you do with Rails' partials?
+
+Having a `partial` object gives us a lot of power that's hard to replicate in standard Rails partials.
+
+#### Appending content from the view into a section
+
+Nice Partials supports calling any method on `ActionView::Base`, like the helpers shown here, and then have them auto-append to the section.
 
 ```html+erb
-<%= render 'components/card', title: "Some Title" do |partial| %>
+<%= render "components/card", title: "Some Title" do |partial| %>
   <% partial.title.t ".title" %>
   <% partial.body.render "form", tangible_thing: @tangible_thing %>
   <% partial.image.image_tag image_path("example.jpg"), alt: "An example image" %>
 <% end %>
 ```
 
-Nice Partials supports calling any method on `ActionView::Base`, like the helpers shown above, and then have them auto-append to the content area.
+#### I18n: translating and setting multiple keys at a time
 
-Nice Partials is a lightweight and hopefully more Rails-native alternative to [ViewComponent](http://viewcomponent.org). It aims to provide many of the same benefits as ViewComponent while requiring less ceremony. This specific approach originated with [Bullet Train](https://bullettrain.co)'s "Field Partials" and was later reimagined and completely reimplemented by Dom Christie.
+`partial.t` is a shorthand to translate and assign multiple keys at once:
 
+```html+erb
+<% partial.t :title, description: :header, byline: "custom.key" %>
+
+# This is the same as writing:
+<% partial.title t(".title") %>
+<% partial.description t(".header") %>
+<% partial.byline t("custom.key") %>
+```
+
+#### Capturing options and building HTML tags
+
+You can pass keyword options to a writer method and they'll be auto-added to `partial.x.options`, like so:
+
+```html+erb
+<%= render "components/card" do |partial| %>
+  <% partial.title "Title content", class: "text-m4", data: { controller: "title" } %>
+<% end %>
+
+# app/views/components/_card.html.erb:
+# From the render above `title.options` now contain `{ class: "text-m4", data: { controller: "title" } }`.
+# The options can be output via `<%=` and are run through `tag.attributes` to be converted to HTML attributes.
+
+<h1 <%= partial.title.options %>><%= partial.title %></h1> # => <h1 class="text-m4" data-controller="title">Title content</h1>
+```
+
+`partial` also supports auto-generating an element by calling any of Rails' `tag` methods e.g.:
+
+```html+erb
+This shorthand gets us the same h1 element from the previous example:
+<%= partial.title.h1 %> # => <h1 class="text-m4" data-controller="title">Title content</h1>
+
+# Internally, this is similar to doing:
+<%= tag.h1 partial.title.to_s, partial.title.options %>
+```
+
+#### Yielding tag builders into the partial's rendering block
+
+The above example showed sending options from the rendering block into the partial and having it construct elements.
+
+But the partial can also prepare tag builders that the rendering block can then extend and finalize:
+
+```html+erb
+<% render "components/card" do |partial|
+  <% partial.title { |tag| tag.h1 "Title content" } %>
+<% end %>
+
+# app/views/components/_card.html.erb
+<% partial.title.yield tag.with_options(class: "text-m4", data: { controller: "title" }) %> # => <h1 class="text-m4" data-controller="title">Title content</h1>
+```
 
 ## Sponsored By
 
@@ -75,6 +130,8 @@ Nice Partials:
   - doesn't require any upgrades to existing partials for interoperability.
   - are still testable!
 
+Nice Partials are a lightweight and more Rails-native alternative to [ViewComponent](http://viewcomponent.org). Providing many of the same benefits as ViewComponent with less ceremony.
+
 ## Setup
 
 Add to your `Gemfile`:
@@ -94,18 +151,6 @@ You only need to use Nice Partials when:
  - you want to specifically isolate your helper methods for a specific partial.
 
 ### Using Nice Partials
-
-Nice Partials is invoked automatically when you render your partial with a block like so:
-
-```html+erb
-<%= render 'components/card' do |partial| %>
-  <%= partial.content_for :some_section do %>
-    Some content!
-  <% end %>
-<% end %>
-```
-
-Now within the partial file itself, you can use `<%= partial.yield :some_section %>` to render whatever content areas you want to be passed into your partial.
 
 ### Accessing the content returned from `yield`
 
