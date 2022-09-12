@@ -1,38 +1,53 @@
 # nice_partials [![[version]](https://badge.fury.io/rb/nice_partials.svg)](https://badge.fury.io/rb/nice_partials)  [![[travis]](https://travis-ci.org/andrewculver/nice_partials.svg)](https://travis-ci.org/andrewculver/nice_partials)
 
-Nice Partials lets [`content_for` and `yield`](https://guides.rubyonrails.org/layouts_and_rendering.html#using-the-content-for-method) calls be partial specific, to provide named "content areas" or "slots". This optional layer of magic helps make traditional Rails view partials a better fit for extracting components from your views, like so:
+Nice Partials adds ad-hoc named content areas to Action View partials with a lot of extra power.
+
+Here we're using the `partial` method from Nice Partials, and printing out both the `image`, `title`, and `body` areas:
 
 `app/views/components/_card.html.erb`:
 ```html+erb
 <div class="card">
-  <%= partial.yield :image %>
+  <%= partial.image %>
   <div class="card-body">
-    <h5 class="card-title"><%= title %></h5>
-    <% if partial.content_for? :body %>
+    <h5 class="card-title"><%= partial.title %></h5>
+    <% if partial.body? %>
       <p class="card-text">
-        <%= partial.yield :body %>
+        <%= partial.body %>
       </p>
     <% end %>
   </div>
 </div>
 ```
 
-Then you can call `render`, but specify how to populate the content areas:
+Then in `render`, you can populate the content areas:
 
 ```html+erb
-<%= render 'components/card', title: 'Some Title' do |partial| %>
-  <% partial.content_for :body do %>
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-    <strong>quis nostrud exercitation ullamco laboris</strong> nisi ut aliquip
-    ex ea commodo consequat.
+<%= render 'components/card', title: "Some Title" do |partial| %>
+  <% partial.title t(".title") %>
+
+  <% partial.body do %>
+    Lorem ipsum dolor sit amet, …
   <% end %>
 
-  <% partial.content_for :image do %>
-    <%= image_tag image_path('example.jpg'), alt: 'An example image' %>
+  <% partial.image do %>
+    <%= image_tag image_path("example.jpg"), alt: "An example image" %>
   <% end %>
 <% end %>
 ```
+
+So far this is pretty analogous to Rails' built-in `content_for` & `content_for?`, and `partial` does support both too. However, while Rails' `content_for` & `content_for?` are global, `partial.content_for` & `partial.content_for?` are local to the specific partial, so you don't have to worry about clashes or leaking.
+
+Having a `partial` to call gives us a lot of power, here's another way we can write what you just saw above:
+
+```html+erb
+<%= render 'components/card', title: "Some Title" do |partial| %>
+  <% partial.title.t ".title" %>
+  <% partial.body.render "form", tangible_thing: @tangible_thing %>
+  <% partial.image.image_tag image_path("example.jpg"), alt: "An example image" %>
+<% end %>
+```
+
+Nice Partials supports calling any method on `ActionView::Base`, like the helpers shown above, and then have them auto-append to the content area.
 
 Nice Partials is a lightweight and hopefully more Rails-native alternative to [ViewComponent](http://viewcomponent.org). It aims to provide many of the same benefits as ViewComponent while requiring less ceremony. This specific approach originated with [Bullet Train](https://bullettrain.co)'s "Field Partials" and was later reimagined and completely reimplemented by Dom Christie.
 
@@ -52,39 +67,13 @@ Nice Partials is a lightweight and hopefully more Rails-native alternative to [V
 
 Nice Partials:
 
- - is just regular Rails view partials like you're used to.
- - reduces the friction when extracting components.
- - only ends up in the specific partials you need its functionality in.
- - reduces context switching.
- - allows isolated helper logic alongside your partial view code.
- - doesn't require any upgrades to existing partials for interoperability.
- - are still testable!
-
-
-## Can't I do the same thing without Nice Partials?
-
-You can almost accomplish the same thing without Nice Partials, but in practice you end up having to flush the content buffers after using them, leading to something like this:
-
-```html+erb
-<div class="card">
-  <%= yield :image %>
-  <% content_for :image, flush: true do '' end %>
-  <div class="card-body">
-    <h5 class="card-title"><%= title %></h5>
-    <% if content_for? :body %>
-      <p class="card-text">
-        <%= yield :body %>
-        <% content_for :body, flush: true do '' end %>
-      </p>
-    <% end %>
-  </div>
-</div>
-```
-
-Earlier iterations of Nice Partials aimed to simply clean up this syntax with helper methods like `flush_content_for`, but because the named content buffers were in a global namespace, it was also possible to accidentally create situations where two partials with a `:body` content area would end up interfering with each other, depending on the order they're nested and rendered.
-
-Nice Partials resolves the last-mile issues with standard view partials and content buffers by introducing a small, generic object that helps transparently namespace your named content buffers. This same object can also be used to define helper methods specific to your partial that are isolated from the global helper namespace.
-
+  - are regular Rails view partials.
+  - reduces the friction when extracting components.
+  - only ends up in the specific partials you need its functionality in.
+  - reduces context switching.
+  - allows isolated helper logic alongside your partial view code.
+  - doesn't require any upgrades to existing partials for interoperability.
+  - are still testable!
 
 ## Setup
 
