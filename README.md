@@ -68,7 +68,7 @@ Nice Partials supports calling any method on `ActionView::Base`, like the helper
 <% partial.byline t("custom.key") %>
 ```
 
-### Capturing options and building HTML tags
+### Capturing options in the rendering block and building HTML tags in the partial
 
 You can pass keyword options to a writer method and they'll be auto-added to `partial.x.options`, like so:
 
@@ -94,7 +94,7 @@ You can pass keyword options to a writer method and they'll be auto-added to `pa
 <%= tag.h1 partial.title.to_s, partial.title.options %>
 ```
 
-### Yielding tag builders into the partial's rendering block
+### Yielding tag builders into the rendering block
 
 The above example showed sending options from the rendering block into the partial and having it construct elements.
 
