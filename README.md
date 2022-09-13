@@ -39,6 +39,52 @@ Then in `render` we populate them:
 
 So far these uses are pretty similar to Rails' global `content_for` & `content_for?`, except these sections are local to the specific partial, so there's no clashing or leaking.
 
+### More-in depth compared to regular Rails partials
+
+Consider this regular Rails partials rendering:
+
+```html+erb
+<%= render "components/card" do %>
+  <% content_for :title, "Title content" %>
+<% end %>
+
+# app/views/components/_card.html.erb
+<%= yield :title %>
+<%= yield %>
+```
+
+There's a number of gotchas here:
+
+- The `content_for` writes to `:title` across every partial, thus leaking.
+- The rendering block isn't called until `<%= yield %>` is, so the `content_for` isn't called and `<%= yield :title %>` outputs nothing.
+
+With Nice Partials the yield is automatic and we can write content for just that partial without leaking:
+
+```html+erb
+<%= render "components/card" do |partial| %>
+  <% partial.title "Title content" %>
+<% end %>
+
+# app/views/components/_card.html.erb
+<%= partial.title %>
+```
+
+This happens because Nice Partials checks the partial source code for any `yield` calls that calls Rails' `capture` helper — e.g. `yield` and `yield something` but not `yield :title`. If there's no capturing yields Nice Partials calls `capture` for you.
+
+This means Nice Partials also respect existing yield calls in your partial, so you can upgrade existing partials bit by bit or not at all if you don't want to.
+
+Nice Partials:
+
+  - are still regular Rails view partials.
+  - reduces the friction when extracting components.
+  - only ends up in the specific partials you need the functionality.
+  - reduces context switching.
+  - allows isolated helper logic alongside your partial view code.
+  - doesn't require any upgrades to existing partials for interoperability.
+  - are still testable!
+
+Nice Partials are a lightweight and more Rails-native alternative to [ViewComponent](http://viewcomponent.org). Providing many of the same benefits as ViewComponent with less ceremony.
+
 ## What extra powers does `partial` give me?
 
 Having a `partial` object lets us add abstractions that are hard to replicate in standard Rails partials.
@@ -177,20 +223,6 @@ end %>
 
 > Would you like to support Nice Partials development and have your logo featured here? [Reach out!](http://twitter.com/andrewculver)
 
-
-## Benefits of Nice Partials
-
-Nice Partials:
-
-  - are regular Rails view partials.
-  - reduces the friction when extracting components.
-  - only ends up in the specific partials you need its functionality in.
-  - reduces context switching.
-  - allows isolated helper logic alongside your partial view code.
-  - doesn't require any upgrades to existing partials for interoperability.
-  - are still testable!
-
-Nice Partials are a lightweight and more Rails-native alternative to [ViewComponent](http://viewcomponent.org). Providing many of the same benefits as ViewComponent with less ceremony.
 
 ## Setup
 
