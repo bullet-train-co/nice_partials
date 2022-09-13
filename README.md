@@ -191,6 +191,30 @@ With Nice Partials, `partial.yield` returns the same content:
 <%= partial.yield %> # => "Some content!\n\nYet more content!"
 ```
 
+### Referring to the outer partial while rendering another
+
+During a rendering block `partial` refers to the outer partial, so you can compose them.
+
+```html+erb
+<% partial.title "Title content" %>
+
+<%= render "components/card" do |cp| %>
+  <% cp.title partial.title %>
+<% end %>
+```
+
+### Passing content from one partial to the next
+
+If you need to pass content into another partial, `content_from` lets you pass the keys to extract and then a hash to rename keys.
+
+```html+erb
+<%= render "components/card" do |cp| %>
+  <% cp.content_from partial, :title, byline: :header %>
+<% end %>
+```
+
+Here, we copied the `partial.title` to `cp.title` and `partial.byline` became `cp.header`.
+
 ### Defining and using well isolated helper methods
 
 If you want to have helper methods that are available only within your partials, you can call `partial.helpers` directly:
