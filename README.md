@@ -1,13 +1,15 @@
 # nice_partials [![[version]](https://badge.fury.io/rb/nice_partials.svg)](https://badge.fury.io/rb/nice_partials)
 
-Nice Partials adds ad-hoc named content areas, or sections, to Action View partials with a lot of extra power.
+Nice Partials adds ad-hoc named content areas, or sections, to Action View partials with a lot of extra power on top.
 
-Here we're using the `partial` method from Nice Partials, and outputting the `image`, `title`, and `body` sections:
+Everything happens through a new `partial` method, which at the base of it have method shorthands for partial specific `content_for` and `content_for?`s.
+
+See, here we're outputting the `image`, `title`, and `body` sections:
 
 `app/views/components/_card.html.erb`:
 ```html+erb
 <div class="card">
-  <%= partial.image %>
+  <%= partial.image %> # Same as `partial.content_for :image`
   <div class="card-body">
     <h5 class="card-title"><%= partial.title %></h5>
     <% if partial.body? %>
@@ -19,11 +21,11 @@ Here we're using the `partial` method from Nice Partials, and outputting the `im
 </div>
 ```
 
-Then in `render`, you can populate them:
+Then in `render` we populate them:
 
 ```html+erb
 <%= render "components/card", title: "Some Title" do |partial| %>
-  <% partial.title t(".title") %>
+  <% partial.title t(".title") %> # Same as `partial.content_for :title, t(".title")`
 
   <% partial.body do %>
     Lorem ipsum dolor sit amet, …
@@ -35,13 +37,13 @@ Then in `render`, you can populate them:
 <% end %>
 ```
 
-So far these are pretty similar to Rails' global `content_for` & `content_for?`, except these sections are local to the specific partial, so there's no clashes or leaking.
+So far these uses are pretty similar to Rails' global `content_for` & `content_for?`, except these sections are local to the specific partial, so there's no clashing or leaking.
 
-### What can't you do with Rails' partials?
+## What extra powers does `partial` give me?
 
-Having a `partial` object gives us a lot of power that's hard to replicate in standard Rails partials.
+Having a `partial` object lets us add abstractions that are hard to replicate in standard Rails partials.
 
-#### Appending content from the view into a section
+### Appending content from the view into a section
 
 Nice Partials supports calling any method on `ActionView::Base`, like the helpers shown here, and then have them auto-append to the section.
 
@@ -53,20 +55,20 @@ Nice Partials supports calling any method on `ActionView::Base`, like the helper
 <% end %>
 ```
 
-#### I18n: translating and setting multiple keys at a time
+### I18n: translating and setting multiple keys at a time
 
 `partial.t` is a shorthand to translate and assign multiple keys at once:
 
 ```html+erb
 <% partial.t :title, description: :header, byline: "custom.key" %>
 
-# This is the same as writing:
+# The above is the same as writing:
 <% partial.title t(".title") %>
 <% partial.description t(".header") %>
 <% partial.byline t("custom.key") %>
 ```
 
-#### Capturing options and building HTML tags
+### Capturing options and building HTML tags
 
 You can pass keyword options to a writer method and they'll be auto-added to `partial.x.options`, like so:
 
@@ -77,7 +79,7 @@ You can pass keyword options to a writer method and they'll be auto-added to `pa
 
 # app/views/components/_card.html.erb:
 # From the render above `title.options` now contain `{ class: "text-m4", data: { controller: "title" } }`.
-# The options can be output via `<%=` and are run through `tag.attributes` to be converted to HTML attributes.
+# The options can be output via `<%=` and are automatically run through `tag.attributes` to be converted to HTML attributes.
 
 <h1 <%= partial.title.options %>><%= partial.title %></h1> # => <h1 class="text-m4" data-controller="title">Title content</h1>
 ```
@@ -85,14 +87,14 @@ You can pass keyword options to a writer method and they'll be auto-added to `pa
 `partial` also supports auto-generating an element by calling any of Rails' `tag` methods e.g.:
 
 ```html+erb
-This shorthand gets us the same h1 element from the previous example:
+# This shorthand gets us the same h1 element from the previous example:
 <%= partial.title.h1 %> # => <h1 class="text-m4" data-controller="title">Title content</h1>
 
 # Internally, this is similar to doing:
 <%= tag.h1 partial.title.to_s, partial.title.options %>
 ```
 
-#### Yielding tag builders into the partial's rendering block
+### Yielding tag builders into the partial's rendering block
 
 The above example showed sending options from the rendering block into the partial and having it construct elements.
 
@@ -107,7 +109,7 @@ But the partial can also prepare tag builders that the rendering block can then 
 <% partial.title.yield tag.with_options(class: "text-m4", data: { controller: "title" }) %> # => <h1 class="text-m4" data-controller="title">Title content</h1>
 ```
 
-#### Smoother conditional rendering
+### Smoother conditional rendering
 
 In regular Rails partials it's common to see `content_for?` used to conditionally rendering something. With Nice Partials we can do this:
 
@@ -125,7 +127,7 @@ But since sections respond to and leverage `present?`, we can shorten the above 
 
 This way no empty h1 element is rendered.
 
-#### Accessing the content returned via `partial.yield`
+### Accessing the content returned via `partial.yield`
 
 To access the inner content lines in the block here, partials have to manually insert a `<%= yield %>` call.
 
@@ -143,7 +145,7 @@ With Nice Partials, `partial.yield` returns the same content:
 <%= partial.yield %> # => "Some content!\n\nYet more content!"
 ```
 
-#### Defining and using well isolated helper methods
+### Defining and using well isolated helper methods
 
 If you want to have helper methods that are available only within your partials, you can call `partial.helpers` directly:
 
