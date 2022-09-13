@@ -79,10 +79,12 @@ class NicePartials::PartialTest < NicePartials::Test
 
   test "passing section to another section writer" do
     outer_partial, inner_partial = new_partial, new_partial
-    outer_partial.title "Hello there"
 
     inner_partial.title outer_partial.title
+    assert_empty inner_partial.title.to_s
 
+    outer_partial.title "Hello there"
+    inner_partial.title outer_partial.title
     assert_equal "Hello there", inner_partial.title.to_s
   end
 
