@@ -77,6 +77,17 @@ class NicePartials::PartialTest < NicePartials::Test
     assert_equal "some content, yet more", partial.body.to_s
   end
 
+  test "passing section to another section writer" do
+    outer_partial, inner_partial = new_partial, new_partial
+
+    inner_partial.title outer_partial.title
+    assert_empty inner_partial.title.to_s
+
+    outer_partial.title "Hello there"
+    inner_partial.title outer_partial.title
+    assert_equal "Hello there", inner_partial.title.to_s
+  end
+
   test "content_from with immediate contents" do
     outer_partial, inner_partial = new_partial, new_partial
     outer_partial.title "Hello there"
