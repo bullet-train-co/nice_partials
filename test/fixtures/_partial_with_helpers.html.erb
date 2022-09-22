@@ -1,0 +1,13 @@
+<%
+  partial.helpers do
+    def upcase(content)
+      content.upcase
+    end
+
+    def squish(content)
+      content.gsub(/\s+/, " ")
+    end
+  end
+%>
+
+<p><%= partial.upcase yield %></p>

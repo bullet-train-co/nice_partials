@@ -29,7 +29,7 @@ module NicePartials
     end
 
     def helpers(&block)
-      class_eval &block
+      self.class.class_eval(&block)
     end
 
     # `translate` is a shorthand to set `content_for` with content that's run through

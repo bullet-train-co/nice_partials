@@ -129,6 +129,18 @@ class NicePartials::PartialTest < NicePartials::Test
     assert_equal "Hello there", outer_partial.title.to_s
   end
 
+  test "helpers don't leak to view" do
+    partial = new_partial
+    partial.helpers do
+      def upcase(content)
+        content.upcase
+      end
+    end
+
+    assert_equal "YO", partial.upcase("yo")
+    assert_not_respond_to view, :upcase
+  end
+
   private
 
   def new_partial
