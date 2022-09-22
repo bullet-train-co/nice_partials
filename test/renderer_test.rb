@@ -39,6 +39,22 @@ class RendererTest < NicePartials::Test
     end
   end
 
+  test "render partial that declares helper methods" do
+    render "partial_with_helpers" do
+      "upcased"
+    end
+
+    assert_css "p", text: "UPCASED"
+  end
+
+  test "render partial exposes helper methods to callers" do
+    render "partial_with_helpers" do |partial|
+      partial.squish "text with       spaces"
+    end
+
+    assert_css "p", text: "TEXT WITH SPACES"
+  end
+
   test "accessing partial in outer context won't leak state to inner render" do
     render "partial_accessed_in_outer_context"
 
