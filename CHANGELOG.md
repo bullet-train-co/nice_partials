@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+* Fix `partial.helpers` accidentally adding methods to `ActionView::Base`
+
+  When using `partial.helpers {}`, internally `class_eval` would be called on the Partial instance, and through `delegate_missing_to` passed on to the view context and thus we'd effectively have a global method, exactly as if we'd just used regular Rails view helpers.
+
 * Let partials respond to named content sections
 
   ```erb
