@@ -1,41 +1,241 @@
-# nice_partials [![[version]](https://badge.fury.io/rb/nice_partials.svg)](https://badge.fury.io/rb/nice_partials)  [![[travis]](https://travis-ci.org/andrewculver/nice_partials.svg)](https://travis-ci.org/andrewculver/nice_partials)
+# nice_partials [![[version]](https://badge.fury.io/rb/nice_partials.svg)](https://badge.fury.io/rb/nice_partials)
 
-Nice Partials lets [`content_for` and `yield`](https://guides.rubyonrails.org/layouts_and_rendering.html#using-the-content-for-method) calls be partial specific, to provide named "content areas" or "slots". This optional layer of magic helps make traditional Rails view partials a better fit for extracting components from your views, like so:
+Nice Partials adds ad-hoc named content areas, or sections, to Action View partials with a lot of extra power on top.
+
+Everything happens through a new `partial` method, which at the base of it have method shorthands for partial specific `content_for` and `content_for?`s.
+
+See, here we're outputting the `image`, `title`, and `body` sections:
 
 `app/views/components/_card.html.erb`:
 ```html+erb
 <div class="card">
-  <%= partial.yield :image %>
+  <%= partial.image %> # Same as `partial.content_for :image`
   <div class="card-body">
-    <h5 class="card-title"><%= title %></h5>
-    <% if partial.content_for? :body %>
+    <h5 class="card-title"><%= partial.title %></h5>
+    <% if partial.body? %>
       <p class="card-text">
-        <%= partial.yield :body %>
+        <%= partial.body %>
       </p>
     <% end %>
   </div>
 </div>
 ```
 
-Then you can call `render`, but specify how to populate the content areas:
+Then in `render` we populate them:
 
 ```html+erb
-<%= render 'components/card', title: 'Some Title' do |partial| %>
-  <% partial.content_for :body do %>
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-    <strong>quis nostrud exercitation ullamco laboris</strong> nisi ut aliquip
-    ex ea commodo consequat.
+<%= render "components/card", title: "Some Title" do |partial| %>
+  <% partial.title t(".title") %> # Same as `partial.content_for :title, t(".title")`
+
+  <% partial.body do %>
+    Lorem ipsum dolor sit amet, …
   <% end %>
 
-  <% partial.content_for :image do %>
-    <%= image_tag image_path('example.jpg'), alt: 'An example image' %>
+  <% partial.image do %>
+    <%= image_tag image_path("example.jpg"), alt: "An example image" %>
   <% end %>
 <% end %>
 ```
 
-Nice Partials is a lightweight and hopefully more Rails-native alternative to [ViewComponent](http://viewcomponent.org). It aims to provide many of the same benefits as ViewComponent while requiring less ceremony. This specific approach originated with [Bullet Train](https://bullettrain.co)'s "Field Partials" and was later reimagined and completely reimplemented by Dom Christie.
+So far these uses are pretty similar to Rails' global `content_for` & `content_for?`, except these sections are local to the specific partial, so there's no clashing or leaking.
 
+### More-in depth compared to regular Rails partials
+
+Consider this regular Rails partials rendering:
+
+```html+erb
+<%= render "components/card" do %>
+  <% content_for :title, "Title content" %>
+<% end %>
+
+# app/views/components/_card.html.erb
+<%= yield :title %>
+<%= yield %>
+```
+
+There's a number of gotchas here:
+
+- The `content_for` writes to `:title` across every partial, thus leaking.
+- The rendering block isn't called until `<%= yield %>` is, so the `content_for` isn't called and `<%= yield :title %>` outputs nothing.
+
+With Nice Partials the yield is automatic and we can write content for just that partial without leaking:
+
+```html+erb
+<%= render "components/card" do |partial| %>
+  <% partial.title "Title content" %>
+<% end %>
+
+# app/views/components/_card.html.erb
+<%= partial.title %>
+```
+
+This happens because Nice Partials checks the partial source code for any `yield` calls that calls Rails' `capture` helper — e.g. `yield` and `yield something` but not `yield :title`. If there's no capturing yields Nice Partials calls `capture` for you.
+
+This means Nice Partials also respect existing yield calls in your partial, so you can upgrade existing partials bit by bit or not at all if you don't want to.
+
+Nice Partials:
+
+  - are still regular Rails view partials.
+  - reduces the friction when extracting components.
+  - only ends up in the specific partials you need the functionality.
+  - reduces context switching.
+  - allows isolated helper logic alongside your partial view code.
+  - doesn't require any upgrades to existing partials for interoperability.
+  - are still testable!
+
+Nice Partials are a lightweight and more Rails-native alternative to [ViewComponent](http://viewcomponent.org). Providing many of the same benefits as ViewComponent with less ceremony.
+
+## What extra powers does `partial` give me?
+
+Having a `partial` object lets us add abstractions that are hard to replicate in standard Rails partials.
+
+### Appending content from the view into a section
+
+Nice Partials supports calling any method on `ActionView::Base`, like the helpers shown here, and then have them auto-append to the section.
+
+```html+erb
+<%= render "components/card", title: "Some Title" do |partial| %>
+  <% partial.title.t ".title" %>
+  <% partial.body.render "form", tangible_thing: @tangible_thing %>
+  <% partial.image.image_tag image_path("example.jpg"), alt: "An example image" %>
+<% end %>
+```
+
+### I18n: translating and setting multiple keys at a time
+
+`partial.t` is a shorthand to translate and assign multiple keys at once:
+
+```html+erb
+<% partial.t :title, description: :header, byline: "custom.key" %>
+
+# The above is the same as writing:
+<% partial.title t(".title") %>
+<% partial.description t(".header") %>
+<% partial.byline t("custom.key") %>
+```
+
+### Capturing options in the rendering block and building HTML tags in the partial
+
+You can pass keyword options to a writer method and they'll be auto-added to `partial.x.options`, like so:
+
+```html+erb
+<%= render "components/card" do |partial| %>
+  <% partial.title "Title content", class: "text-m4", data: { controller: "title" } %>
+<% end %>
+
+# app/views/components/_card.html.erb:
+# From the render above `title.options` now contain `{ class: "text-m4", data: { controller: "title" } }`.
+# The options can be output via `<%=` and are automatically run through `tag.attributes` to be converted to HTML attributes.
+
+<h1 <%= partial.title.options %>><%= partial.title %></h1> # => <h1 class="text-m4" data-controller="title">Title content</h1>
+```
+
+`partial` also supports auto-generating an element by calling any of Rails' `tag` methods e.g.:
+
+```html+erb
+# This shorthand gets us the same h1 element from the previous example:
+<%= partial.title.h1 %> # => <h1 class="text-m4" data-controller="title">Title content</h1>
+
+# Internally, this is similar to doing:
+<%= tag.h1 partial.title.to_s, partial.title.options %>
+```
+
+### Yielding tag builders into the rendering block
+
+The above example showed sending options from the rendering block into the partial and having it construct elements.
+
+But the partial can also prepare tag builders that the rendering block can then extend and finalize:
+
+```html+erb
+<% render "components/card" do |partial|
+  <% partial.title { |tag| tag.h1 "Title content" } %>
+<% end %>
+
+# app/views/components/_card.html.erb
+<% partial.title.yield tag.with_options(class: "text-m4", data: { controller: "title" }) %> # => <h1 class="text-m4" data-controller="title">Title content</h1>
+```
+
+### Smoother conditional rendering
+
+In regular Rails partials it's common to see `content_for?` used to conditionally rendering something. With Nice Partials we can do this:
+
+```html+erb
+<% if partial.title? %>
+  <% partial.title.h1 %>
+<% end %>
+```
+
+But since sections respond to and leverage `present?`, we can shorten the above to:
+
+```html+erb
+<% partial.title.presence&.h1 %>
+```
+
+This way no empty h1 element is rendered.
+
+### Accessing the content returned via `partial.yield`
+
+To access the inner content lines in the block here, partials have to manually insert a `<%= yield %>` call.
+
+```html+erb
+<%= render "components/card" do %>
+  Some content!
+  Yet more content!
+<% end %>
+```
+
+With Nice Partials, `partial.yield` returns the same content:
+
+```html+erb
+# app/views/components/_card.html.erb
+<%= partial.yield %> # => "Some content!\n\nYet more content!"
+```
+
+### Referring to the outer partial while rendering another
+
+During a rendering block `partial` refers to the outer partial, so you can compose them.
+
+```html+erb
+<% partial.title "Title content" %>
+
+<%= render "components/card" do |cp| %>
+  <% cp.title partial.title %>
+<% end %>
+```
+
+### Passing content from one partial to the next
+
+If you need to pass content into another partial, `content_from` lets you pass the keys to extract and then a hash to rename keys.
+
+```html+erb
+<%= render "components/card" do |cp| %>
+  <% cp.content_from partial, :title, byline: :header %>
+<% end %>
+```
+
+Here, we copied the `partial.title` to `cp.title` and `partial.byline` became `cp.header`.
+
+### Defining and using well isolated helper methods
+
+If you want to have helper methods that are available only within your partials, you can call `partial.helpers` directly:
+
+```html+erb
+# app/views/components/_card.html.erb
+<% partial.helpers do
+  # references should be a link if the user can drill down, otherwise just a text label.
+  def reference_to(user)
+    # look! this method has access to the scope of the entire view context and all the other helpers that come with it!
+    if can? :show, user
+      link_to user.name, user
+    else
+      object.name
+    end
+  end
+end %>
+
+# Later in the partial we can use the method:
+<td><%= partial.reference_to(user) %></td>
+```
 
 ## Sponsored By
 
@@ -48,44 +248,6 @@ Nice Partials is a lightweight and hopefully more Rails-native alternative to [V
 > Would you like to support Nice Partials development and have your logo featured here? [Reach out!](http://twitter.com/andrewculver)
 
 
-## Benefits of Nice Partials
-
-Nice Partials:
-
- - is just regular Rails view partials like you're used to.
- - reduces the friction when extracting components.
- - only ends up in the specific partials you need its functionality in.
- - reduces context switching.
- - allows isolated helper logic alongside your partial view code.
- - doesn't require any upgrades to existing partials for interoperability.
- - are still testable!
-
-
-## Can't I do the same thing without Nice Partials?
-
-You can almost accomplish the same thing without Nice Partials, but in practice you end up having to flush the content buffers after using them, leading to something like this:
-
-```html+erb
-<div class="card">
-  <%= yield :image %>
-  <% content_for :image, flush: true do '' end %>
-  <div class="card-body">
-    <h5 class="card-title"><%= title %></h5>
-    <% if content_for? :body %>
-      <p class="card-text">
-        <%= yield :body %>
-        <% content_for :body, flush: true do '' end %>
-      </p>
-    <% end %>
-  </div>
-</div>
-```
-
-Earlier iterations of Nice Partials aimed to simply clean up this syntax with helper methods like `flush_content_for`, but because the named content buffers were in a global namespace, it was also possible to accidentally create situations where two partials with a `:body` content area would end up interfering with each other, depending on the order they're nested and rendered.
-
-Nice Partials resolves the last-mile issues with standard view partials and content buffers by introducing a small, generic object that helps transparently namespace your named content buffers. This same object can also be used to define helper methods specific to your partial that are isolated from the global helper namespace.
-
-
 ## Setup
 
 Add to your `Gemfile`:
@@ -93,78 +255,6 @@ Add to your `Gemfile`:
 ```ruby
 gem "nice_partials"
 ```
-
-## Usage
-
-### When to use Nice Partials
-
-You only need to use Nice Partials when:
-
- - you want to define one or more named content areas in your partial. If you don't have multiple named content areas in your partial, you could just pass your content into the partial using the standard block and `yield` approach.
-
- - you want to specifically isolate your helper methods for a specific partial.
-
-### Using Nice Partials
-
-Nice Partials is invoked automatically when you render your partial with a block like so:
-
-```html+erb
-<%= render 'components/card' do |partial| %>
-  <%= partial.content_for :some_section do %>
-    Some content!
-  <% end %>
-<% end %>
-```
-
-Now within the partial file itself, you can use `<%= partial.yield :some_section %>` to render whatever content areas you want to be passed into your partial.
-
-### Accessing the content returned from `yield`
-
-In a regular Rails partial:
-
-```html+erb
-<%= render 'components/card' do %>
-  Some content!
-  Yet more content!
-<% end %>
-```
-
-You can access the inner content lines through what's returned from `yield`:
-
-```html+erb
-<%# app/views/components/_card.html.erb %>
-<%= yield %> # => "Some content!\n\nYet more content!"
-```
-
-With Nice Partials, you can call `partial.yield` without arguments and return the same `"Some content!\n\nYet more content!"`.
-
-### Defining and using well isolated helper methods
-
-To minimize the amount of pollution in the global helper namespace, you can use the shared context object to define helper methods specifically for your partials _within your partial_ like so:
-
-```html+erb
-<% partial.helpers do
-
-  # references should be a link if the user can drill down, otherwise just a text label.
-  def reference_to(user)
-    # look! this method has access to the scope of the entire view context and all the other helpers that come with it!
-    if can? :show, user
-      link_to user.name, user
-    else
-      object.name
-    end
-  end
-
-end %>
-```
-
-Then later in the partial you can use the helper method like so:
-
-```html+erb
-<td><%= partial.reference_to(user) %></td>
-```
-
-## Development
 
 ### Testing
 
@@ -174,4 +264,4 @@ bundle exec rake test
 
 ## MIT License
 
-Copyright (C) 2020 Andrew Culver <https://bullettrain.co> and Dom Christie <https://domchristie.co.uk>. Released under the MIT license.
+Copyright (C) 2022 Andrew Culver <https://bullettrain.co> and Dom Christie <https://domchristie.co.uk>. Released under the MIT license.
