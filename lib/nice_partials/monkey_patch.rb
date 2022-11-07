@@ -26,9 +26,6 @@ module NicePartials::RenderingWithLocalePrefix
   end
 end
 
-require "active_support/deprecation"
-NicePartials::DEPRECATOR = ActiveSupport::Deprecation.new("1.0", "nice_partials")
-
 module NicePartials::RenderingWithAutoContext
   ActionView::Base.prepend self
 
@@ -36,15 +33,6 @@ module NicePartials::RenderingWithAutoContext
     @__partials ||= NicePartials::Partial::Stack.new
   end
   delegate :partial, to: :__partials
-
-  def p(*args)
-    if args.empty?
-      NicePartials::DEPRECATOR.deprecation_warning :p, :partial # In-branch printing so we don't warn on legit `Kernel.p` calls.
-      partial
-    else
-      super # …we're really Kernel.p
-    end
-  end
 
   # Overrides `ActionView::Helpers::RenderingHelper#render` to push a new `nice_partial`
   # on the stack, so rendering has a fresh `partial` to store content in.
