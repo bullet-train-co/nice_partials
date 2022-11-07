@@ -12,6 +12,9 @@ require "capybara/minitest"
 require "view_component"
 require "nice_partials"
 
+# Ensure we assign the default configs, so `view_component_path` is set.
+ViewComponent::Base.config = ViewComponent::Config.new
+
 class NicePartials::Test < ActionView::TestCase
   include Capybara::Minitest::Assertions
 
