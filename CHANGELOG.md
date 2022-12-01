@@ -1,5 +1,47 @@
 ## CHANGELOG
 
+* Allow Nice Partials to grab content from `local_assigns`
+
+  Previously, the only way to assign content to a Nice Partial was through passing a block:
+
+  ```erb
+  # app/views/posts/show.html.erb
+  <%= render "posts/post", byline: "Some guy" %>
+
+  # app/views/posts/_post.html.erb
+  <%= render "card" do |partial| %>
+    <% partial.title "Hello there" %>
+    <% partial.byline byline %> <%# `byline` comes from the outer `render` call above. %>
+  <% end %>
+
+  Now, Nice Partials will automatically use Rails' `local_assigns`, which contain any `locals:` passed to `render`, as a content fallback. So this works:
+
+  ```erb
+  <%= render "card", title: "Hello there", byline: byline %>
+  ```
+
+  So the `card` partial is now oblivious to whether its `title` or `byline` were passed as render `locals:` or through the usual assignments in a block.
+
+  ```erb
+  # app/views/_card.html.erb
+  <%= partial.title %> written by <%= partial.byline %>
+  ```
+
+  Previously to get this behavior you'd need to write:
+
+  ```erb
+  # app/views/_card.html.erb
+  <%= partial.title.presence || local_assigns[:title] %> written by <%= partial.byline.presence || local_assigns[:byline] %>
+  ```
+
+* Add `NicePartials::Partial#slice`
+
+  Returns a Hash of the passed keys with their contents, useful for passing to other render calls:
+
+  ```erb
+  <%= render "card", partial.slice(:title, :byline) %>
+  ```
+
 * Fix `partial.helpers` accidentally adding methods to `ActionView::Base`
 
   When using `partial.helpers {}`, internally `class_eval` would be called on the Partial instance, and through `delegate_missing_to` passed on to the view context and thus we'd effectively have a global method, exactly as if we'd just used regular Rails view helpers.

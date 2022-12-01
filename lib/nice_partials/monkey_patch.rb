@@ -48,8 +48,8 @@ module NicePartials::RenderingWithAutoContext
 
   # Overrides `ActionView::Helpers::RenderingHelper#render` to push a new `nice_partial`
   # on the stack, so rendering has a fresh `partial` to store content in.
-  def render(*)
-    __partials.prepend nice_partial
+  def render(*, local_assigns)
+    __partials.prepend nice_partial_with(local_assigns)
     super
   ensure
     __partials.shift

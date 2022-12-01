@@ -129,6 +129,13 @@ class NicePartials::PartialTest < NicePartials::Test
     assert_equal "Hello there", outer_partial.title.to_s
   end
 
+  test "slice" do
+    partial = new_partial(locals: { title: "Hello there" })
+    partial.byline "Some guy"
+
+    assert_equal({ title: "Hello there", byline: "Some guy" }, partial.slice(:title, :byline))
+  end
+
   test "helpers don't leak to view" do
     partial = new_partial
     partial.helpers do
@@ -143,7 +150,7 @@ class NicePartials::PartialTest < NicePartials::Test
 
   private
 
-  def new_partial
-    NicePartials::Partial.new view
+  def new_partial(locals: nil)
+    NicePartials::Partial.new(view, locals)
   end
 end

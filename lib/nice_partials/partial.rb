@@ -16,8 +16,8 @@ module NicePartials
     #   <%= content.output_buffer %> # => "This line is printed to the `output_buffer`."
     attr_accessor :output_buffer
 
-    def initialize(view_context)
-      @view_context = view_context
+    def initialize(view_context, local_assigns = nil)
+      @view_context, @local_assigns = view_context, local_assigns
     end
 
     def yield(*arguments, &block)
@@ -90,6 +90,10 @@ module NicePartials
       section(...)&.to_s
     end
 
+    def slice(*keys)
+      keys.index_with { content_for _1 }
+    end
+
     def capture(*arguments, &block)
       self.output_buffer = @view_context.capture(*arguments, self, &block)
     end
@@ -97,7 +101,7 @@ module NicePartials
     private
 
     def section_from(name)
-      @sections ||= {} and @sections[name] ||= Section.new(@view_context)
+      @sections ||= {} and @sections[name] ||= Section.new(@view_context, @local_assigns&.dig(name))
     end
 
     def method_missing(meth, *arguments, **keywords, &block)
