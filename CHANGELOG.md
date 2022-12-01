@@ -1,6 +1,6 @@
 ## CHANGELOG
 
-* Allow Nice Partials to grab content from `local_assigns`
+* Seed Nice Partials content from `local_assigns`
 
   Previously, the only way to assign content to a Nice Partial was through passing a block:
 
@@ -14,13 +14,13 @@
     <% partial.byline byline %> <%# `byline` comes from the outer `render` call above. %>
   <% end %>
 
-  Now, Nice Partials will automatically use Rails' `local_assigns`, which contain any `locals:` passed to `render`, as a content fallback. So this works:
+  Now, Nice Partials will automatically use Rails' `local_assigns`, which contain any `locals:` passed to `render`, as the seed for content. So this works:
 
   ```erb
   <%= render "card", title: "Hello there", byline: byline %>
   ```
 
-  So the `card` partial is now oblivious to whether its `title` or `byline` were passed as render `locals:` or through the usual assignments in a block.
+  And the `card` partial is now oblivious to whether its `title` or `byline` were passed as render `locals:` or through the usual assignments in a block.
 
   ```erb
   # app/views/_card.html.erb
@@ -32,6 +32,14 @@
   ```erb
   # app/views/_card.html.erb
   <%= partial.title.presence || local_assigns[:title] %> written by <%= partial.byline.presence || local_assigns[:byline] %>
+  ```
+
+  Passing extra content via a block appends:
+
+  ```erb
+  <%= render "card", title: "Hello there" do |partial| %>
+    <% partial.title ", and welcome!" %> # Calling `partial.title` outputs `"Hello there, and welcome!"`
+  <% end %>
   ```
 
 * Add `NicePartials::Partial#slice`
