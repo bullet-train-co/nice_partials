@@ -89,12 +89,39 @@ Nice Partials are a lightweight and more Rails-native alternative to [ViewCompon
 
 Having a `partial` object lets us add abstractions that are hard to replicate in standard Rails partials.
 
+### Passing content from the render call
+
+Nice Partials will use Action View's `local_assigns`, which stores any `locals` passed to `render`, as the basis for contents.
+
+Given a partial like
+
+```html+erb
+<%# app/views/components/_card.html.erb %>
+<%= partial.title %> written by <%= partial.byline %>
+```
+
+Can then be used like this:
+
+```html+erb
+<%= render "components/card", title: "Hello there", byline: "Some guy" do |partial| %>
+  <% partial.byline ", who writes stuff" %>
+<% end %>
+```
+
+This will then output "Hello there written by Some guy, who writes stuff"
+
+You can also use `slice` to pass on content from an outer partial:
+
+```html+erb
+<%= render "components/card", partial.slice(:title, :byline) %>
+```
+
 ### Appending content from the view into a section
 
 Nice Partials supports calling any method on `ActionView::Base`, like the helpers shown here, and then have them auto-append to the section.
 
 ```html+erb
-<%= render "components/card", title: "Some Title" do |partial| %>
+<%= render "components/card" do |partial| %>
   <% partial.title.t ".title" %>
   <% partial.body.render "form", tangible_thing: @tangible_thing %>
   <% partial.image.image_tag image_path("example.jpg"), alt: "An example image" %>
