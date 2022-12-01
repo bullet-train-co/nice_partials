@@ -123,6 +123,21 @@ class RendererTest < NicePartials::Test
     end
   end
 
+  test "passing local_assigns as content seeds" do
+    byline = "Some guy"
+
+    render "local_assigns", title: "Title", byline: byline, header: tag.h1("Yo") do |partial|
+      partial.byline ", who writes stuff"
+      partial.header " more"
+    end
+
+    assert_css "h1", text: "Title"
+    assert_css "span", text: "Some guy, who writes stuff"
+    assert_match "<h1>Yo</h1> more", rendered
+
+    assert_equal "Some guy", byline # We can't mutate the passed in content.
+  end
+
   test "doesn't clobber Kernel.p" do
     assert_output "\"it's clobbering time\"\n" do
       render("clobberer") { |p| p.content_for :message, "hello from nice partials" }
