@@ -1,7 +1,7 @@
 <div class="card">
   <%= partial.yield :image %>
   <div class="card-body">
-    <h5 class="card-title"><%= title %></h5>
+    <h5 class="card-title"><%= partial.title %></h5>
     <% if partial.body? %>
       <p class="card-text">
         <%# TODO: remove send pending https://github.com/bullet-train-co/nice_partials/pull/54 %>

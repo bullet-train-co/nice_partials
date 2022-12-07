@@ -9,9 +9,9 @@ class NicePartials::Partial::Content
     end
   end
 
-  def initialize(view_context)
-    @view_context, @content = view_context, ActiveSupport::SafeBuffer.new
-    @options = Options.new(@view_context)
+  def initialize(view_context, content = nil)
+    @view_context, @options = view_context, Options.new(view_context)
+    @content = ActiveSupport::SafeBuffer.new and concat content
   end
   delegate :to_s, :present?, to: :@content
 
