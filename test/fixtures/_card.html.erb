@@ -4,8 +4,7 @@
     <h5 class="card-title"><%= partial.title %></h5>
     <% if partial.body? %>
       <p class="card-text">
-        <%# TODO: remove send pending https://github.com/bullet-train-co/nice_partials/pull/54 %>
-        <%= partial.body.send :yield, tag.with_options(class: "text-bold") %>
+        <%= partial.body.yield tag.with_options(class: "text-bold") %>
       </p>
     <% end %>
   </div>
