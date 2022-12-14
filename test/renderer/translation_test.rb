@@ -8,6 +8,7 @@ class Renderer::TranslationTest < NicePartials::Test
       translated: { message: "message" },
       nice_partials_translated: { message: "nice_partials" },
       t: { title: "title key content", header: "header key content" },
+      special_nice_partials_translated: { message: "message content" }
     }
     I18n.backend.store_translations "en", custom: { key: "custom key content" }
   end
@@ -24,6 +25,12 @@ class Renderer::TranslationTest < NicePartials::Test
     render "translations/nice_partials_translated"
 
     assert_text "nice_partials"
+  end
+
+  test "translations key lookup handles special characters" do
+    render "translations/special_nice_partials_translated"
+
+    assert_text "message content"
   end
 
   test "translate method" do
