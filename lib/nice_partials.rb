@@ -4,9 +4,8 @@ require_relative "nice_partials/version"
 
 module NicePartials
   def self.locale_prefix_from(lookup_context, block)
-    root_paths = lookup_context.view_paths
     partial_location = block.source_location.first.dup
-    root_paths.each { partial_location.gsub!(/^#{_1.path}\//, '') }
+    lookup_context.view_paths.each { partial_location.gsub!(/^#{_1.path}\//, '') }
     partial_location.split('.').first.gsub('/_', '/').gsub('/', '.')
   end
 end
