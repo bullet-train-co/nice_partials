@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+* Fix rendering with special characters in a view path.
+
+  Ref: https://github.com/bullet-train-co/nice_partials/pull/70
+
 * Seed Nice Partials content from `local_assigns`
 
   Previously, the only way to assign content to a Nice Partial was through passing a block:
