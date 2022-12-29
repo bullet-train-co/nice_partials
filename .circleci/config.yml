@@ -60,6 +60,26 @@ jobs:
           name: Run unit tests
           command: bin/test
 
+  'Local Minitest with Rails main':
+    # docker:
+    #   - <<: *ruby_node_browsers_docker_image
+    #   - <<: *postgres_docker_image
+    #   - image: circleci/redis
+    executor: ruby/default
+    steps:
+      # - browser-tools/install-browser-tools
+      - checkout
+
+      # Install dependencies
+      - run: "sudo gem update --system" # Rails requires a newer version of Rubygems.
+      - run: "RAILS_MAIN=true bundle install"
+      - run: "RAILS_MAIN=true bundle clean --force"
+      # - run: "yarn install"
+      # - *wait_for_docker
+      - run:
+          name: Run unit tests
+          command: RAILS_MAIN=true bin/test
+
   'Local Standard Ruby':
     docker:
       - <<: *ruby_node_browsers_docker_image
@@ -145,6 +165,7 @@ workflows:
   build:
     jobs:
       - 'Local Minitest'
+      - 'Local Minitest with Rails main'
       # TODO Enable this when we're sure it won't cause a bunch of conflicts on PRs.
       # - 'Local Standard Ruby'
       - 'Starter Repo Minitest'

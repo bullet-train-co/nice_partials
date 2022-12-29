@@ -18,7 +18,8 @@ ViewComponent::Base.config = ViewComponent::Config.new
 class NicePartials::Test < ActionView::TestCase
   include Capybara::Minitest::Assertions
 
-  TestController.view_paths << "test/fixtures/(special)" << "test/fixtures"
+  TestController.prepend_view_path "test/fixtures"
+  TestController.prepend_view_path "test/fixtures/(special)"
 
   private
 
