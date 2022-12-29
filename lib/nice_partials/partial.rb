@@ -6,23 +6,13 @@ module NicePartials
 
     delegate_missing_to :@view_context
 
-    #   <%= render "nice_partial" do |p| %>
-    #     <% p.content_for :title, "Yo" %>
-    #     This content can be accessed through calling `yield`.
-    #   <% end %>
-    #
-    # Then in the nice_partial:
-    #   <%= content.content_for :title %> # => "Yo"
-    #   <%= content.output_buffer %> # => "This line is printed to the `output_buffer`."
-    attr_accessor :output_buffer
-
     def initialize(view_context, local_assigns = nil)
       @view_context, @local_assigns = view_context, local_assigns
     end
 
     def yield(*arguments, &block)
       if arguments.empty?
-        output_buffer
+        @captured_buffer
       else
         content_for(*arguments, &block)
       end
@@ -95,7 +85,7 @@ module NicePartials
     end
 
     def capture(*arguments, &block)
-      self.output_buffer = @view_context.capture(*arguments, self, &block)
+      @captured_buffer = @view_context.capture(*arguments, self, &block)
     end
 
     private
