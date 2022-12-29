@@ -73,7 +73,7 @@ jobs:
       # Install dependencies
       - run: "sudo gem update --system" # Rails requires a newer version of Rubygems.
       - run: "RAILS_MAIN=true bundle install"
-      - run: "bundle clean --force"
+      - run: "RAILS_MAIN=true bundle clean --force"
       # - run: "yarn install"
       # - *wait_for_docker
       - run:
