@@ -71,6 +71,7 @@ jobs:
       - checkout
 
       # Install dependencies
+      - run: "gem update --system" # Rails requires a newer version of Rubygems.
       - run: "RAILS_MAIN=true bundle install"
       - run: "bundle clean --force"
       # - run: "yarn install"
