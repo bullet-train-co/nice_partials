@@ -41,7 +41,7 @@ aliases:
       # We run this because the DB might not be available for a while due to a race condition.
       run: dockerize -wait tcp://localhost:5432 -timeout 1m
 jobs:
-  'Local Minitest with Rails 7':
+  'Local Minitest':
     # docker:
     #   - <<: *ruby_node_browsers_docker_image
     #   - <<: *postgres_docker_image
@@ -164,6 +164,7 @@ workflows:
   build:
     jobs:
       - 'Local Minitest'
+      - 'Local Minitest with Rails main'
       # TODO Enable this when we're sure it won't cause a bunch of conflicts on PRs.
       # - 'Local Standard Ruby'
       - 'Starter Repo Minitest'
