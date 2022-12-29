@@ -139,7 +139,7 @@ class RendererTest < NicePartials::Test
   end
 
   test "passing local_assigns as content seeds with hash render call" do
-    byline = "Some guy"
+    byline = "Some person"
 
     # Action View won't accept passing a block to this render call style, and blankly overrides the passed in `:partial` key
     # …for some reason.
@@ -147,10 +147,27 @@ class RendererTest < NicePartials::Test
     render partial: "local_assigns", locals: { title: "Title", byline: byline, header: tag.h1("Yo") }
 
     assert_css "h1", text: "Title"
-    assert_css "span", text: "Some guy"
+    assert_css "span", text: "Some person"
     assert_match "<h1>Yo</h1>", rendered
 
-    assert_equal "Some guy", byline # We can't mutate the passed in content.
+    assert_equal "Some person", byline # We can't mutate the passed in content.
+  end
+
+  test "passing local_assigns as content seeds with hash render call works with strict template locals" do
+    skip "strict locals aren't supported yet" unless ActionView.version.to_s >= "7.1"
+
+    byline = "Some person"
+
+    # Action View won't accept passing a block to this render call style, and blankly overrides the passed in `:partial` key
+    # …for some reason.
+    # https://github.com/rails/rails/blob/90a272a1de6f13711943139c4292336dbff19c7c/actionview/lib/action_view/helpers/rendering_helper.rb#L35
+    render partial: "strict_locals", locals: { byline: byline, header: tag.h1("Yo") }
+
+    assert_no_css "h1", text: "Title" # We can only extract values from the passed `locals` above and not any defaults set in the local scope of the partial itself.
+    assert_css "span", text: "Some person"
+    assert_match "<h1>Yo</h1>", rendered
+
+    assert_equal "Some person", byline # We can't mutate the passed in content.
   end
 
   test "doesn't clobber Kernel.p" do
