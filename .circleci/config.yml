@@ -78,7 +78,7 @@ jobs:
       # - *wait_for_docker
       - run:
           name: Run unit tests
-          command: bin/test
+          command: RAILS_MAIN=true bin/test
 
   'Local Standard Ruby':
     docker:
