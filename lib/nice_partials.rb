@@ -3,6 +3,9 @@
 require_relative "nice_partials/version"
 
 module NicePartials
+  singleton_class.attr_accessor :prevent_instance_variable_leaks
+  singleton_class.alias_method :prevent_instance_variable_leaks?, :prevent_instance_variable_leaks
+
   def self.locale_prefix_from(lookup_context, block)
     partial_location = block.source_location.first.dup
     lookup_context.view_paths.each { partial_location.delete_prefix!(_1.path)&.delete_prefix!("/") }

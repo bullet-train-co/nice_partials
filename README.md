@@ -85,6 +85,55 @@ Nice Partials:
 
 Nice Partials are a lightweight and more Rails-native alternative to [ViewComponent](http://viewcomponent.org). Providing many of the same benefits as ViewComponent with less ceremony.
 
+## Prevent instance variables leaking into partials
+
+Add an initializer like this:
+
+```ruby
+# config/initializers/nice_partials.rb
+NicePartials.prevent_instance_variable_leaks = Rails.env.development? || Rails.env.test?
+```
+
+Now, NicePartials will clear out view instance variables during a `render` call and reset them afterwards.
+
+Note: this shouldn't be enabled in production. Catch the issues in development or test instead.
+
+### Why do I need this?
+
+Rails automatically copies controller instance variables over to the view, so given this controller:
+
+```ruby
+class PostsController < ApplicationController
+  def show
+    @post = Post.find(params[:id])
+  end
+end
+```
+
+will now have `@post` available in it's `posts/show.html.erb` template.
+
+But if we render something, then due to a quirk of how Action View's rendering works, the instance variables will leak. E.g.:
+
+```erb
+# app/views/posts/show.html.erb
+<%= render "post" %>
+
+# app/views/posts/_post.html.erb
+<%= @post.title %> # This works because the `@post` variable has leaked, but it shouldn't have.
+```
+
+This may seem fine for this example, but it can get hairy with complex that may have various uses of instance variables and local variables.
+
+With `NicePartials.prevent_instance_variable_leaks` enabled, we're forced to do:
+
+```erb
+# app/views/posts/show.html.erb
+<%= render "post", post: @post %> # Now we have to pass the post along.
+
+# app/views/posts/_post.html.erb
+<%= post.title %> # Now our partial blows up in case `post` hasn't been passed.
+```
+
 ## What extra powers does `partial` give me?
 
 Having a `partial` object lets us add abstractions that are hard to replicate in standard Rails partials.

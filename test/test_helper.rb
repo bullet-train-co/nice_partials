@@ -12,6 +12,8 @@ require "capybara/minitest"
 require "view_component"
 require "nice_partials"
 
+NicePartials.prevent_instance_variable_leaks = true
+
 # Ensure we assign the default configs, so `view_component_path` is set.
 ViewComponent::Base.config = ViewComponent::Config.new
 

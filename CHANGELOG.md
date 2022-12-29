@@ -1,5 +1,29 @@
 ## CHANGELOG
 
+* Add option to prevent instance variables leaking into partials
+
+  Due to the way Action View's rendering works any instance variable on the template,
+  usually copied over from a controller, will leak into any partial renders like so:
+
+  ```erb
+  # This should've been `render "post", post: @post`
+  <%= render "post" %>
+
+  # _post.html.erb
+  <%= @post.title %> # The partial relies on the @post instance variable, but it should've used a local variable
+  ```
+
+  Now, if apps add an initializer like this:
+
+  ```ruby
+  # config/initializers/nice_partials.rb
+  NicePartials.prevent_instance_variable_leaks = Rails.env.development? || Rails.env.test?
+  ```
+
+  NicePartials will clear out any instance variables during a `render` call and reset them afterwards.
+
+  Note: this shouldn't be enabled in production. Catch the issues in development or test instead.
+
 * Fix rendering with special characters in a view path.
 
   Ref: https://github.com/bullet-train-co/nice_partials/pull/70

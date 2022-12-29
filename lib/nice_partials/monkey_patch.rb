@@ -88,6 +88,22 @@ module NicePartials::RenderingWithAutoContext
   end
 end
 
+module NicePartials::InstanceVariableLeakPrevention
+  ActionView::Base.prepend self
+
+  def assign(new_assigns)
+    (@_collected_assigns ||= {}).merge! new_assigns
+    super
+  end
+
+  def render(...)
+    @_collected_assigns&.each_key { instance_variable_set(:"@#{_1}", nil) }
+    super
+  ensure
+    @_collected_assigns&.each { instance_variable_set(:"@#{_1}", _2) }
+  end
+end if NicePartials.prevent_instance_variable_leaks?
+
 module NicePartials::PartialRendering
   ActionView::PartialRenderer.prepend self
 
