@@ -122,7 +122,7 @@ But if we render something, then due to a quirk of how Action View's rendering w
 <%= @post.title %> # This works because the `@post` variable has leaked, but it shouldn't have.
 ```
 
-This may seem fine for this example, but it can get hairy with complex that may have various uses of instance variables and local variables.
+This may seem fine for this example, but it can get hairy with complex partials that may have various uses of instance variables and local variables.
 
 With `NicePartials.prevent_instance_variable_leaks` enabled, we're forced to do:
 
