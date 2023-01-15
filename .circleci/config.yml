@@ -131,7 +131,7 @@ jobs:
             - yarn-packages-v1-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ .Branch }}-{{ checksum "app/assets/builds/application.mailer.light.css" }}
 
       # Install dependencies
-      - run: "bundle install"
+      - run: "BUNDLE_PATH='vendor/bundle' bundle install"
       - run: "bundle clean --force"
       - run: "bundle exec rake bt:link"
       - run: "yarn install"
