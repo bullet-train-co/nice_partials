@@ -12,8 +12,8 @@ aliases:
   - &restore_yarn_cache
       name: Restore Yarn cache
       keys:
-        - yarn-packages-v1-{{ $CIRCLE_WORKING_DIRECTORY }}-{{ .Branch }}-{{ checksum "yarn.lock" }}
-        - yarn-packages-v1-{{ $CIRCLE_WORKING_DIRECTORY }}-{{ .Branch }}-
+        - yarn-packages-v1-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ .Branch }}-{{ checksum "yarn.lock" }}
+        - yarn-packages-v1-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ .Branch }}-
         - yarn-packages-
   - &save_bundle_cache
       name: Save Bundle cache
@@ -22,7 +22,7 @@ aliases:
         - vendor/bundle
   - &save_yarn_cache
       name: Save Yarn cache
-      key: yarn-packages-v1-{{ $CIRCLE_WORKING_DIRECTORY }}-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      key: yarn-packages-v1-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ .Branch }}-{{ checksum "yarn.lock" }}
       paths:
         - node_modules
   - &ruby_node_browsers_docker_image
