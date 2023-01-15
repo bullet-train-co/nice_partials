@@ -133,6 +133,8 @@ jobs:
 
       # Install dependencies
       - run: "cat Gemfile.lock"
+      - run: "bundle lock --update=nice_partials"
+      - run: "cat Gemfile.lock"
       - run: "bundle install"
       - run: "cat Gemfile.lock"
       - run: "bundle clean --force"
