@@ -113,8 +113,8 @@ jobs:
     executor: ruby/default
     parallelism: 16
     steps:
-      - browser-tools/install-browser-tools
       - checkout
+      - browser-tools/install-browser-tools
       - run: "git clone https://github.com/bullet-train-co/bullet_train.git tmp/starter"
 
       - run:
