@@ -123,7 +123,12 @@ jobs:
 
       # TODO Figure out how to make these work for `tmp/starter`
       # - restore_cache: *restore_bundler_cache
-      # - restore_cache: *restore_yarn_cache
+      - restore_cache:
+          name: Restore tmp/starter Yarn cache
+          keys:
+            - yarn-packages-v1-{{ .Branch }}-{{ checksum "tmp/starter/yarn.lock" }}
+            - yarn-packages-v1-{{ .Branch }}-
+            - yarn-packages-
 
       # Install dependencies
       - run: "cd tmp/starter && bundle install"
@@ -132,6 +137,13 @@ jobs:
       - run: "cd tmp/starter && yarn install"
       - run: "cd tmp/starter && yarn build"
       - run: "cd tmp/starter && yarn build:css"
+
+      - save_cache:
+          name: Save tmp/starter Yarn cache
+          key: yarn-packages-v1-{{ .Branch }}-{{ checksum "tmp/starter/yarn.lock" }}
+          paths:
+            - tmp/starter/node_modules
+
 
       - *wait_for_docker
 
