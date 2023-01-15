@@ -140,6 +140,7 @@ jobs:
       - run: "cat Gemfile.lock"
       - run: "bundle install"
       - run: "cat Gemfile.lock"
+      - run: "bundle clean --dry-run"
       - run: "bundle clean --force"
       - run: "bundle exec rake bt:link"
       - run: "yarn install"
