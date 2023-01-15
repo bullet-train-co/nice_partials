@@ -126,7 +126,7 @@ jobs:
             grep -v 'gem "nice_partials"' Gemfile > Gemfile.tmp
             mv Gemfile.tmp Gemfile
             echo 'gem "nice_partials", path: "../.."' >> Gemfile
-      - run: bundle lock --update=nice_partials --local
+      - run: bundle lock --update=nice_partials
 
       - restore_cache: *restore_bundler_cache
       - restore_cache: *restore_yarn_cache
