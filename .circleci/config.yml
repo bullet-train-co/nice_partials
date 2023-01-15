@@ -115,7 +115,7 @@ jobs:
     parallelism: 16
     steps:
       - checkout:
-          path: ../..
+          path: ~/project
       - browser-tools/install-browser-tools
       - run: "git clone https://github.com/bullet-train-co/bullet_train.git ."
 
