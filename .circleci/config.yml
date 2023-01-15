@@ -111,6 +111,8 @@ jobs:
       - <<: *postgres_docker_image
       - image: circleci/redis
     executor: ruby/default
+    environment:
+      BUNDLE_PATH: 'vendor/bundle'
     working_directory: tmp/starter
     parallelism: 16
     steps:
@@ -131,7 +133,7 @@ jobs:
             - yarn-packages-v1-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ .Branch }}-{{ checksum "app/assets/builds/application.mailer.light.css" }}
 
       # Install dependencies
-      - run: "BUNDLE_PATH='vendor/bundle' bundle install"
+      - run: "bundle install"
       - run: "bundle clean --force"
       - run: "bundle exec rake bt:link"
       - run: "yarn install"
