@@ -12,9 +12,15 @@ Gem::Specification.new do |gem|
   gem.homepage      = "https://github.com/bullet-train-co/nice_partials"
   gem.license       = "MIT"
 
-  gem.files         = Dir["{**/}{.*,*}"].select{ |path| File.file?(path) && path !~ /^pkg/ }
-  gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
-  gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
+    # Specify which files should be added to the gem when it is released.
+  # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
+  gem.files = Dir.chdir(__dir__) do
+    `git ls-files -z`.split("\x0").reject do |f|
+      (f == __FILE__) || f.match(%r{\A(?:(?:bin|test|spec|features)/|\.(?:git|travis|circleci)|appveyor)})
+    end
+  end
+  gem.bindir = "exe"
+  gem.executables = gem.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   gem.require_paths = ["lib"]
 
   gem.required_ruby_version = ">= 2.0"
