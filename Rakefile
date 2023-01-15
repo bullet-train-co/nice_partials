@@ -1,6 +1,8 @@
 # # #
 # Get gemspec info
 
+require "bundler/gem_tasks"
+
 gemspec_file = Dir["*.gemspec"].first
 gemspec = eval File.read(gemspec_file), binding, gemspec_file
 info = "#{gemspec.name} | #{gemspec.version} | " \
