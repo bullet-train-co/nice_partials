@@ -6,9 +6,7 @@ aliases:
   - &restore_bundler_cache
       name: Restore Bundler cache
       keys:
-        - gem-cache-v2-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
-        - gem-cache-v2-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ .Branch }}-
-        - gem-cache-v2-
+        - gem-cache-v3-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
   - &restore_yarn_cache
       name: Restore Yarn cache
       keys:
@@ -17,7 +15,7 @@ aliases:
         - yarn-packages-
   - &save_bundler_cache
       name: Save Bundler cache
-      key: gem-cache-v2-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
+      key: gem-cache-v3-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
       paths:
         - vendor/bundle
   - &save_yarn_cache
@@ -126,6 +124,7 @@ jobs:
           name: Link starter repository to the Ruby gem being tested.
           command: "grep -v 'gem \"nice_partials\"' Gemfile > Gemfile.tmp && mv Gemfile.tmp Gemfile && echo 'gem \"nice_partials\", path: \"../..\"' >> Gemfile"
 
+      - run: "bundle env"
       - restore_cache: *restore_bundler_cache
       - restore_cache: *restore_yarn_cache
       - restore_cache:
@@ -134,6 +133,7 @@ jobs:
             - yarn-build-css-v1-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ .Branch }}-{{ checksum "yarn.lock" }}
 
       # Install dependencies
+      - run: "bundle env"
       - run: "bundle install"
       - run: "bundle clean --force"
       - run: "bundle exec rake bt:link"
