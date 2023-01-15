@@ -122,7 +122,11 @@ jobs:
 
       - run:
           name: Link starter repository to the Ruby gem being tested.
-          command: "grep -v 'gem \"nice_partials\"' Gemfile > Gemfile.tmp && mv Gemfile.tmp Gemfile && echo 'gem \"nice_partials\", path: \"../..\"' >> Gemfile"
+          command: |
+            grep -v 'gem "nice_partials"' Gemfile > Gemfile.tmp
+            mv Gemfile.tmp Gemfile
+            echo 'gem "nice_partials", path: "../.."' >> Gemfile
+      - run: bundle lock --update=nice_partials --local
 
       - restore_cache: *restore_bundler_cache
       - restore_cache: *restore_yarn_cache
@@ -133,7 +137,6 @@ jobs:
 
       # Install dependencies
       - run: "cat Gemfile.lock"
-      - run: "bundle lock --update=nice_partials"
       - run: "cat Gemfile.lock"
       - run: "bundle install"
       - run: "cat Gemfile.lock"
