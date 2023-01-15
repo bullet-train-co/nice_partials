@@ -12,8 +12,8 @@ aliases:
   - &restore_yarn_cache
       name: Restore Yarn cache
       keys:
-        - yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
-        - yarn-packages-v1-{{ .Branch }}-
+        - yarn-packages-v1-{{ $CIRCLE_WORKING_DIRECTORY }}-{{ .Branch }}-{{ checksum "yarn.lock" }}
+        - yarn-packages-v1-{{ $CIRCLE_WORKING_DIRECTORY }}-{{ .Branch }}-
         - yarn-packages-
   - &save_bundle_cache
       name: Save Bundle cache
@@ -22,7 +22,7 @@ aliases:
         - vendor/bundle
   - &save_yarn_cache
       name: Save Yarn cache
-      key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      key: yarn-packages-v1-{{ $CIRCLE_WORKING_DIRECTORY }}-{{ .Branch }}-{{ checksum "yarn.lock" }}
       paths:
         - node_modules
   - &ruby_node_browsers_docker_image
@@ -111,46 +111,37 @@ jobs:
       - <<: *postgres_docker_image
       - image: circleci/redis
     executor: ruby/default
+    working_directory: tmp/starter
     parallelism: 16
     steps:
-      - checkout
+      - checkout:
+          path: ../..
       - browser-tools/install-browser-tools
-      - run: "git clone https://github.com/bullet-train-co/bullet_train.git tmp/starter"
+      - run: "git clone https://github.com/bullet-train-co/bullet_train.git ."
 
       - run:
           name: Link starter repository to the Ruby gem being tested.
-          command: "grep -v 'gem \"nice_partials\"' tmp/starter/Gemfile > tmp/starter/Gemfile.tmp && mv tmp/starter/Gemfile.tmp tmp/starter/Gemfile && echo 'gem \"nice_partials\", path: \"../..\"' >> tmp/starter/Gemfile"
+          command: "grep -v 'gem \"nice_partials\"' Gemfile > Gemfile.tmp && mv Gemfile.tmp Gemfile && echo 'gem \"nice_partials\", path: \"../..\"' >> Gemfile"
 
-      # TODO Figure out how to make these work for `tmp/starter`
       # - restore_cache: *restore_bundler_cache
-      - restore_cache:
-          name: Restore tmp/starter Yarn cache
-          keys:
-            - yarn-packages-v1-{{ .Branch }}-{{ checksum "tmp/starter/yarn.lock" }}
-            - yarn-packages-v1-{{ .Branch }}-
-            - yarn-packages-
+      - restore_cache: *restore_yarn_cache
 
       # Install dependencies
-      - run: "cd tmp/starter && bundle install"
-      - run: "cd tmp/starter && bundle clean --force"
-      - run: "cd tmp/starter && bundle exec rake bt:link"
-      - run: "cd tmp/starter && yarn install"
-      - run: "cd tmp/starter && yarn build"
-      - run: "cd tmp/starter && yarn build:css"
+      - run: "bundle install"
+      - run: "bundle clean --force"
+      - run: "bundle exec rake bt:link"
+      - run: "yarn install"
+      - run: "yarn build"
+      - run: "yarn build:css"
 
-      - save_cache:
-          name: Save tmp/starter Yarn cache
-          key: yarn-packages-v1-{{ .Branch }}-{{ checksum "tmp/starter/yarn.lock" }}
-          paths:
-            - tmp/starter/node_modules
-
+      # - save_cache: *save_bundler_cache
+      - save_cache: *save_yarn_cache
 
       - *wait_for_docker
 
       - run:
           name: Run tests with Knapsack Pro
           command: |
-            cd tmp/starter
             export RAILS_ENV=test
             SKIP_RESOLVE_TEST=1 bundle exec rails "knapsack_pro:queue:minitest[--verbose]"
           environment:
