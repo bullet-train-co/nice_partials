@@ -138,12 +138,12 @@ jobs:
       # Install dependencies
       - run: "bundle install"
       - run: "bundle clean --force"
-      - save_cache: *save_bundler_cache
       - run: "bundle exec rake bt:link"
       - run: "yarn install"
       - run: "yarn build"
       - run: "yarn build:css"
 
+      - save_cache: *save_bundler_cache
       - save_cache: *save_yarn_cache
       - save_cache:
           name: Save yarn build:css cache
