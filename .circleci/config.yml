@@ -136,10 +136,7 @@ jobs:
             - yarn-build-css-v1-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ .Branch }}-{{ checksum "yarn.lock" }}
 
       # Install dependencies
-      - run: "cat Gemfile.lock"
-      - run: "cat Gemfile.lock"
       - run: "bundle install"
-      - run: "cat Gemfile.lock"
       - run: "bundle clean --dry-run"
       - run: "bundle clean --force"
       - run: "bundle exec rake bt:link"
