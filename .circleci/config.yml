@@ -15,8 +15,8 @@ aliases:
         - yarn-packages-v1-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ .Branch }}-{{ checksum "yarn.lock" }}
         - yarn-packages-v1-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ .Branch }}-
         - yarn-packages-
-  - &save_bundle_cache
-      name: Save Bundle cache
+  - &save_bundler_cache
+      name: Save Bundler cache
       key: gem-cache-v1-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
       paths:
         - vendor/bundle
@@ -98,7 +98,7 @@ jobs:
 
       # # Save dependency caches
       # # We only do this as part of this job, because it's time consuming and we don't want it to slow down test runners.
-      # - save_cache: *save_bundle_cache
+      # - save_cache: *save_bundler_cache
       # - save_cache: *save_yarn_cache
 
       - run:
