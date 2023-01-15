@@ -130,7 +130,7 @@ jobs:
       - restore_cache:
           name: Restore yarn build:css cache
           keys:
-            - yarn-packages-v1-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ .Branch }}-{{ checksum "app/assets/builds/application.mailer.light.css" }}
+            - yarn-build-css-v1-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ .Branch }}-{{ checksum "yarn.lock" }}
 
       # Install dependencies
       - run: "bundle install"
@@ -144,9 +144,9 @@ jobs:
       - save_cache: *save_yarn_cache
       - save_cache:
           name: Save yarn build:css cache
-          key: yarn-packages-v1-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ .Branch }}-{{ checksum "app/assets/builds/application.mailer.light.css" }}
+          key: yarn-build-css-v1-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
-            - app/assets/builds/application.mailer.light.css
+            - app/assets/builds/*.css
 
       - *wait_for_docker
 
