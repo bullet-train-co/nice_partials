@@ -1,7 +1,7 @@
 version: 2.1
 orbs:
   ruby: circleci/ruby@0.1.2
-  browser-tools: circleci/browser-tools@1.4
+  browser-tools: circleci/browser-tools@1.4.1
 aliases:
   - &restore_bundler_cache
       name: Restore Bundler cache
@@ -118,7 +118,8 @@ jobs:
     steps:
       - checkout:
           path: ~/project
-      - browser-tools/install-browser-tools
+      - browser-tools/install-browser-tools:
+          firefox-version: 108.0.1
       - run: "git clone https://github.com/bullet-train-co/bullet_train.git ."
 
       - run:
