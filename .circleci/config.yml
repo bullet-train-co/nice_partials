@@ -124,7 +124,6 @@ jobs:
           name: Link starter repository to the Ruby gem being tested.
           command: "grep -v 'gem \"nice_partials\"' Gemfile > Gemfile.tmp && mv Gemfile.tmp Gemfile && echo 'gem \"nice_partials\", path: \"../..\"' >> Gemfile"
 
-      - run: "bundle env"
       - restore_cache: *restore_bundler_cache
       - restore_cache: *restore_yarn_cache
       - restore_cache:
@@ -133,8 +132,9 @@ jobs:
             - yarn-build-css-v1-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ .Branch }}-{{ checksum "yarn.lock" }}
 
       # Install dependencies
-      - run: "bundle env"
+      - run: "cat Gemfile.lock"
       - run: "bundle install"
+      - run: "cat Gemfile.lock"
       - run: "bundle clean --force"
       - run: "bundle exec rake bt:link"
       - run: "yarn install"
