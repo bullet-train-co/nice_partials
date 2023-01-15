@@ -6,9 +6,9 @@ aliases:
   - &restore_bundler_cache
       name: Restore Bundler cache
       keys:
-        - gem-cache-v1-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
-        - gem-cache-v1-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ .Branch }}-
-        - gem-cache-v1-
+        - gem-cache-v2-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
+        - gem-cache-v2-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ .Branch }}-
+        - gem-cache-v2-
   - &restore_yarn_cache
       name: Restore Yarn cache
       keys:
@@ -17,7 +17,7 @@ aliases:
         - yarn-packages-
   - &save_bundler_cache
       name: Save Bundler cache
-      key: gem-cache-v1-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
+      key: gem-cache-v2-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
       paths:
         - vendor/bundle
   - &save_yarn_cache
