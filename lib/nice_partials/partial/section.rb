@@ -24,7 +24,6 @@ class NicePartials::Partial::Section < NicePartials::Partial::Content
   #    <% partial.title.h2 ", appended" %> # => <h2 class="xl">Some title content, appended</h2>
   #
   # Note that NicePartials don't support deep merging attributes out of the box.
-  # For that, bundle https://github.com/seanpdoyle/attributes_and_token_lists
   def method_missing(meth, *arguments, **keywords, &block)
     if meth != :p && @view_context.respond_to?(meth)
       append @view_context.public_send(meth, *arguments, **keywords, &block)
