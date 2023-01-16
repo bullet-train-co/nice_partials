@@ -32,7 +32,10 @@ class NicePartials::Partial::Section < NicePartials::Partial::Content
       @view_context.tag.public_send(meth, @content + arguments.first.to_s, **options.merge(keywords), &block)
     end
   end
-  def respond_to_missing?(...) = @view_context.respond_to?(...)
+
+  def respond_to_missing?(...)
+    @view_context.respond_to?(...)
+  end
 
   private
 
@@ -44,5 +47,7 @@ class NicePartials::Partial::Section < NicePartials::Partial::Content
     end
   end
 
-  def chunks() = @chunks ||= []
+  def chunks
+    @chunks ||= []
+  end
 end
