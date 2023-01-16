@@ -1,5 +1,11 @@
 ## CHANGELOG
 
+### 0.9.1
+
+* Fix Ruby 2.7 compatibility
+
+### 0.9.0
+
 * Fix rendering with special characters in a view path.
 
   Ref: https://github.com/bullet-train-co/nice_partials/pull/70
