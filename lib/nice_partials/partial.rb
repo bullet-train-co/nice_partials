@@ -95,11 +95,7 @@ module NicePartials
     end
 
     def method_missing(meth, *arguments, **keywords, &block)
-      if @view_context.respond_to?(meth)
-        @view_context.public_send(meth, *arguments, **keywords, &block)
-      else
-        define_accessor meth and public_send(meth, *arguments, **keywords, &block)
-      end
+      define_accessor meth and public_send(meth, *arguments, **keywords, &block)
     end
 
     def define_accessor(name)
