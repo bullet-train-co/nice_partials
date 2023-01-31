@@ -175,6 +175,17 @@ Nice Partials supports calling any method on `ActionView::Base`, like the helper
 <% partial.byline t("custom.key") %>
 ```
 
+### Fallback to default content if nothing's been set
+
+```html+erb
+<%= partial.header.fallback "Default Header" %>
+<%= partial.header.fallback do %>
+  <h1>Default Header</h1>
+<% end %>
+```
+
+Note: this doesn't write anything to the section.
+
 ### Capturing options in the rendering block and building HTML tags in the partial
 
 You can pass keyword options to a writer method and they'll be auto-added to `partial.x.options`, like so:

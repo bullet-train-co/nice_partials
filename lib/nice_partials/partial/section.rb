@@ -43,6 +43,10 @@ class NicePartials::Partial::Section < NicePartials::Partial::Content
     chunks.present? || super
   end
 
+  def fallback(content = nil, &block)
+    presence || content || (@view_context.capture(&block) if block_given?)
+  end
+
   undef_method :p # Remove Kernel.p here to pipe through method_missing and hit tag proxy.
 
   # Implements our proxying to the `@view_context` or `@view_context.tag`.
