@@ -110,12 +110,7 @@ module NicePartials
       @helpers_context ||= Helpers.new(@view_context)
     end
 
-    class Helpers
-      def initialize(view_context)
-        @view_context = view_context
-      end
-      delegate_missing_to :@view_context
-
+    class Helpers < SimpleDelegator
       def self.method_added(name)
         super
         NicePartials::Partial.delegate name, to: :helpers_context
