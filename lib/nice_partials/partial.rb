@@ -4,8 +4,6 @@ module NicePartials
     autoload :Section, "nice_partials/partial/section"
     autoload :Stack, "nice_partials/partial/stack"
 
-    delegate_missing_to :@view_context
-
     def initialize(view_context, local_assigns = nil)
       @view_context, @local_assigns = view_context, local_assigns
     end
@@ -19,7 +17,7 @@ module NicePartials
     end
 
     def helpers(&block)
-      self.class.class_eval(&block)
+      Helpers.class_eval(&block)
     end
 
     # `translate` is a shorthand to set `content_for` with content that's run through
@@ -94,18 +92,34 @@ module NicePartials
       @sections ||= {} and @sections[name] ||= Section.new(@view_context, @local_assigns&.dig(name))
     end
 
+    def respond_to_missing?(meth, include_private = false)
+      meth != :to_ary # Avoid creating a section when doing `*partial`.
+    end
+
     def method_missing(meth, *arguments, **keywords, &block)
-      if @view_context.respond_to?(meth)
-        @view_context.public_send(meth, *arguments, **keywords, &block)
-      else
-        define_accessor meth and public_send(meth, *arguments, **keywords, &block)
-      end
+      define_accessor meth and public_send(meth, *arguments, **keywords, &block)
     end
 
     def define_accessor(name)
       name = name.to_s.chomp("?").to_sym
       self.class.define_method(name) { |content = nil, **options, &block| section(name, content, **options, &block) }
       self.class.define_method("#{name}?") { section?(name) }
+    end
+
+    def helpers_context
+      @helpers_context ||= Helpers.new(@view_context)
+    end
+
+    class Helpers
+      def initialize(view_context)
+        @view_context = view_context
+      end
+      delegate_missing_to :@view_context
+
+      def self.method_added(name)
+        super
+        NicePartials::Partial.delegate name, to: :helpers_context
+      end
     end
   end
 end
