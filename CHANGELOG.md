@@ -1,5 +1,30 @@
 ## CHANGELOG
 
+### 0.9.2
+
+* Changed: view methods don't clobber section names
+
+  Previously, we'd eagerly delegate to the view context so if the view had a `label` method, `partial.label` would call the view's `label` instead of making a `label` section.
+
+  This was to support `partial.helpers` but we've changed the implementation to support the above. `partial.helpers` still works the same too.
+
+* Changed: `partial.helpers` no longer automatically calls `partial` methods
+
+  Previously, if a user defined a partial helper like this:
+
+  ```ruby
+  partial.helpers do
+    def some_helper
+      some_section
+    end
+  end
+  ```
+
+  If `some_section` wasn't a view method, it would automatically call `partial.some_section`
+  thereby adding a new content section to the partial.
+
+  Now `partial.helpers` behaves exactly like view helpers — making it easier to copy code directly when migrating — so users would have to explicitly call `partial.some_section`.
+
 ### 0.9.1
 
 * Fix Ruby 2.7 compatibility

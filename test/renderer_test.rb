@@ -15,6 +15,14 @@ class RendererTest < NicePartials::Test
     assert_css("img") { assert_equal "https://example.com/image.jpg", _1["src"] }
   end
 
+  test "render partial can yield block named label" do
+    render "yield_label" do |partial|
+      partial.label "Label"
+    end
+
+    assert_text "Label"
+  end
+
   test "render with options from call site" do
     render "columns" do |partial|
       partial.left "The Left", class: "left-column"
