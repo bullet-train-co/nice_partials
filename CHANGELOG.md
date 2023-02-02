@@ -2,14 +2,13 @@
 
 ### 0.9.2
 
-* Fixed: view methods don't clobber section names
+* Changed: view methods don't clobber section names
 
   Previously, we'd eagerly delegate to the view context so if the view had a `label` method, `partial.label` would call the view's `label` instead of making a `label` section.
 
-  This was to support `partial.helpers` having direct access to the view context.
-  `partial.helpers`
+  This was to support `partial.helpers` but we've changed the implementation to support the above. `partial.helpers` still works the same too.
 
-* Fixed: `partial.helpers` no longer automatically calls `partial` methods
+* Changed: `partial.helpers` no longer automatically calls `partial` methods
 
   Previously, if a user defined a partial helper like this:
 
