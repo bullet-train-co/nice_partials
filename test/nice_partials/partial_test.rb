@@ -136,6 +136,16 @@ class NicePartials::PartialTest < NicePartials::Test
     assert_equal({ title: "Hello there", byline: "Some guy" }, partial.slice(:title, :byline))
   end
 
+  test "call + presence" do
+    assert_nil new_partial.header.call
+    assert_equal "yo", new_partial.tap { _1.header "yo" }.header.call
+  end
+
+  test "presence" do
+    assert_nil new_partial.header.presence
+    assert_kind_of NicePartials::Partial::Section, new_partial.tap { _1.header "yo" }.header.presence
+  end
+
   test "helpers don't leak to view" do
     partial = new_partial
     partial.helpers do

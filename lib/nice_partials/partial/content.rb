@@ -15,6 +15,10 @@ class NicePartials::Partial::Content
   end
   delegate :to_s, :present?, to: :@content
 
+  def call
+    @content.presence
+  end
+
   # Contains options passed to a partial:
   #
   #   <% partial.title class: "post-title" %> # partial.title.options # => { class: "post-title" }
@@ -38,7 +42,7 @@ class NicePartials::Partial::Content
   def append(content)
     case
     when content.respond_to?(:render_in) then concat  content.render_in(@view_context)
-    when content.respond_to?(:call)      then capture content
+    when content.is_a?(Proc)             then capture content
     else
       concat content
     end

@@ -2,6 +2,20 @@
 
 ### 0.9.2
 
+* New: add `call` to Partial sections
+
+  Now, something like `partial.header.call` works and returns the inner written content if any, or nil.
+
+  Examples:
+
+  ```ruby
+  partial.header.call # => nil
+  partial.header ""
+  partial.header.call # => nil
+  partial.header "yo"
+  partial.header.call # => "yo"
+  ```
+
 * Changed: view methods don't clobber section names
 
   Previously, we'd eagerly delegate to the view context so if the view had a `label` method, `partial.label` would call the view's `label` instead of making a `label` section.
