@@ -75,7 +75,7 @@ module NicePartials
     alias content_for? section?
 
     def content_for(...)
-      section(...)&.to_s
+      section(...).presence&.to_s
     end
 
     def slice(*keys)
