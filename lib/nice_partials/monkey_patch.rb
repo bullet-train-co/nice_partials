@@ -8,7 +8,7 @@ module NicePartials::RenderingWithLocalePrefix
   end
 
   def t(key, options = {})
-    if (prefix = @_nice_partials_t_prefix) && key.to_s.first == '.'
+    if (prefix = @_nice_partials_t_prefix) && key&.start_with?(".")
       key = "#{prefix}#{key}"
     end
 
