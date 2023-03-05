@@ -138,6 +138,12 @@ class NicePartials::PartialTest < NicePartials::Test
     assert_equal({ title: "Hello there", byline: "Some guy" }, partial.slice(:title, :byline))
   end
 
+  test "predicates respects locals" do
+    partial = new_partial(locals: { title: "Hello there" })
+    assert partial.title?
+    assert_equal "Hello there", partial.title.to_s
+  end
+
   test "helpers don't leak to view" do
     partial = new_partial
     partial.helpers do

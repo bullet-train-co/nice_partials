@@ -70,7 +70,7 @@ module NicePartials
     end
 
     def section?(name)
-      @sections&.dig(name).present?
+      section_from(name).present?
     end
     alias content_for? section?
 

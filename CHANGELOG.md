@@ -1,5 +1,25 @@
 ## CHANGELOG
 
+### 0.9.3
+
+* Fixed: section predicates not respecting `local_assigns` content
+
+  Previously, when doing something like this:
+
+  ```erb
+  <%= render "card", title: "Hello there" %>
+  ```
+
+  If the inner card partial had this,
+
+  ```erb
+  <% if partial.title? %>
+    <%= partial.title %>
+  <% end %>
+  ```
+
+  The `title?` predicate would fail, because it didn't look up content from the passed `local_assigns`. Now it does.
+
 ### 0.9.2
 
 * Changed: view methods don't clobber section names
