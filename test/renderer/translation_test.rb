@@ -7,6 +7,7 @@ class Renderer::TranslationTest < NicePartials::Test
     I18n.backend.store_translations "en", translations: {
       translated: { message: "message" },
       nice_partials_translated: { message: "nice_partials" },
+      nice_partials_translated_symbol: { message: "nice_partials" },
       t: { title: "title key content", header: "header key content" },
       special_nice_partials_translated: { message: "message content" }
     }
@@ -23,6 +24,12 @@ class Renderer::TranslationTest < NicePartials::Test
 
   test "translations insert prefix from originating partial" do
     render "translations/nice_partials_translated"
+
+    assert_text "nice_partials"
+  end
+
+  test "translations insert prefix from originating partial when translation key is a symbol" do
+    render "translations/nice_partials_translated_symbol"
 
     assert_text "nice_partials"
   end
