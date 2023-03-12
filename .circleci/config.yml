@@ -1,30 +1,21 @@
 version: 2.1
 orbs:
-  ruby: circleci/ruby@0.1.2
+  ruby: circleci/ruby@2.0.0
   browser-tools: circleci/browser-tools@1.4.1
 aliases:
-  - &restore_bundler_cache
-      name: Restore Bundler cache
-      keys:
-        - gem-cache-v4-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
   - &restore_yarn_cache
       name: Restore Yarn cache
       keys:
         - yarn-packages-v1-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ .Branch }}-{{ checksum "yarn.lock" }}
         - yarn-packages-v1-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ .Branch }}-
         - yarn-packages-
-  - &save_bundler_cache
-      name: Save Bundler cache
-      key: gem-cache-v4-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
-      paths:
-        - vendor/bundle
   - &save_yarn_cache
       name: Save Yarn cache
       key: yarn-packages-v1-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ .Branch }}-{{ checksum "yarn.lock" }}
       paths:
         - node_modules
   - &ruby_node_browsers_docker_image
-      - image: cimg/ruby:3.2.0-browsers
+      - image: cimg/ruby:3.2.1-browsers
         environment:
           PGHOST: localhost
           PGUSER: untitled_application
@@ -46,37 +37,30 @@ jobs:
     #   - image: circleci/redis
     executor: ruby/default
     steps:
-      # - browser-tools/install-browser-tools
       - checkout
 
-      # Install dependencies
-      - run: "bundle install"
-      - run: "bundle clean --force"
-      # - run: "yarn install"
-      # - *wait_for_docker
+      - ruby/install-deps:
+          clean-bundle: true
       - run:
           name: Run unit tests
           command: bin/test
 
   'Local Minitest with Rails main':
-    # docker:
-    #   - <<: *ruby_node_browsers_docker_image
-    #   - <<: *postgres_docker_image
-    #   - image: circleci/redis
+    environment:
+      RAILS_MAIN: true
     executor: ruby/default
     steps:
-      # - browser-tools/install-browser-tools
       - checkout
 
-      # Install dependencies
-      - run: "sudo gem update --system" # Rails requires a newer version of Rubygems.
-      - run: "RAILS_MAIN=true bundle install"
-      - run: "RAILS_MAIN=true bundle clean --force"
-      # - run: "yarn install"
-      # - *wait_for_docker
+      - run: "sudo gem update --system --no-document" # Install newer Bundler to use a shallow Rails checkout.
+      - run: bundle lock --update=rails
+
+      - ruby/install-deps:
+          clean-bundle: true
+
       - run:
           name: Run unit tests
-          command: RAILS_MAIN=true bin/test
+          command: bin/test
 
   'Local Standard Ruby':
     docker:
@@ -90,8 +74,8 @@ jobs:
       # - restore_cache: *restore_yarn_cache
 
       # Install dependencies
-      - ruby/bundle-install
-      - run: bundle clean --force
+      - ruby/install-deps:
+          clean-bundle: true
       - run: yarn install
 
       # # Save dependency caches
@@ -109,16 +93,16 @@ jobs:
       - <<: *postgres_docker_image
       - image: circleci/redis
     executor: ruby/default
-    environment:
-      BUNDLE_PATH: 'vendor/bundle'
     working_directory: tmp/starter
     parallelism: 16
     steps:
       - checkout:
           path: ~/project
       - browser-tools/install-browser-tools:
-          firefox-version: 108.0.1
-      - run: "git clone https://github.com/bullet-train-co/bullet_train.git ."
+          firefox-version: "110.0"
+
+      - run: rm LICENSE.chromedriver
+      - run: git clone --depth 1 https://github.com/bullet-train-co/bullet_train.git .
 
       - run:
           name: Link starter repository to the Ruby gem being tested.
@@ -128,7 +112,9 @@ jobs:
             echo 'gem "nice_partials", path: "../.."' >> Gemfile
       - run: bundle lock --update=nice_partials
 
-      - restore_cache: *restore_bundler_cache
+      - ruby/install-deps:
+          clean-bundle: true
+
       - restore_cache: *restore_yarn_cache
       - restore_cache:
           name: Restore yarn build:css cache
@@ -136,14 +122,9 @@ jobs:
             - yarn-build-css-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
 
       # Install dependencies
-      - run: "bundle install"
-      - run: "bundle clean --force"
-      - run: "bundle exec rake bt:link"
       - run: "yarn install"
-      - run: "yarn build"
       - run: "yarn build:css"
 
-      - save_cache: *save_bundler_cache
       - save_cache: *save_yarn_cache
       - save_cache:
           name: Save yarn build:css cache
@@ -156,11 +137,11 @@ jobs:
 
       - run:
           name: Run tests with Knapsack Pro
-          command: |
-            export RAILS_ENV=test
-            SKIP_RESOLVE_TEST=1 bundle exec rails "knapsack_pro:queue:minitest[--verbose]"
+          command: bundle exec rails "knapsack_pro:queue:minitest[--verbose]"
           environment:
             KNAPSACK_PRO_CI_NODE_TOTAL: 16
+            RAILS_ENV: test
+            SKIP_RESOLVE_TEST: 1
 
       # If you don't want to use Knapsack Pro, then use this configuration:
       #
