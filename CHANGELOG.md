@@ -1,5 +1,29 @@
 ## CHANGELOG
 
+### 0.9.4
+
+* Feature: declare contents via `required` and `optional`
+
+  ```html+erb
+  <% if partial.title? %>
+    <h1 class="text-xl">
+      <%= partial.title %>
+    </h1>
+  <% end %>
+
+  <div><%= partial.body %></div>
+  ```
+
+  Can now become:
+
+  ```html+erb
+  <%= partial.title.optional.h1 class: "text-xl" %><%# Will not output any HTML element if no content has been provided. %>
+
+  <div><%= partial.body.required %></div> <%# Raises when this line is hit if no content has been provided %>
+  ```
+  
+  See the README for more.
+
 ### 0.9.3
 
 * Fixed: section predicates not respecting `local_assigns` content

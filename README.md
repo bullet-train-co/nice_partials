@@ -116,6 +116,40 @@ You can also use `slice` to pass on content from an outer partial:
 <%= render "components/card", partial.slice(:title, :byline) %>
 ```
 
+### Declaring content as optional or required
+
+In traditional Rails partials, you'll see lots of checks for whether or not we have content to then output an element.
+
+With Nice Partials, it would look like this:
+
+```html+erb
+<% if partial.title? %>
+  <h1 class="text-xl"><%= partial.title %></h1>
+<% end %>
+```
+
+However, we can remove the conditional using `optional`:
+
+```html+erb
+<%= partial.title.optional.then do |title| %>
+  <h1 class="text-xl"><%= title %></h1>
+<% end %>
+```
+
+This will avoid outputting an empty tag, which could mess with your markup, in case there's no content provided for `title`.
+
+Note: with Nice Partials tag helpers support, this example could also be shortened to `<%= partial.title.optional.h1 class: "text-xl" %>`.
+
+#### Required
+
+Alternatively, if `title` is a section that we require to be provided, we can do:
+
+```html+erb
+<h1 class="text-xl"><%= partial.title.required %></h1>
+```
+
+Here, `required` will raise in case there's been no `title` content provided by that point.
+
 ### Appending content from the view into a section
 
 Nice Partials supports calling any method on `ActionView::Base`, like the helpers shown here, and then have them auto-append to the section.
@@ -181,24 +215,6 @@ But the partial can also prepare tag builders that the rendering block can then 
 # app/views/components/_card.html.erb
 <% partial.title.yield tag.with_options(class: "text-m4", data: { controller: "title" }) %> # => <h1 class="text-m4" data-controller="title">Title content</h1>
 ```
-
-### Smoother conditional rendering
-
-In regular Rails partials it's common to see `content_for?` used to conditionally rendering something. With Nice Partials we can do this:
-
-```html+erb
-<% if partial.title? %>
-  <% partial.title.h1 %>
-<% end %>
-```
-
-But since sections respond to and leverage `present?`, we can shorten the above to:
-
-```html+erb
-<% partial.title.presence&.h1 %>
-```
-
-This way no empty h1 element is rendered.
 
 ### Accessing the content returned via `partial.yield`
 
