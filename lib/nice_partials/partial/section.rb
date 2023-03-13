@@ -1,4 +1,39 @@
+# frozen_string_literal: true
+
 class NicePartials::Partial::Section < NicePartials::Partial::Content
+  class RequiredError < ArgumentError; end
+
+  class Empty < BasicObject
+    def initialize(section)
+      @section = section
+    end
+    delegate :blank?, :present?, :presence, to: :@section
+
+    def nil?
+      true
+    end
+
+    def method_missing(...)
+      present? ? super : ""
+    end
+  end
+
+  # Returns self if `present?`, or raises.
+  # Useful to declare content that you require to be supplied during a `render` call.
+  #
+  #   <%= partial.title.required.div class: "text-xl" %>
+  def required
+    present? ? self : raise(RequiredError, "Section expected to have content, but wasn't supplied during render")
+  end
+
+  # Returns self if `present?`, or returns a Null object that won't output any content.
+  # Useful to declare optional content sections, that you also don't want to print any HTML elements for.
+  #
+  #   <%= partial.title.optional.div class: "text-xl" %> # => "" # Won't output an empty `<div>` that can mess with HTML markups.
+  def optional
+    present? ? self : Empty.new(self)
+  end
+
   def yield(*arguments)
     chunks.each { append @view_context.capture(*arguments, &_1) }
     self

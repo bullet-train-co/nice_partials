@@ -52,6 +52,26 @@ class NicePartials::PartialTest < NicePartials::Test
     OUTPUT
   end
 
+  test "content declarations" do
+    partial = new_partial
+    assert_raises(NicePartials::Partial::Section::RequiredError) { partial.title.required.div(class: "text-xs") }
+    assert_equal "", partial.title.optional.div(class: "text-xs")
+
+    never_yielded = true
+    with_block = partial.title.optional.div(class: "text-xs") { never_yielded = false; partial.body.h1 }
+    assert_equal "", with_block
+    assert never_yielded
+
+    partial.title.optional.tap  { flunk "This block shouldn't execute" }
+    partial.title.optional.then { flunk "This block shouldn't execute" }
+
+    partial.title "yo"
+    assert_equal %(<div class="text-xs">yo</div>), partial.title.required.div(class: "text-xs")
+    assert_equal %(<div class="text-xs">yo</div>), partial.title.optional.div(class: "text-xs")
+
+    assert_equal "<h1>yo</h1>", partial.title.optional.then { |title| tag.h1 title }
+  end
+
   test "tag proxy with options" do
     partial = new_partial
     partial.title "content", class: "post-title"
