@@ -1,28 +1,39 @@
 # Monkey patch required to make `t` work as expected. Is this evil?
 # TODO Do we need to monkey patch other types of renderers as well?
 module NicePartials::RenderingWithLocalePrefix
-  ActionView::Base.prepend self
+  module BaseIntegration
+    ::ActionView::Base.prepend self
 
-  def capture(*, &block)
-    with_nice_partials_t_prefix(lookup_context, block) { super }
-  end
+    def t(key, options = {})
+      if (template = @_nice_partials_translate_template) && key&.start_with?(".")
+        key = "#{virtual_path_translate_key_prefix(template.virtual_path)}#{key}"
+      end
 
-  def t(key, options = {})
-    if (prefix = @_nice_partials_t_prefix) && key&.start_with?(".")
-      key = "#{prefix}#{key}"
+      super(key, **options)
     end
 
-    super(key, **options)
+    def with_nice_partials_t_prefix(block)
+      old_nice_partials_translate_template = @_nice_partials_translate_template
+      @_nice_partials_translate_template = block ? @current_template : nil
+      yield
+    ensure
+      @_nice_partials_translate_template = old_nice_partials_translate_template
+    end
+
+    private
+
+    def virtual_path_translate_key_prefix(virtual_path)
+      @_scope_key_by_partial_cache ||= {} # Reuses Rails' existing `t` cache.
+      @_scope_key_by_partial_cache[virtual_path] ||= virtual_path.gsub(%r{/_?}, ".")
+    end
   end
 
-  private
+  module PartialRendererIntegration
+    ActionView::PartialRenderer.prepend self
 
-  def with_nice_partials_t_prefix(lookup_context, block)
-    _nice_partials_t_prefix = @_nice_partials_t_prefix
-    @_nice_partials_t_prefix = block ? NicePartials.locale_prefix_from(lookup_context, block) : nil
-    yield
-  ensure
-    @_nice_partials_t_prefix = _nice_partials_t_prefix
+    def render(partial, view, block)
+      view.with_nice_partials_t_prefix(block) { super }
+    end
   end
 end
 
