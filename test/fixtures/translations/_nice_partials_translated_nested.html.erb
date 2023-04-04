@@ -1,0 +1,6 @@
+<%= render "basic" do %>
+  <% _1.message render("translations/translated") %>
+  <% _1.message do %>
+    <%= render "translations/translated" %>
+  <% end %>
+<% end %>

@@ -1,28 +1,32 @@
 # Monkey patch required to make `t` work as expected. Is this evil?
 # TODO Do we need to monkey patch other types of renderers as well?
 module NicePartials::RenderingWithLocalePrefix
-  ActionView::Base.prepend self
+  module BaseIntegration
+    ::ActionView::Base.prepend self
 
-  def capture(*, &block)
-    with_nice_partials_t_prefix(lookup_context, block) { super }
-  end
+    def t(key, options = {})
+      if (prefix = @_nice_partials_t_prefix) && key&.start_with?(".")
+        key = "#{prefix}#{key}"
+      end
 
-  def t(key, options = {})
-    if (prefix = @_nice_partials_t_prefix) && key&.start_with?(".")
-      key = "#{prefix}#{key}"
+      super(key, **options)
     end
 
-    super(key, **options)
+    def with_nice_partials_t_prefix(block)
+      old_nice_partials_t_prefix = @_nice_partials_t_prefix
+      @_nice_partials_t_prefix = block ? @current_template&.virtual_path&.gsub(/\/_?/, ".") : nil
+      yield
+    ensure
+      @_nice_partials_t_prefix = old_nice_partials_t_prefix
+    end
   end
 
-  private
+  module PartialRendererIntegration
+    ActionView::PartialRenderer.prepend self
 
-  def with_nice_partials_t_prefix(lookup_context, block)
-    _nice_partials_t_prefix = @_nice_partials_t_prefix
-    @_nice_partials_t_prefix = block ? NicePartials.locale_prefix_from(lookup_context, block) : nil
-    yield
-  ensure
-    @_nice_partials_t_prefix = _nice_partials_t_prefix
+    def render(partial, view, block)
+      view.with_nice_partials_t_prefix(block) { super }
+    end
   end
 end
 
