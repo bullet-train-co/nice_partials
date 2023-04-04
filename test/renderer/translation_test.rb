@@ -34,6 +34,12 @@ class Renderer::TranslationTest < NicePartials::Test
     assert_text "nice_partials"
   end
 
+  test "translations nested" do
+    render "translations/nice_partials_translated_nested"
+
+    assert_text "message\n    message\n"
+  end
+
   test "translations key lookup handles special characters" do
     render "translations/special_nice_partials_translated"
 

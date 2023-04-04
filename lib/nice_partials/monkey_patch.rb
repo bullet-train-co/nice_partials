@@ -1,11 +1,7 @@
 # Monkey patch required to make `t` work as expected. Is this evil?
 # TODO Do we need to monkey patch other types of renderers as well?
 module NicePartials::RenderingWithLocalePrefix
-  ActionView::Base.prepend self
-
-  def capture(*, &block)
-    with_nice_partials_t_prefix(lookup_context, block) { super }
-  end
+  ::ActionView::Base.prepend self
 
   def t(key, options = {})
     if (prefix = @_nice_partials_t_prefix) && key&.start_with?(".")
@@ -15,14 +11,20 @@ module NicePartials::RenderingWithLocalePrefix
     super(key, **options)
   end
 
-  private
+  def render(options = {}, locals = {}, &block)
+    if options.respond_to?(:to_ary) || options.is_a?(Hash) && options[:collection]
+      super # collection renders never have a block, but shouldn't reset our `t` prefix to nil, like partial renders would.
+    else
+      with_nice_partials_t_prefix(block) { super }
+    end
+  end
 
-  def with_nice_partials_t_prefix(lookup_context, block)
-    _nice_partials_t_prefix = @_nice_partials_t_prefix
-    @_nice_partials_t_prefix = block ? NicePartials.locale_prefix_from(lookup_context, block) : nil
+  def with_nice_partials_t_prefix(block)
+    old_nice_partials_t_prefix = @_nice_partials_t_prefix
+    @_nice_partials_t_prefix = block ? @current_template&.virtual_path&.gsub(/\/_?/, ".") : nil
     yield
   ensure
-    @_nice_partials_t_prefix = _nice_partials_t_prefix
+    @_nice_partials_t_prefix = old_nice_partials_t_prefix
   end
 end
 
