@@ -1,5 +1,31 @@
 ## CHANGELOG
 
+* Feature: partial helpers can access `local_assigns` values
+
+  ```html+erb
+  <%# app/views/articles/show.html.erb %>
+  <% render "section", id: "an_article" do |section| %>
+    <%= tag.h1 "An Article", id: section.labelledby %>
+  <% end %>
+
+  <%# app/views/application/_section.html.erb %>
+  <%
+    partial.helpers do
+      def labelledby
+        if (id = local_assigns[:id])
+          "#{id}_label"
+        end
+      end
+
+      def aria
+        local_assigns.fetch(:aria, {}).with_defaults(labelledby:)
+      end
+    end
+  %>
+
+  <%= tag.section partial.yield, id:, aria: partial.aria %>
+  ```
+
 ### 0.9.4
 
 * Feature: declare contents via `required` and `optional`
@@ -21,7 +47,7 @@
 
   <div><%= partial.body.required %></div> <%# Raises when this line is hit if no content has been provided %>
   ```
-  
+
   See the README for more.
 
 ### 0.9.3

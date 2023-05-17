@@ -7,6 +7,10 @@
     def squish(content)
       content.gsub(/\s+/, " ")
     end
+
+    def upcase_foo
+      local_assigns[:foo].upcase
+    end
   end
 %>
 

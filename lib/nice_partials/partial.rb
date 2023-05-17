@@ -107,13 +107,23 @@ module NicePartials
     end
 
     def helpers_context
-      @helpers_context ||= Helpers.new(@view_context)
+      @helpers_context ||= Helpers.new(@view_context, @local_assigns)
     end
 
     class Helpers < SimpleDelegator
+      attr_reader :local_assigns
+
       def self.method_added(name)
         super
-        NicePartials::Partial.delegate name, to: :helpers_context
+
+        unless name == :initialize
+          NicePartials::Partial.delegate name, to: :helpers_context
+        end
+      end
+
+      def initialize(view_context, local_assigns)
+        super(view_context)
+        @local_assigns = local_assigns
       end
     end
   end

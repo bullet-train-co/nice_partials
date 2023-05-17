@@ -164,6 +164,17 @@ class NicePartials::PartialTest < NicePartials::Test
     assert_equal "Hello there", partial.title.to_s
   end
 
+  test "helpers can access local_assigns" do
+    partial = new_partial(locals: {foo: "bar"})
+    partial.helpers do
+      def upcase_foo
+        local_assigns[:foo].upcase
+      end
+    end
+
+    assert_equal "BAR", partial.upcase_foo
+  end
+
   test "helpers don't leak to view" do
     partial = new_partial
     partial.helpers do
