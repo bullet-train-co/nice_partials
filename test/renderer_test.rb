@@ -63,6 +63,14 @@ class RendererTest < NicePartials::Test
     assert_css "p", text: "TEXT WITH SPACES"
   end
 
+  test "render partial helper methods can access local_assigns" do
+    render "partial_with_helpers", foo: "bar" do |partial|
+      partial.upcase_foo
+    end
+
+    assert_css "p", text: "BAR"
+  end
+
   test "accessing partial in outer context won't leak state to inner render" do
     render "partial_accessed_in_outer_context"
 

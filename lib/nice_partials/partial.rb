@@ -4,6 +4,9 @@ module NicePartials
     autoload :Section, "nice_partials/partial/section"
     autoload :Stack, "nice_partials/partial/stack"
 
+    attr_reader :local_assigns
+    alias_method :locals, :local_assigns
+
     def initialize(view_context, local_assigns = nil)
       @view_context, @local_assigns = view_context, local_assigns
     end
@@ -107,13 +110,23 @@ module NicePartials
     end
 
     def helpers_context
-      @helpers_context ||= Helpers.new(@view_context)
+      @helpers_context ||= Helpers.new(@view_context, self)
     end
 
     class Helpers < SimpleDelegator
       def self.method_added(name)
         super
-        NicePartials::Partial.delegate name, to: :helpers_context
+
+        unless name == :initialize || name == :partial
+          NicePartials::Partial.delegate name, to: :helpers_context
+        end
+      end
+
+      attr_reader :partial
+
+      def initialize(view_context, partial)
+        super(view_context)
+        @partial = partial
       end
     end
   end
