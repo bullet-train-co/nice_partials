@@ -1,6 +1,20 @@
 ## CHANGELOG
 
-* Feature: partial helpers can access `local_assigns` values
+* Feature: partial's expose `local_assigns` + `locals` alias
+
+  ```html+erb
+  <%# app/views/articles/show.html.erb %>
+  <%= render "section", id: "an_article" %>
+
+  <%# app/views/application/_section.html.erb %>
+  <%# We can access the passed `id:` like this: %>
+  <% partial.local_assigns[:id] %>
+  <% partial.locals[:id] %>
+  ```
+
+  Note: this is equal to the default partial local variable of `local_assigns`, but it becomes more useful with the next feature below.
+
+* Feature: partial helpers can access `partial`
 
   ```html+erb
   <%# app/views/articles/show.html.erb %>
@@ -11,14 +25,12 @@
   <%# app/views/application/_section.html.erb %>
   <%
     partial.helpers do
-      def labelledby
-        if (id = local_assigns[:id])
-          "#{id}_label"
-        end
+      def aria
+        partial.locals.fetch(:aria, {}).with_defaults(labelledby:)
       end
 
-      def aria
-        local_assigns.fetch(:aria, {}).with_defaults(labelledby:)
+      def labelledby
+        id = partial.locals[:id] and "#{id}_label"
       end
     end
   %>

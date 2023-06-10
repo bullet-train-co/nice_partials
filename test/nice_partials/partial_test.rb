@@ -164,11 +164,23 @@ class NicePartials::PartialTest < NicePartials::Test
     assert_equal "Hello there", partial.title.to_s
   end
 
+  test "helpers can access partial" do
+    partial = new_partial(locals: {foo: "bar"})
+    partial.helpers do
+      def fill_in_body
+        partial.body "body content"
+      end
+    end
+
+    partial.fill_in_body
+    assert_equal "body content", partial.body.to_s
+  end
+
   test "helpers can access local_assigns" do
     partial = new_partial(locals: {foo: "bar"})
     partial.helpers do
       def upcase_foo
-        local_assigns[:foo].upcase
+        partial.local_assigns[:foo].upcase
       end
     end
 
@@ -185,6 +197,10 @@ class NicePartials::PartialTest < NicePartials::Test
 
     assert_equal "YO", partial.upcase("yo")
     assert_not_respond_to view, :upcase
+  end
+
+  test "locals" do
+    assert_equal({foo: "bar"}, new_partial(locals: {foo: "bar"}).locals)
   end
 
   private
