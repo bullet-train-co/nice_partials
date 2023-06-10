@@ -34,6 +34,21 @@ class NicePartials::Partial::Section < NicePartials::Partial::Content
     present? ? self : Empty.new(self)
   end
 
+  # Allows adding a default fallback when there's been no content provided.
+  #
+  #   <%= partial.header.fallback "Default header" %>
+  #
+  #   <%= partial.header.fallback do %>
+  #    <h1>Default Header</h1>
+  #   <% end %>
+  #
+  #   Can also output a tag when there's no content:
+  #   <%= partial.header.fallback.h1 "Default header" %>
+  def fallback(content = nil, &block)
+    # TODO: Add a proxy that returns `self` when content is present and e.g. `h1` is called.
+    presence || content || (@view_context.capture(&block) if block_given?) || @view_context.tag
+  end
+
   def yield(*arguments)
     chunks.each { append @view_context.capture(*arguments, &_1) }
     self
@@ -41,10 +56,6 @@ class NicePartials::Partial::Section < NicePartials::Partial::Content
 
   def present?
     chunks.present? || super
-  end
-
-  def fallback(content = nil, &block)
-    presence || content || (@view_context.capture(&block) if block_given?)
   end
 
   undef_method :p # Remove Kernel.p here to pipe through method_missing and hit tag proxy.
