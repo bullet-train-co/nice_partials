@@ -98,8 +98,7 @@ jobs:
     steps:
       - checkout:
           path: ~/project
-      - browser-tools/install-browser-tools:
-          firefox-version: "110.0"
+      - browser-tools/install-browser-tools
 
       - run: rm LICENSE.chromedriver
       - run: git clone --depth 1 https://github.com/bullet-train-co/bullet_train.git .
