@@ -101,7 +101,8 @@ jobs:
 
       - run: export FIREFOX_VERSION=$(firefox --version)
       - browser-tools/install-browser-tools:
-          firefox-version: $FIREFOX_VERSION
+          environment:
+            ORB_PARAM_FIREFOX_VERSION: $FIREFOX_VERSION
 
       - run: rm LICENSE.chromedriver
       - run: git clone --depth 1 https://github.com/bullet-train-co/bullet_train.git .
