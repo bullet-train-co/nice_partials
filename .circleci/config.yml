@@ -98,10 +98,8 @@ jobs:
     steps:
       - checkout:
           path: ~/project
-
-      - run: export ORB_PARAM_FIREFOX_VERSION=$(firefox --version)
       - browser-tools/install-browser-tools:
-          firefox-version: ${ORB_PARAM_FIREFOX_VERSION}
+          firefox-version: "112.0"
 
       - run: rm LICENSE.chromedriver
       - run: git clone --depth 1 https://github.com/bullet-train-co/bullet_train.git .
