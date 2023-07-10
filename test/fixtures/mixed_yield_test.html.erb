@@ -1,6 +1,6 @@
-<%= render "yields/mixed" do |partial| %>
-  <% partial.slot do %>
+\= render "yields/mixed" do |partial|
+  \partial.slot do
     <div id="slot">slot content</div>
-  <% end %>
+  \end
   <div id="output_buffer">output buffer content</div>
-<% end %>
+\end

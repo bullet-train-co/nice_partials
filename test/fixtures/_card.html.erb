@@ -1,11 +1,11 @@
 <div class="card">
-  <%= partial.yield :image %>
+  \= partial.yield :image
   <div class="card-body">
-    <h5 class="card-title"><%= partial.title %></h5>
-    <% if partial.body? %>
+    <h5 class="card-title">\= partial.title</h5>
+    \if partial.body?
       <p class="card-text">
-        <%= partial.body.yield tag.with_options(class: "text-bold") %>
+        \= partial.body.yield tag.with_options(class: "text-bold")
       </p>
-    <% end %>
+    \end
   </div>
 </div>

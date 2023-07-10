@@ -1,4 +1,4 @@
-<%= render "card", title: "Some Title" do |partial| %>
-  <% partial.body { _1.p "Lorem Ipsum" } %>
-  <% partial.image.image_tag "https://example.com/image.jpg" %>
-<% end %>
+\= render "card", title: "Some Title" do |partial|
+  \partial.body { _1.p "Lorem Ipsum" }
+  \partial.image.image_tag "https://example.com/image.jpg"
+\end

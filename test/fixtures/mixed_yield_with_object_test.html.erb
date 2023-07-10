@@ -1,6 +1,6 @@
-<%= render "yields/mixed_with_object" do |partial| %>
-  <% partial.slot do |tag| %>
-    <%= tag.div("slot content") %>
-  <% end %>
+\= render "yields/mixed_with_object" do |partial|
+  \partial.slot do |tag|
+    \= tag.div("slot content")
+  \end
   <div id="output_buffer">output buffer content</div>
-<% end %>
+\end
