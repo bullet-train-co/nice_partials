@@ -35,7 +35,7 @@ class BRB::Erubi < ::ActionView::Template::Handlers::ERB::Erubi
 
   def initialize(input, ...)
     old_input = input.dup
-    if input.gsub!(/\\(?!s\+)(.*?)(\<\/|[ \t]*\r?\n)/, '<%\1%>\2')
+    if input.gsub!(/\\(.*?)(\<\/|[ \t]*\r?\n)/, '<%\1 %>\2')
       # puts [old_input, input] unless input.include?("clobbering")
     end
     super

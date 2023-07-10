@@ -1,17 +1,15 @@
-<%
-  partial.helpers do
-    def upcase(content)
-      content.upcase
-    end
-
-    def squish(content)
-      content.gsub(/\s+/, " ")
-    end
-
-    def upcase_foo
-      partial.locals[:foo].upcase
-    end
-  end
-%>
+\partial.helpers do
+\  def upcase(content)
+\    content.upcase
+\  end
+\
+\  def squish(content)
+\    content.gsub(/\s+/, " ")
+\  end
+\
+\  def upcase_foo
+\    partial.locals[:foo].upcase
+\  end
+\end
 
 <p>\= partial.upcase yield</p>
