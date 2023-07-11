@@ -28,22 +28,22 @@ class NicePartials::Test < ActionView::TestCase
   end
 end
 
-module BRB
-  singleton_class.attr_reader :sigils
-  @sigils = {}
+module BRB; end
+module BRB::Sigils
+  @values = {}
 
-  def self.replace_sigils(source)
-    source.gsub!(/\\(#{sigils.keys.join("|")})=?((?:\.\w+)+|\((?:.*?)\))/) { "<%= #{@sigils[$1].sub('\2', $2)} %>" }
+  def self.gsub!(source)
+    source.gsub!(/\\(#{@values.keys.join("|")})=?((?:\.\w+)+|\((?:.*?)\))/) { "<%= #{@values[$1].sub('\2', $2)} %>" }
   end
 
-  def self.gsub_sigil(key, replacer)
-    sigils[key.to_s] = replacer
+  def self.register(key, replacer)
+    @values[key.to_s] = replacer
   end
 
-  gsub_sigil :t, 't "\2"'
-  gsub_sigil :class, %s(class="\= class_names(\1)")
-  gsub_sigil :attributes, 'tag.attributes(\1)'
-  gsub_sigil :data, 'tag.attributes(data: \1)'
+  register :t, 't "\2"'
+  register :class, %s(class="\= class_names(\1)")
+  register :attributes, 'tag.attributes(\1)'
+  register :data, 'tag.attributes(data: \1)'
 end
 
 class BRB::Erubi < ::ActionView::Template::Handlers::ERB::Erubi
@@ -52,7 +52,7 @@ class BRB::Erubi < ::ActionView::Template::Handlers::ERB::Erubi
 
   def initialize(input, ...)
     old_input = input.dup
-    if BRB.replace_sigils(input)
+    if BRB::Sigils.gsub!(input)
       puts ["sigils", old_input, input] unless input.include?("clobbering")
     end
 
