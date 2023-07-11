@@ -52,16 +52,28 @@ class BRB::Erubi < ::ActionView::Template::Handlers::ERB::Erubi
 
   def initialize(input, ...)
     old_input = input.dup
+
+    # puts old_input
+
+    # scanner = StringScanner.new(input)
+    # while string = scanner.scan_until(/\\/)
+    #   binding.irb
+    #   if scanner.bol? && scanner.check(/\n/)
+    #     puts "YO"
+    #   end
+    #   p string
+    # end
+
     if BRB::Sigils.gsub!(input)
-      puts ["sigils", old_input, input] unless input.include?("clobbering")
+      # puts ["sigils", old_input, input] unless input.include?("clobbering")
     end
 
     if input.gsub!(/^\\\r?\n(.*?)^\\\r?\n/m, "<%\n\\1%>\n")
-      puts ["group", old_input, input] unless input.include?("clobbering")
+      # puts ["group", old_input, input] unless input.include?("clobbering")
     end
 
     if input.gsub!(/(?<!\/)\\(.*?)(\<\/|[ \t]*\r?\n)/, '<%\1%>\2')
-      puts ["line", old_input, input] unless input.include?("clobbering")
+      # puts ["line", old_input, input] unless input.include?("clobbering")
     end
     super
   end
