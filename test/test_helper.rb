@@ -28,7 +28,23 @@ class NicePartials::Test < ActionView::TestCase
   end
 end
 
-module BRB; end
+module BRB
+  singleton_class.attr_reader :sigils
+  @sigils = {}
+
+  def self.replace_sigils(source)
+    source.gsub!(/\(?#{sigils.keys.join("|")})=?\((.*?)\)/, sigils)
+  end
+
+  def self.gsub_sigil(key, replacer)
+    sigils[key.to_s] = replacer
+  end
+
+  gsub_sigil :class, %s(class="\= class_names(\1)")
+  gsub_sigil :attributes, 'tag.attributes(\1)'
+  gsub_sigil :data, 'tag.attributes(data: \1)'
+end
+
 class BRB::Erubi < ::ActionView::Template::Handlers::ERB::Erubi
   # DEFAULT_REGEXP = /<%(={1,2}|-|\#|%)?(.*?)([-=])?%>([ \t]*\r?\n)?/m
   # DEFAULT_REGEXP = /<%(={1,2}|-|\#|%)?(.*?)([-=])?%>([ \t]*\r?\n)?/m
