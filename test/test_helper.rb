@@ -33,13 +33,14 @@ module BRB
   @sigils = {}
 
   def self.replace_sigils(source)
-    source.gsub!(/\(?#{sigils.keys.join("|")})=?\((.*?)\)/, sigils)
+    source.gsub!(/\\(#{sigils.keys.join("|")})=?((?:\.\w+)+|\((?:.*?)\))/) { "<%= #{@sigils[$1].sub('\2', $2)} %>" }
   end
 
   def self.gsub_sigil(key, replacer)
     sigils[key.to_s] = replacer
   end
 
+  gsub_sigil :t, 't "\2"'
   gsub_sigil :class, %s(class="\= class_names(\1)")
   gsub_sigil :attributes, 'tag.attributes(\1)'
   gsub_sigil :data, 'tag.attributes(data: \1)'
@@ -51,6 +52,10 @@ class BRB::Erubi < ::ActionView::Template::Handlers::ERB::Erubi
 
   def initialize(input, ...)
     old_input = input.dup
+    if BRB.replace_sigils(input)
+      puts ["sigils", old_input, input] unless input.include?("clobbering")
+    end
+
     if input.gsub!(/^\\\r?\n(.*?)^\\\r?\n/m, "<%\n\\1%>\n")
       puts ["group", old_input, input] unless input.include?("clobbering")
     end
