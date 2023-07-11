@@ -33,17 +33,18 @@ module BRB::Sigils
   @values = {}
 
   def self.gsub!(source)
-    source.gsub!(/\\(#{@values.keys.join("|")})=?((?:\.\w+)+|\((?:.*?)\))/) { "<%= #{@values[$1].sub('\2', $2)} %>" }
+    source.gsub!(/\\(#{@values.keys.join("|")})=?(?:(\.\w+)+|\((.*?)\))/) { p $1, $2, $3; @values[$1].sub('\1', $2 || $3) }
   end
 
   def self.register(key, replacer)
     @values[key.to_s] = replacer
   end
 
-  register :t, 't "\2"'
-  register :class, %s(class="\= class_names(\1)")
-  register :attributes, 'tag.attributes(\1)'
-  register :data, 'tag.attributes(data: \1)'
+  register :t, '\= t "\1"'
+  register :class, %(class="\\= class_names(\\1)")
+  register :attributes, '\= tag.attributes(\1)'
+  register :p, '\= tag.attributes(\1)'
+  register :data, '\= tag.attributes(data: \1)'
 end
 
 class BRB::Erubi < ::ActionView::Template::Handlers::ERB::Erubi
@@ -51,10 +52,7 @@ class BRB::Erubi < ::ActionView::Template::Handlers::ERB::Erubi
   # DEFAULT_REGEXP = /<%(={1,2}|-|\#|%)?(.*?)([-=])?%>([ \t]*\r?\n)?/m
 
   def initialize(input, ...)
-    old_input = input.dup
-
-    # puts old_input
-
+    puts input
     # scanner = StringScanner.new(input)
     # while string = scanner.scan_until(/\\/)
     #   binding.irb
@@ -65,15 +63,15 @@ class BRB::Erubi < ::ActionView::Template::Handlers::ERB::Erubi
     # end
 
     if BRB::Sigils.gsub!(input)
-      # puts ["sigils", old_input, input] unless input.include?("clobbering")
+      puts ["sigils", input] unless input.include?("clobbering")
     end
 
     if input.gsub!(/^\\\r?\n(.*?)^\\\r?\n/m, "<%\n\\1%>\n")
-      # puts ["group", old_input, input] unless input.include?("clobbering")
+      # puts ["group", input] unless input.include?("clobbering")
     end
 
-    if input.gsub!(/(?<!\/)\\(.*?)(\<\/|[ \t]*\r?\n)/, '<%\1%>\2')
-      # puts ["line", old_input, input] unless input.include?("clobbering")
+    if input.gsub!(/(?<!\/)\\(.*?)(\"?\>|\<\/|[ \t]*\r?\n)/, '<%\1 %>\2')
+      puts ["line", input] unless input.include?("clobbering")
     end
     super
   end

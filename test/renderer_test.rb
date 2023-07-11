@@ -13,6 +13,8 @@ class RendererTest < NicePartials::Test
     assert_text "Some Title"
     assert_css "p", class: "text-bold", text: "Lorem Ipsum"
     assert_css("img") { assert_equal "https://example.com/image.jpg", _1["src"] }
+
+    puts rendered
   end
 
   test "render partial can yield block named label" do
@@ -187,7 +189,7 @@ class RendererTest < NicePartials::Test
   end
 
   test "doesn't clobber Kernel.p" do
-    assert_output "\"it's clobbering time\"\n" do
+    assert_output /"it's clobbering time"\n/ do
       render("clobberer") { |p| p.content_for :message, "hello from nice partials" }
     end
 

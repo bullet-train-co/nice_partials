@@ -9,3 +9,17 @@
     \end
   </div>
 </div>
+
+\# Just some test data
+\ post = Struct.new(:title, :active?, :options).new("hello", true, { data: { controller: "post" }, aria: { role: "list" } })
+\ partial.body class: ["super", active: post.active?], data: { controller: "cool" }
+
+<h1 \class(active: post.active?)>\= post.title</h1>
+
+<span \= partial.body.options></span>
+<span \attributes(post.options)></span>
+<span \p(post.options)></span> \# or just?
+
+\# Can't place data-list-value="yo" after sigils, and can't have multi sigils yet.
+<span data-list-value="yo" \data(post.options[:data])></span>
+<span data-list-value="yo" \data({ controller: "list" })></span>
