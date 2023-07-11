@@ -187,7 +187,7 @@ class RendererTest < NicePartials::Test
   end
 
   test "doesn't clobber Kernel.p" do
-    assert_output "\"it's clobbering time\"\n" do
+    assert_output /"it's clobbering time"\n/ do
       render("clobberer") { |p| p.content_for :message, "hello from nice partials" }
     end
 
@@ -196,7 +196,7 @@ class RendererTest < NicePartials::Test
 
   test "deprecates top-level access through p method" do
     assert_deprecated /p is deprecated and will be removed from nice_partials \d/, NicePartials::DEPRECATOR do
-      assert_output "\"it's clobbering time\"\n" do
+      assert_output /"it's clobbering time"\n/ do
         render("clobberer") { |p| p.content_for :message, "hello from nice partials" }
       end
     end
