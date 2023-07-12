@@ -21,5 +21,6 @@
 <span \p(post.options)></span> \# or just?
 
 \# Can't place data-list-value="yo" after sigils, and can't have multi sigils yet.
+\lorem() \# Fix needing () on this sigil
 <span data-list-value="yo" \data(post.options[:data])></span>
-<span data-list-value="yo" \data({ controller: "list" })></span>
+<span data-list-value="yo" \data({ controller: "list" })>\lorem()</span>
