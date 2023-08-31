@@ -24,7 +24,7 @@ See, here we're outputting the `image`, `title`, and `body` sections:
 Then in `render` we populate them:
 
 ```html+erb
-<%= render "components/card", title: "Some Title" do |partial| %>
+<%= render "components/card" do |partial| %>
   <% partial.title t(".title") %> # Same as `partial.content_for :title, t(".title")`
 
   <% partial.body do %>
