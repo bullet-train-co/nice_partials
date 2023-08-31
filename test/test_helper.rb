@@ -73,7 +73,8 @@ class BRB::Erubi < ::ActionView::Template::Handlers::ERB::Erubi
       # puts ["group", input] unless input.include?("clobbering")
     end
 
-    if input.gsub!(/(?<!\/)\\(.*?)(\"?\>|\<\/|[ \t]*\r?\n)/, '<%\1 %>\2')
+    # if input.gsub!(/(?<!\/)\\(.*?)(\"?\>|\<\/|[ \t]*\r?\n)/, '<%\1 %>\2')
+    if input.gsub!(/(?<!\/)\\(.*?)(?=\n|"? \\|"?>|<\/|(?<!\/)\\|[a-z-]+=)/, '<%\1 %>')
       puts ["line", input] unless input.include?("clobbering")
     end
     super

@@ -11,8 +11,8 @@
 </div>
 
 \# Just some test data
-\ post = Struct.new(:title, :active?, :options).new("hello", true, { data: { controller: "post" }, aria: { role: "list" } })
-\ partial.body class: ["super", active: post.active?], data: { controller: "cool" }
+\post = Struct.new(:title, :active?, :options).new("hello", true, { data: { controller: "post" }, aria: { role: "list" } })
+\partial.body class: ["super", active: post.active?], data: { controller: "cool" }
 
 <h1 \class(active: post.active?)>\= post.title</h1>
 
@@ -20,7 +20,13 @@
 <span \attributes(post.options)></span>
 <span \p(post.options)></span> \# or just?
 
-\# Can't place data-list-value="yo" after sigils, and can't have multi sigils yet.
+\# Can't place data-list-value="yo" after sigils, and can't have multi sigils yet. \# Fix comments not seeking to eol to close.
 \lorem() \# Fix needing () on this sigil
 <span data-list-value="yo" \data(post.options[:data])></span>
 <span data-list-value="yo" \data({ controller: "list" })>\lorem()</span>
+
+\= post.title
+<h1>\= post.title</h1>
+<h1 \data(post.options[:data])></h1>
+\post.title.match? /\w+/
+<h1 \p(post.options) \attributes(post.options) data-controller="title"></h1> \# Fix no space before data-controller
