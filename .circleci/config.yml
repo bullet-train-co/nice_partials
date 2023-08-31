@@ -21,7 +21,7 @@ aliases:
           PGUSER: untitled_application
           RAILS_ENV: test
   - &postgres_docker_image
-      - image: circleci/postgres
+      - image: cimg/postgres
         environment:
           POSTGRES_HOST_AUTH_METHOD: trust
           POSTGRES_DB: untitled_application_test
@@ -34,7 +34,7 @@ jobs:
     # docker:
     #   - <<: *ruby_node_browsers_docker_image
     #   - <<: *postgres_docker_image
-    #   - image: circleci/redis
+    #   - image: cimg/redis
     executor: ruby/default
     steps:
       - checkout
@@ -91,7 +91,7 @@ jobs:
     docker:
       - <<: *ruby_node_browsers_docker_image
       - <<: *postgres_docker_image
-      - image: circleci/redis
+      - image: cimg/redis
     executor: ruby/default
     working_directory: tmp/starter
     parallelism: 16
