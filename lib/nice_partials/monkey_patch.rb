@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Monkey patch required to make `t` work as expected. Is this evil?
 # TODO Do we need to monkey patch other types of renderers as well?
 module NicePartials::RenderingWithLocalePrefix
