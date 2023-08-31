@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    nice_partials (0.9.3)
+    nice_partials (0.10.0)
       actionview (>= 4.2.6)
 
 GEM
