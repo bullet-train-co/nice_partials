@@ -28,6 +28,26 @@ class NicePartials::Test < ActionView::TestCase
   end
 end
 
+# Here's BRB with preprocessing sigils. Sigils aim to make actions common in an HTML context easier to write.
+# At template compile time the sigils are `gsub`'ed into their replacements.
+#
+# They follow this syntax, here `sigil_name` is the name of the Sigil:
+#
+#   \sigil_name # A sigil with no arguments
+#   \sigil_name(< ruby expression >) # A sigil with arguments, must be called with ()
+#
+# Examples:
+#
+#   \class(active: post.active?) -> class="<%= class_names(active: post.active?) %>"
+#   \attributes(post.options) -> <%= tag.attributes(post.options) %>
+#   \p(post.options) -> <%= tag.attributes(post.options) %>
+#   \data(post.data) -> <%= tag.attributes(data: post.data) %>
+#   \lorem -> Lorem ipsum dolor sit amet…
+#
+# There's also a `t` sigil, but that's a little more involved since there's some extra things to condense:
+#
+#   \t.message -> <%= t ".message" %>
+#   \t Some bare words -> <%= t "Some bare words" %> # Assumes we're using a gettext I18n backend, coming later!
 module BRB; end
 module BRB::Sigils
   @values = {}
