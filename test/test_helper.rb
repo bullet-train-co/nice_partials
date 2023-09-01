@@ -54,6 +54,18 @@ class BRB::Erubi < ::ActionView::Template::Handlers::ERB::Erubi
   # DEFAULT_REGEXP = /<%(={1,2}|-|\#|%)?(.*?)([-=])?%>([ \t]*\r?\n)?/m
   # DEFAULT_REGEXP = /<%(={1,2}|-|\#|%)?(.*?)([-=])?%>([ \t]*\r?\n)?/m
 
+  # BRB aims to be a simpler syntax, but still a superset of ERB, that's aware of the context we're in: HTML.
+  #
+  # We're replacing <% %>, <%= %>, and <%# %> with \, \= and \# — these are self-terminating expressions.
+  #
+  # We recognize these contexts and convert them to their terminated ERB equivalent:
+  #
+  # 1. A plain Ruby line: \puts "yo" -> <%puts "yo" %>
+  # 2. Within a tag: <h1>\= post.title</h1> -> <h1><%= post.title %></h1>
+  # 3. Within attributes at the end: <h1 \= post.options></h1> -> <h1 aria-labelledby="title"></h1>
+  # 4. Within attributes:
+  #    <h1 \= post.options \= class_names(active: post.active?) data-controller="title"></h1> ->
+  #    <h1 aria-labelledby="title" class="active"data-controller="title"></h1>
   def initialize(input, ...)
     puts input
     # scanner = StringScanner.new(input)
