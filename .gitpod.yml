@@ -1,0 +1,13 @@
+image:
+  file: .gitpod.Dockerfile
+
+tasks:
+  - init: bundle install
+
+vscode:
+  extensions:
+    - rebornix.ruby
+    - formulahendry.auto-rename-tag
+    - formulahendry.auto-close-tag
+    - Digoro.clipboard
+    - streetsidesoftware.code-spell-checker
