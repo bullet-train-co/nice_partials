@@ -95,7 +95,7 @@ module NicePartials::RenderingWithAutoContext
   # `render` calls since rendering happens in one `ActionView::Base` instance.
   def capture_with_outer_partial_access(*arguments, &block)
     __partials.locate_previous
-    __partials.first.capture(*arguments, &block)
+    __partials.first.capture(*arguments, &block) if block_given?
   ensure
     __partials.reset_locator
   end
@@ -110,7 +110,7 @@ module NicePartials::PartialRendering
   #
   #   <% yield partial %>
   def render_partial_template(view, locals, template, layout, block)
-    view.capture_with_outer_partial_access(&block) if block && !template.has_capturing_yield?
+    view.capture_with_outer_partial_access(&block) unless template.has_capturing_yield?
     super
   end
 end
