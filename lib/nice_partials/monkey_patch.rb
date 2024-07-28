@@ -45,10 +45,7 @@ NicePartials::DEPRECATOR = ActiveSupport::Deprecation.new("1.0", "nice_partials"
 module NicePartials::RenderingWithAutoContext
   ActionView::Base.prepend self
 
-  def __partials
-    @__partials ||= NicePartials::Partial::Stack.new
-  end
-  delegate :partial, to: :__partials
+  attr_reader :partial
 
   def p(*args)
     if args.empty?
@@ -63,10 +60,10 @@ module NicePartials::RenderingWithAutoContext
   # on the stack, so rendering has a fresh `partial` to store content in.
   def render(options = {}, locals = {}, &block)
     partial_locals = options.is_a?(Hash) ? options[:locals] : locals
-    __partials.prepend nice_partial_with(partial_locals)
+    @partial = nice_partial_with(partial_locals)
     super
   ensure
-    __partials.shift
+    @partial = partial.outer_partial
   end
 
   # Since Action View passes any `yield`s in partials through `_layout_for`, we
@@ -94,10 +91,10 @@ module NicePartials::RenderingWithAutoContext
   # Note: this happens because the `@partial` instance variable is shared between all
   # `render` calls since rendering happens in one `ActionView::Base` instance.
   def capture_with_outer_partial_access(*arguments, &block)
-    __partials.locate_previous
-    __partials.first.capture(*arguments, &block) if block_given?
+    inner_partial, @partial = partial, partial.outer_partial
+    inner_partial.capture(*arguments, &block)
   ensure
-    __partials.reset_locator
+    @partial = inner_partial
   end
 end
 
@@ -110,7 +107,7 @@ module NicePartials::PartialRendering
   #
   #   <% yield partial %>
   def render_partial_template(view, locals, template, layout, block)
-    view.capture_with_outer_partial_access(&block) unless template.has_capturing_yield?
+    view.capture_with_outer_partial_access(&block) if block && !template.has_capturing_yield?
     super
   end
 end

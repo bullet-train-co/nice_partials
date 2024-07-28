@@ -4,11 +4,14 @@ module NicePartials
     autoload :Section, "nice_partials/partial/section"
     autoload :Stack, "nice_partials/partial/stack"
 
+    attr_reader :outer_partial
+
     attr_reader :local_assigns
     alias_method :locals, :local_assigns
 
     def initialize(view_context, local_assigns = nil)
       @view_context, @local_assigns = view_context, local_assigns
+      @outer_partial = view_context.partial # Capture the existing outer partial we're rendering within, if any.
     end
 
     def yield(*arguments, &block)
