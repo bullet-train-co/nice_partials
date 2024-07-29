@@ -38,6 +38,8 @@ jobs:
     executor: ruby/default
     steps:
       - checkout
+      - ruby/install:
+          version: "3.3.3"
 
       - ruby/install-deps:
           clean-bundle: true
@@ -51,6 +53,8 @@ jobs:
     executor: ruby/default
     steps:
       - checkout
+      - ruby/install:
+          version: "3.3.3"
 
       - run: "sudo gem update --system --no-document" # Install newer Bundler to use a shallow Rails checkout.
       - run: bundle lock --update=rails
@@ -67,6 +71,8 @@ jobs:
       - <<: *ruby_node_browsers_docker_image
     steps:
       - checkout
+      - ruby/install:
+          version: "3.3.3"
 
       # TODO Figure out how to make these work for `tmp/starter`
       # # Restore dependency caches
