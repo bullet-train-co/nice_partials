@@ -201,4 +201,10 @@ class RendererTest < NicePartials::Test
       end
     end
   end
+
+  test "nested render without rendering block" do
+    render template: "nested_render_without_rendering_block"
+
+    assert_text "Lorem Ipsum"
+  end
 end
