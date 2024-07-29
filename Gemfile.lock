@@ -254,6 +254,7 @@ DEPENDENCIES
   debug
   irb
   minitest
+  net-protocol (~> 0.2.2)
   nice_partials!
   rails
   rake

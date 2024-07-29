@@ -19,3 +19,5 @@ gem "view_component"
 gem "capybara"
 
 gem "debug"
+
+gem "net-protocol" # Needed for net-pop apparently.
