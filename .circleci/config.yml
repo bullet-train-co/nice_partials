@@ -99,7 +99,7 @@ jobs:
       - checkout:
           path: ~/project
       - browser-tools/install-browser-tools:
-          firefox-version: "112.0"
+          firefox-version: "117.0"
           chrome-version: "116.0.5845.96" # TODO: remove -> https://github.com/CircleCI-Public/browser-tools-orb/issues/75
           replace-existing-chrome: true # TODO: remove -> https://github.com/CircleCI-Public/browser-tools-orb/issues/75
 
