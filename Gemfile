@@ -15,3 +15,5 @@ end
 
 gem "view_component"
 gem "capybara"
+
+gem "debug"
