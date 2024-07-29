@@ -96,7 +96,7 @@ class RendererTest < NicePartials::Test
 
   test "explicit yield with object won't auto-capture but make partial available in capture" do
     render "yields/object" do |object, partial|
-      assert_equal Hash.new(custom_key: :custom_value), object
+      assert_equal Hash.new({custom_key: :custom_value}), object
       assert_kind_of NicePartials::Partial, partial
     end
   end
