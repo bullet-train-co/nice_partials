@@ -12,8 +12,6 @@ Gem::Specification.new do |gem|
   gem.homepage      = "https://github.com/bullet-train-co/nice_partials"
   gem.license       = "MIT"
 
-  gem.required_ruby_version = "> 3.0.0"
-
     # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
   gem.files = Dir.chdir(__dir__) do
@@ -25,7 +23,7 @@ Gem::Specification.new do |gem|
   gem.executables = gem.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   gem.require_paths = ["lib"]
 
-  gem.required_ruby_version = ">= 2.0"
+  gem.required_ruby_version = ">= 3.0"
 
   gem.add_dependency "actionview", '>= 4.2.6'
 
