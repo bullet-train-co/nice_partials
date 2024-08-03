@@ -143,7 +143,7 @@ jobs:
       - run:
           name: "Reenable Knapsack" # Hack to get BulletTrain's starter repo to run via knapsack again.
           command: >
-            sed -i "" s/KNAPSACK_PRO_CI_NODE_INDEX/KNAPSACK_PRO_CI_NODE_TOTAL/g test/test_helper.rb
+            sed -i "" -e "s/KNAPSACK_PRO_CI_NODE_INDEX/KNAPSACK_PRO_CI_NODE_TOTAL/g" test/test_helper.rb
 
       - run:
           name: Run tests with Knapsack Pro
