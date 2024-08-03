@@ -141,6 +141,11 @@ jobs:
       - *wait_for_docker
 
       - run:
+          name: "Reenable Knapsack" # Hack to get BulletTrain's starter repo to run via knapsack again.
+          command: >
+            sed -i "" s/KNAPSACK_PRO_CI_NODE_INDEX/KNAPSACK_PRO_CI_NODE_TOTAL/g test/test_helper.rb
+
+      - run:
           name: Run tests with Knapsack Pro
           command: bundle exec rails "knapsack_pro:queue:minitest[--verbose]"
           environment:
