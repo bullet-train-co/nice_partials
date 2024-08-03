@@ -20,4 +20,4 @@ gem "capybara"
 
 gem "debug"
 
-gem "net-protocol" # Needed for net-pop apparently.
+gem "net-pop", github: "ruby/net-pop" # Declare gem explicitly to workaround bug in Ruby 3.3.3. Ref: https://stackoverflow.com/a/78620570
